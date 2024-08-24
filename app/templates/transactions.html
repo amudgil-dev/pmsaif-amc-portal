@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Your Transactions</h1>
+    
+    <!-- Search form -->
+    <form method="GET" action="{{ url_for('txn.transactions') }}">
+        <input type="text" name="search" placeholder="Search by amount">
+        <input type="submit" value="Search">
+    </form>
+
+    <!-- Add transaction form -->
+    <h2>Add New Transaction</h2>
+    <form method="POST" action="{{ url_for('txn.transactions') }}">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.amount.label }}
+            {{ form.amount }}
+        </div>
+        <div>
+            {{ form.date.label }}
+            {{ form.date }}
+        </div>
+        {{ form.submit }}
+    </form>
+
+    <!-- Transactions table -->
+    <h2>Transaction History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for txn in transactions %}
+                <tr>
+                    <td>{{ txn.txn_date }}</td>
+                    <td>{{ txn.txn_amount }}</td>
+                    <td>{{ txn.txn_type }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
