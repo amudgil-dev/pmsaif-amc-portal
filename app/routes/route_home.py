@@ -13,6 +13,7 @@ def index():
   print('index()')
   loggedin = 0
   user_name = ""
+  is_authenticated = current_user.is_authenticated
 
-  return render_template('index.html',loggedin=loggedin, user_name=user_name)
+  return render_template('index.html',is_authenticated=is_authenticated, user_name=user_name)
 #   if current_user.is_authenticated:

@@ -1,10 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, flash,current_app
+from flask import Blueprint, render_template, redirect, url_for, flash,current_app,request
 from flask_login import login_user, logout_user, login_required, current_user
+from app.helpers.helper_util import generate_resetlink,email_resetlink
 from app.models.models import User
-from app.forms.forms import SigninForm
+from app.forms.forms import ResetPasswordForm, ResetRequestForm, SigninForm
 from app.helpers.auth_helper import AuthHelper
 from app.helpers.logging_helper import debug, info, warning, error, critical, log_exception, log_function_call
-from app.extensions import login_manager
+from app.extensions import login_manager, db
 
 bp_auth = Blueprint('auth', __name__)
 
@@ -80,3 +81,94 @@ def handle_exception(e):
     error(f"Unhandled exception in auth blueprint: {str(e)}")
     # You might want to render an error template or return an error response here
     return "An error occurred", 500
+
+
+
+# create reset request
+@bp_auth.route('/resetreq', methods=['GET','POST'])
+def user_reset_req():
+    print('in user_reset_req()')
+    try:
+        AuthHelper.delete_session(current_user.id)
+        print(' session deleted')
+    except:
+        pass
+
+    logout_user()
+    print('user logged out')
+  # if current_user.is_authenticated:
+  #    logout_user()
+    print(' before form')
+    email = None
+    form = ResetRequestForm()
+
+    if request.method=="POST":
+        if form.validate_on_submit():
+            email = form.email.data.strip()
+            user = User.query.filter_by(email=email).first()
+
+            # user is found, means the email is registered,
+            if user:
+                reset_link = generate_resetlink (user)
+                print(f"reset_link = {reset_link} ")
+                email_resetlink(reset_link, email)
+                flash("Reset link is sent which is valid for 5 mins!", 'success')
+                return redirect("/logout")
+            else:
+                print("user is none")
+                flash(" If your mail is registered, you will receive an passsword reset link, else consider registering !", 'warning')
+                return redirect("/register")
+        else:
+            flash(form.errors, 'danger')
+            return render_template("form_resetreq.html", 
+                                    page_heading="Reset Password Request",
+                                    email= email,
+                                    form= form)
+
+    if request.method=="GET":
+        # return render_template("register_user.html")
+        form.email.data = ''   
+        return render_template("form_resetreq.html", 
+                                email= email,
+                                form= form, 
+                                page_heading="Reset Password Request ...",
+                                Title = ""
+                                )
+                            
+  
+####### validating the link when customer clicks on it and allowing creation of new passsword afterwards! ############
+
+@bp_auth.route('/resetpwd/<token>', methods=['GET','POST'])
+def reset_password(token):
+    print('in reset_password()')
+    logout_user()
+
+    print(f" token = {token}")  
+    print(request.method)
+    user = User.verify_token(token)
+    if user is None:
+        print("user is none")
+        flash("Invalid or expired token, try again!", 'warning')
+        return redirect("/resetreq")
+    
+    print('user is not None')
+    if request.method=="POST":
+        print('in reset_password() post ')
+        form = ResetPasswordForm()
+        if form.validate_on_submit():
+            new_password = form.password_hash.data.strip() 
+            # new_passsword_hash = generate_password_hash(new_password)
+            # user.password_hash = new_passsword_hash
+            user.set_password(new_password)
+            db.session.commit()
+            print('user password changed!')
+            flash("Password changed successfully !", 'success')
+            return redirect("/login")
+
+    if request.method=="GET":
+        print(' method is GET')
+        form = ResetPasswordForm()
+        return render_template("form_createpwd.html",
+                            form=form, 
+                            token=token,
+                            page_heading="Create New Password ...",)

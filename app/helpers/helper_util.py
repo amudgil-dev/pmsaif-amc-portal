@@ -38,7 +38,7 @@ def email_resetlink(reset_link, receiver_email):
     print(reset_link)
     print(receiver_email)
     print(len(receiver_email))    
-    subject = 'reset your password for Eventbyte'
+    subject = 'reset your password for PMSAIFWorld AMC Portal'
     msg = Message('Password Reset Request!', sender='noreply@demo.com', recipients=[receiver_email])
     msg.body = f''' 
 
@@ -51,7 +51,7 @@ def email_resetlink(reset_link, receiver_email):
             If you didn't send a password reset request, please ignore this email.
 
         '''
-
+    print(f" msg = {msg}")
     mail.send(msg)
 
 def email_activationlink(activation_link, receiver_email):
@@ -155,8 +155,8 @@ def get_user_details_in_session(session):
 
     return user_id, user_name, user_role, auth_status, pms_list
 
-def checkAuthZ(pms_id):
-    print(f"checkAuthZ( {pms_id} ) ")     
+def checkAuthZ(user_id,pms_id):
+    print(f"checkAuthZ( {user_id, pms_id} ) ")     
     
     pms_id = int(pms_id)
     
@@ -176,6 +176,8 @@ def checkAuthZ(pms_id):
             print(f" auth_status = {auth_status} and user_id = {user_id}")
             return result
         
+   
+               
         submitter_role_id = UserRole.query.filter_by(name="SUBMITTER").first().id
         print(f" user_role = {user_role} and  submitter_role_id = {submitter_role_id} and pms_id = {pms_id} pms_list = {pms_list} ")
         
@@ -199,9 +201,9 @@ def checkAuthZ(pms_id):
     print(f" final result = {result}")
     return result
         
-def enforceAuthz(pms_id):
+def enforceAuthz(user_id,pms_id):
     print(f"enforceAuthz( {pms_id} ) ") 
-    authz = checkAuthZ(pms_id)
+    authz = checkAuthZ(user_id,pms_id)
     if not authz:
         print('You are not authorised to access the PMS you requested, please contat PMSAIF Administrator')
         flash('You are not authorised to access the PMS you requested, please contat PMSAIF Administrator or login with other account!', 'danger')

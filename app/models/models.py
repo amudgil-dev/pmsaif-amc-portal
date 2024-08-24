@@ -1,3 +1,4 @@
+from itsdangerous import Serializer
 from app.extensions import db, login_manager
 from sqlalchemy import UniqueConstraint
 # ... rest of the code remains the same

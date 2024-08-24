@@ -1,6 +1,6 @@
 
 
-from app.models.models import AMCMaster, PMSMaster, PMSStock, db
+from app.models.models import AMCMaster, PMSMaster, PMSStock, User, db
 from sqlalchemy import text
 from pandas import DataFrame
 import pandas as pd
@@ -29,7 +29,7 @@ def getPmsListing(user_id):
 
             pms_array = [dict(zip(label_tuple, row)) for row in records]
             
-            print(pms_array)
+            # print(pms_array)
             return pms_array
     except Exception as e:
         current_app.logger.error(f"Error in getPmsListing: {e}")
@@ -57,9 +57,10 @@ def getPmsListing(user_id):
 
 def getPmsDashDataList(pms_id):
     print('getPmsDashDataList()')
-    print("pms_id ==>", pms_id)
+    # print("pms_id ==>", pms_id)
     
     pms_perf, pms_label = getPmsPerformance(pms_id)
+    # print(f" type(pms_perf) ====>><<<<< {type(pms_perf)} and {pms_perf.month}")
     index_perf, index_label = getPmsIndexPerformance(pms_id, pms_perf.month, pms_perf.year)
     
     pms_details = getPmsDetails(pms_id)
@@ -82,25 +83,34 @@ def getPmsPerformance(pms_id):
     
     label_pms_perf = ('perf_id','amc_name','pms_id', 'pms_name', 'index_id', 'index_name', 'month', 'year', 'one_month', 'three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr', 'cagr_si', 'si') 
 
-    sql = text(query)
-    records = db.engine.execute(sql)
-    
-    print(records)
+    # sql = text(query)
+    # records = db.engine.execute(sql)
 
-    #iterate through object and create seperate arrays to be rendered by highcharts
-    # pms_perf = []
+    # tuple_list = [i for i in records]
 
-    tuple_list = [i for i in records]
-    # for row in tuple_list:
-    #     # pms_perf.append(dict(zip(label_pms_perf, row)))
-    #     pms_perf.append(zip(label_pms_perf, row))
-    print("----****????????*** ---")    
-    print(tuple_list)
-    tuple = tuple_list[0]
-    print(tuple.pms_id)
-    pms_perf = tuple
+    # tuple = tuple_list[0]
+    # pms_perf = tuple
 
-    return pms_perf , label_pms_perf
+    try:
+        with current_app.app_context():
+            with db.engine.connect() as connection:
+                result = connection.execute(text(query), {"pms_id": pms_id})
+                records = result.fetchall()
+
+            # pms_perf = [zip(label_pms_perf, row) for row in records][0]
+            tuple_list = [i for i in records]
+
+            tuple = tuple_list[0]
+            pms_perf = tuple            
+                    
+            # pms_perf = pms_perf[0]
+            print(f"pms_perf =====> {type(pms_perf)}")
+            return pms_perf ,label_pms_perf
+    except Exception as e:
+        current_app.logger.error(f"Error in getPmsListing: {e}")
+        return None , None 
+
+    # return pms_perf , label_pms_perf
 
 
 def getPmsIndexPerformance(pms_id,month, year):
@@ -116,11 +126,17 @@ def getPmsIndexPerformance(pms_id,month, year):
     
     label_index_perf = ('id','index_name', 'index_id', 'month', 'year', 'one_month', 'three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr')
 
-    sql = text(query)
-    records = db.engine.execute(sql)
-    # print(records)
+    try:
+        with current_app.app_context():
+            with db.engine.connect() as connection:
+                result = connection.execute(text(query), {"pms_id": pms_id})
+                records = result.fetchall()
+                
+                tuple_list = [i for i in records]
+    except:
+        pass
 
-    tuple_list = [i for i in records]
+
     if len(tuple_list) > 1:
         index_perf_tuple = tuple_list[0]
     else:
@@ -180,14 +196,21 @@ def getPmsDetails(pms_id):
     
     labels = ('pms_internal_id', 'pms_name', 'min', 'max', 'aum', 'portfolio_pe', 'large_cap', 'mid_cap', 'small_cap', 'cash') 
 
-    sql = text(query)
-    records = db.engine.execute(sql)
-    # print(records)
+    try:
+        with current_app.app_context():
+            with db.engine.connect() as connection:
+                result = connection.execute(text(query), {"pms_id": pms_id})
+                records = result.fetchall()
+                
+                tuple_list = [i for i in records]
+                tuple = tuple_list[0]
+                pms_details = tuple
+                return pms_details
 
-    tuple_list = [i for i in records]
-    tuple = tuple_list[0]
-    pms_details = tuple
-    return pms_details
+    except:
+        None
+
+
 
 
 def getPmsStocks(pms_id):
@@ -200,19 +223,20 @@ def getPmsStocks(pms_id):
             ' and t1.pms_id ='+ str(pms_id) 
                 
 
-    sql = text(query)
-    records = db.engine.execute(sql)
-    # print(records)
+    try:
+        with current_app.app_context():
+            with db.engine.connect() as connection:
+                result = connection.execute(text(query), {"pms_id": pms_id})
+                records = result.fetchall()
+                
+                tuple_list = [i for i in records]
+                pms_stocks = tuple_list
+                
+                return pms_stocks
 
-    tuple_list = [i for i in records]
-    pms_stocks = tuple_list
-    # print('...........')
-    # print(len(pms_stocks))
-    # for tuple in pms_stocks:
-    #     print(tuple)
+    except:
+        None
 
-    # print('...........')
-    return pms_stocks
 
 
 def getPmsSectors(pms_id):
@@ -225,48 +249,56 @@ def getPmsSectors(pms_id):
             ' and t1.pms_id = '+str(pms_id)
                 
 
-    sql = text(query)
-    records = db.engine.execute(sql)
-    # print(records)
-
-    tuple_list = [i for i in records]
-    pms_sectors = tuple_list
-    print('...........')
-    print(len(pms_sectors))
-    for tuple in pms_sectors:
-        print(tuple)
-
-    print('...........')
-    return pms_sectors
-
-
-
-def userEntitledToChange(user_id, pms_id):
-    print('userEntitledToChange()')
-
-    query = ' select count(*) count from user where id = '+ str(user_id) +''\
-            ' and amc_id = (select amc_id from pms_master where pms_id = '+str(pms_id)+')'
+    try:
+        with current_app.app_context():
+            with db.engine.connect() as connection:
+                result = connection.execute(text(query), {"pms_id": pms_id})
+                records = result.fetchall()
                 
+                tuple_list = [i for i in records]
+                pms_sectors = tuple_list
+                
+                return pms_sectors
 
-    sql = text(query)
-    records = db.engine.execute(sql)
-    # print(records)
-
-    tuple_list = [i for i in records]
-    rec_count = tuple_list[0].count
-
-    # print('...........')
-    authorised = False
-    if rec_count is None:
-        # print('rec count is 0')
-        authorised = False
-    else:
-        # print(rec_count)
-        authorised = True
-
-    return authorised
+    except:
+        None
 
 
+
+
+def checkEntitlements(user_id, pms_id):
+    print('checkEntitlements()')
+
+    try:
+        # Use parameterized query to prevent SQL injection
+        query = text("""
+            SELECT COUNT(*) as count 
+            FROM user u
+            JOIN pms_master pm ON u.amc_id = pm.amc_id
+            WHERE u.id = :user_id AND pm.pms_id = :pms_id
+        """)
+
+        result = db.session.execute(query, {'user_id': user_id, 'pms_id': pms_id})
+        count = result.scalar()
+
+        authorized = count > 0
+
+        current_app.logger.info(f"User {user_id} authorization for PMS {pms_id}: {authorized}")
+        
+        return authorized
+
+    except Exception as e:
+        current_app.logger.error(f"Error checking user entitlement: {str(e)}")
+        return False
+    
+    
+
+def getUserByUserId(user_id):
+    return User.query.filter_by(id=user_id).first()
+    
+def getPmsOfAmc(amc_id):
+    return PMSMaster.query.filter_by(amc_id=amc_id).all()
+    
     # delete all the records from the pms_stocks table for given pms_id
 def deletePmsStocks(pms_id):
     print('deletePmsStocks()')
