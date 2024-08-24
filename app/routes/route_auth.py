@@ -16,9 +16,9 @@ def load_user(user_id):
 @log_function_call
 def login():
     print(' in login()')
-    if current_user.is_authenticated:
-        print('redirecting to txn')
-        return redirect(url_for('txn.transactions'))
+    # if current_user.is_authenticated:
+    #     print('redirecting to /pmslist')
+    #     return redirect(url_for('pms.pmslist'))
     
     print('before form')
     form = SigninForm()
@@ -68,9 +68,11 @@ def login():
 @login_required
 @log_function_call
 def logout():
-    AuthHelper.delete_session(current_user)
+    AuthHelper.delete_session(current_user.id)
     logout_user()
     return redirect(url_for('home.index'))
+
+
 
 # Error handling example
 @bp_auth.errorhandler(Exception)

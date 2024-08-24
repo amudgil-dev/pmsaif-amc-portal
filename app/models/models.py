@@ -22,7 +22,7 @@ class User1(UserMixin, db.Model):
 
 class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),unique=True, nullable=False)
     session_id = db.Column(db.String(255), unique=True, nullable=False)
     expiry = db.Column(db.DateTime, nullable=False)
 

@@ -20,7 +20,7 @@ instance/
 logs/
 
 # Environment variables
-.env
+# .env
 .flaskenv
 
 # IDE specific files
