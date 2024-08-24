@@ -1,0 +1,25 @@
+
+{% extends 'navbar.html' %}
+
+{% block content  %}
+<div class="container">
+    <div class="row">
+      <div class="col-sm-12 m-auto">
+
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="alert alert-{{category}} alert-dismissible">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            </div>
+
+        {% endfor %}
+
+                <h1> New PAGE   </h1>
+                <br/>
+                
+
+        </div>
+    </div>
+</div>   
+{% endblock %}

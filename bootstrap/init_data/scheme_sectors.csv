@@ -1,0 +1,173 @@
+scheme_id,sector_name,deployed_pct
+5,HealthCare,6.63
+5,Cash & Cash Equivalent,7.32
+5,Energy,7.6
+5,Industrials,18.33
+5,Consumer Discretionary,27.43
+5,Financial Services,32.69
+6,Transportation,1.5
+6,Cement & Cement Products,1.9
+6,Power,3
+6,Construction,3.9
+6,Auto Ancillaries,3.9
+6,Cash & Cash Equivalent,5
+6,Pharmaceuticals,7.7
+6,Banks,8.9
+6,Ferrous Metals,9.1
+6,Software,9.3
+6,Industrial Products,9.6
+6,Consumer Non Durables,11.3
+6,Chemicals,11.9
+6,Consumer Durables,12.9
+7,Cement & Cement Products,1.8
+7,Power,2.9
+7,Auto Ancillaries,3.7
+7,Construction,3.7
+7,Pharmaceuticals,4.8
+7,Cash & Cash Equivalent,5.6
+7,Healthcare Services,6
+7,Textile Products,7.1
+7,Banks,7.3
+7,Ferrous Metals,8.1
+7,Industrial Products,8.6
+7,Consumer Non Durables,8.7
+7,Software,10
+7,Consumer Durables,10.1
+7,Chemicals,11.5
+8,Cement & Cement Products,1.34
+8,Construction,1.5
+8,Retailing,1.61
+8,Fertilizers & Agrochemicals,1.63
+8,Gas,1.78
+8,Petroleum Products,2.2
+8,Personal Products,2.3
+8,Chemicals & Petrochemicals,2.34
+8,Auto Components,2.49
+8,Food Products,2.56
+8,Transport Services,2.7
+8,Diversified FMCG,3.69
+8,Industrial Products,4.42
+8,Automobiles,4.72
+8,Insurance,5.33
+8,Consumer Durables,5.92
+8,IT - Services,6.48
+8,Textiles & Apparels,6.83
+8,IT - Software,8.22
+8,Pharmaceuticals & Biotechnology,9.54
+8,Banks,22.59
+9,Cement & Cement Products,0.85
+9,Pharmaceuticals & Biotechnology,1.2
+9,Power,1.47
+9,Gas,1.56
+9,Construction,2.02
+9,Cash & Cash Equivalents,2.05
+9,Realty,6.95
+9,Consumer Durables,9.1
+9,Automobiles,10.35
+9,IT - Software,12.67
+9,Insurance,17.88
+9,Banks,33.9
+10,Personal Products,0.82
+10,Leisure Services,1.09
+10,Retailing,1.24
+10,Cement & Cement Products,1.42
+10,Cash & Cash Equivalents,1.77
+10,Beverages,2.06
+10,Diversified FMCG,2.53
+10,Consumer Durables,2.77
+10,Auto Components,3.05
+10,Electrical Equipment,3.17
+10,Telecom - Services,3.27
+10,Pharmaceuticals & Biotechnology,5.02
+10,Automobiles,6.47
+10,Construction,8.05
+10,IT - Software,8.12
+10,Insurance,11.63
+10,Finance,16.72
+10,Banks,20.8
+11,Transport Services,2.33
+11,Chemicals & Petrochemicals,2.53
+11,Telecom - Services,2.56
+11,Beverages,2.79
+11,Finance,3.28
+11,Cement & Cement Products,4.77
+11,Insurance,6.45
+11,Pharmaceuticals & Biotechnology,7.61
+11,Capital Markets,9.9
+11,Industrial Products,9.99
+11,IT - Software,12.59
+11,Cash & Cash Equivalents,12.87
+11,Consumer Durables,22.33
+12,Transport Services,2.4
+12,Telecom - Services,2.54
+12,Chemicals & Petrochemicals,2.63
+12,Beverages,2.76
+12,Finance,3.13
+12,Cement & Cement Products,5.34
+12,Insurance,6.53
+12,Pharmaceuticals & Biotechnology,7.6
+12,Capital Markets,9.93
+12,Industrial Products,9.97
+12,IT - Software,12.67
+12,Cash & Cash Equivalents,12.69
+12,Consumer Durables,21.81
+13,Real Estate,6.8
+13,Materials,12.1
+13,Industrials,14
+13,Financials,20.8
+13,Consumer Discretionary,30.2
+14,Healthcare,8.01
+14,Information Technology,11.41
+14,"Capital Goods, E&C",15.17
+14,Consumer,17.3
+14,Finance,34.4
+15,Finance,8.02
+15,Software,8.18
+15,Industrial Products,9.18
+15,Ferrous Metals,10.16
+15,Banks,13.39
+16,Cement,7.34
+16,Telecom - Services,8.89
+16,Software,13.2
+16,Ferrous Metals,15.41
+16,Banks,24.74
+17,Telecom - Services,5.78
+17,Ferrous Metals,6.44
+17,Finance,7.85
+17,Software,13.48
+17,Banks,19.81
+18,Consumer Services,8
+18,Healthcare,8.2
+18,Consumer Durables,10.2
+18,Chemcials,20.9
+18,Financial Services,25.1
+19,Construction Materials,5.3
+19,Healthcare,6.1
+19,Chemicals,14.9
+19,Consumer Durables,15.4
+19,Financial Services,35.5
+20,Construction Materials,4.8
+20,Capital goods,6.8
+20,Chemicals,12.8
+20,Consumer Durables,18.1
+20,Financial Services,33.3
+21,Pharmaceuticals,6
+21,Chemicals,8
+21,Financial Services,8
+21,Banking,14
+21,Information Technology- Software,19
+22,Chemicals,7
+22,Pharmaceuticals,7
+22,Financial Services,11
+22,Banking,14
+22,Information Technology- Software,17
+23,Banking,8
+23,Automobiles ,9
+23,Chemicals,11
+23,Information Technology - Software ,11
+23,Financial Services,15
+24,Software,9.82
+24,Engineering,9.89
+24,Chemicals,11.32
+24,Consumer,17.16
+24,Banking & Finance,26.97

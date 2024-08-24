@@ -22,3 +22,7 @@ pmsportal_aug_2024/
 ### Remember to set the FLASK_APP environment variable to point to your application. You can do this by running:
 
 export FLASK_APP=run.py
+
+### loading sample data
+
+flask load-sample-data

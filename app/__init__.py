@@ -1,6 +1,7 @@
 from flask import Flask
 from config import Config
-from app.extensions import db, login_manager, csrf
+
+from app.extensions import db, login_manager, csrf, mail
 import logging
 from logging.handlers import RotatingFileHandler
 from app.cli import load_sample_data_command
@@ -14,15 +15,18 @@ def create_app(config_class=Config):
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
+    mail.init_app(app)
 
     # Register blueprints
     from app.routes.route_home import bp_home
     from app.routes.route_txn import bp_txn
     from app.routes.route_auth import bp_auth
+    from app.routes.route_pms import bp_pms
     
     app.register_blueprint(bp_home)
     app.register_blueprint(bp_txn)
     app.register_blueprint(bp_auth)
+    app.register_blueprint(bp_pms)
 
     # Set up logging
     # logging.basicConfig(filename='app.log', level=logging.INFO)

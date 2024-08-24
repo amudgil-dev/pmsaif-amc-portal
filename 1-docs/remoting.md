@@ -4,7 +4,7 @@ rsync -avz -e "ssh -i ~/.ssh/dm_mumbai_aws_key.pem" --exclude '**pycache**' --ex
 
 ### ssh into remote server
 
-╰─$ ssh -i "dm_mumbai_aws_key.pem" ubuntu@ec2-52-66-87-168.ap-south-1.compute.amazonaws.com
+ssh -i "dm_mumbai_aws_key.pem" ubuntu@ec2-52-66-87-168.ap-south-1.compute.amazonaws.com
 
 ### Running the app in test- prod using gunicorn
 
