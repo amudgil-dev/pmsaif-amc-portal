@@ -18,6 +18,7 @@ bp_admin = Blueprint('admin', __name__)
 @bp_admin.route('/admin')
 @login_required
 @AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
 def admin_home():
   # print('admin_home()')
 
@@ -105,7 +106,7 @@ def edit_indexperf(index_id):
 
   if index_perf is None:
     flash('Not Authorised, please contat PMSAIF Administrator!', 'danger')
-    print('Index Id not found not valid')
+    # print('Index Id not found not valid')
     return redirect(url_for('admin.admin_home'))
   
   index = IndexMaster.query.filter_by(id=index_perf.index_id).first()
@@ -126,9 +127,9 @@ def edit_indexperf(index_id):
 
   if request.method == 'POST':
 
-    print('in post')
+    # print('in post')
     # print(index_perf.one_month,index_perf.three_month,index_perf.six_month,index_perf.one_year,index_perf.three_year,index_perf.five_year,index_perf.ten_year,index_perf.cagr_si,index_perf.si,index_perf.created_at)
-    print(' -----')
+    # print(' -----')
 
     if form.validate_on_submit():
       index_perf.one_month = form.one_month.data
@@ -146,7 +147,7 @@ def edit_indexperf(index_id):
          
         db.session.commit()
       except Exception as e:
-        print('Exception occured while updating PMS details')
+        # print('Exception occured while updating PMS details')
         print(e)
         db.session.rollback()
         flash('Index Performance details could not be updated, please try again!', 'danger')
@@ -182,7 +183,7 @@ def new_indexperf(index_id):
 
   if index is None:
     flash('Not Authorised, please contat PMSAIF Administrator!', 'danger')
-    print('Index Id not found not valid')
+    # print('Index Id not found not valid')
     return redirect(url_for('admin.admin_home'))
   
   

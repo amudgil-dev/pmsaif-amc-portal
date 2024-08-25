@@ -21,38 +21,25 @@ def getPmsListing(user_id):
     
     label_tuple = ('amc_id', 'amc_name', 'pms_name', 'pms_id', 'index_id', 'index_name')    
 
+
     try:
+
         with current_app.app_context():
-            with db.session.connect() as connection:
+            
+            with db.engine.connect() as connection:
+ 
                 result = connection.execute(text(query), {"user_id": user_id})
                 records = result.fetchall()
-
+  
             pms_array = [dict(zip(label_tuple, row)) for row in records]
-            
+     
             # print(pms_array)
             return pms_array
     except Exception as e:
+        print(f"in getPmsListing() exception : {e}" )
         current_app.logger.error(f"Error in getPmsListing: {e}")
+        
         return None    
-
-    # sql = text(query)
-    # records = db.session.execute(sql)
-    # print(records)
-
-    # #iterate through object and create seperate arrays to be rendered by highcharts
-    # pms_array = []
-
-    # tuple_list = [i for i in records]
-    # for row in tuple_list:
-    #     pms_array.append(dict(zip(label_tuple, row)))
-    
-    # print(pms_array)
-
-    # return pms_array
-
-
-
-
 
 
 def getPmsDashDataList(pms_id):
@@ -93,7 +80,7 @@ def getPmsPerformance(pms_id):
 
     try:
         with current_app.app_context():
-            with db.session.connect() as connection:
+            with db.engine.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
 
@@ -104,7 +91,7 @@ def getPmsPerformance(pms_id):
             pms_perf = tuple            
                     
             # pms_perf = pms_perf[0]
-            print(f"pms_perf =====> {type(pms_perf)}")
+            # print(f"pms_perf =====> {type(pms_perf)}")
             return pms_perf ,label_pms_perf
     except Exception as e:
         current_app.logger.error(f"Error in getPmsListing: {e}")
@@ -128,7 +115,7 @@ def getPmsIndexPerformance(pms_id,month, year):
 
     try:
         with current_app.app_context():
-            with db.session.connect() as connection:
+            with db.engine.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
                 
@@ -170,9 +157,9 @@ def getIndexPerformance(index_id):
         ' and t2.index_id = '+str(index_id)+' '\
         ' order by year desc, month desc, t2.id desc limit 100 ' 
     
-    print('------')
-    print( query)
-    print('------')
+    # print('------')
+    # print( query)
+    # print('------')
     
     label_index_perf = ('id','index_name', 'index_id', 'month', 'year', 'one_month', 'three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr')
 
@@ -198,7 +185,7 @@ def getPmsDetails(pms_id):
 
     try:
         with current_app.app_context():
-            with db.session.connect() as connection:
+            with db.engine.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
                 
@@ -225,7 +212,7 @@ def getPmsStocks(pms_id):
 
     try:
         with current_app.app_context():
-            with db.session.connect() as connection:
+            with db.engine.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
                 
@@ -251,7 +238,7 @@ def getPmsSectors(pms_id):
 
     try:
         with current_app.app_context():
-            with db.session.connect() as connection:
+            with db.engine.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
                 
@@ -266,8 +253,8 @@ def getPmsSectors(pms_id):
 
 
 
-def checkEntitlements(user_id, pms_id):
-    print('checkEntitlements()')
+def checkEntitlementsFromDB(user_id, pms_id):
+    print('checkEntitlementsFromDB()')
 
     try:
         # Use parameterized query to prevent SQL injection

@@ -2,7 +2,7 @@ from functools import wraps
 from flask import redirect, url_for, flash
 from flask_login import current_user,logout_user
 from app.helpers.helper_util import enforceAuthz
-from app.helpers.queries import checkEntitlements, getUserByUserId
+from app.helpers.queries import checkEntitlementsFromDB, getUserByUserId
 from app.models.models import Session, UserRole
 from app.extensions import db
 from datetime import datetime, timedelta
@@ -105,7 +105,7 @@ def enforceEntitlements(user_id,pms_id):
     
     # If the role is Submitter (any other than Admin) check that the user can only access the PMS belong to their AMC
             
-    authz = checkEntitlements(user_id,pms_id)
+    authz = checkEntitlementsFromDB(user_id,pms_id)
     if not authz:
         print('You are not authorised to access the PMS you requested, please contat PMSAIF Administrator')
         flash('You are not authorised to access the PMS you requested, please contat PMSAIF Administrator or login with other account!', 'danger')
