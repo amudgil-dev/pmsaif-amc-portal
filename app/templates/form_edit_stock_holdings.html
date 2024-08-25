@@ -3,164 +3,231 @@
 
 {% block content  %}
 <script>
-    $(function() {
-        // Maintain a set to track selected stock IDs
-        var selectedStockIds = new Set();
+  // Main function to initialize everything
+function initStockSelection(config) {
+    const {
+        stockNameSelector,
+        selectedStocksTableSelector,
+        addStockButtonSelector,
+        formSelector,
+        pmsIdSelector,
+        errorMessageSelector,
+        autocompleteUrl,
+        submitUrl
+    } = config;
 
-        // Attach autocomplete to the stock_name input fields
-        $(".stock-name").autocomplete({
-            source: function(request, response) {
-                $.ajax({
-                    url: '/autocompstock',
-                    dataType: 'json',
-                    data: {
-                        query: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 3, // Minimum characters to trigger autocomplete
-            select: function(event, ui) {
-                // Update the additional fields when an option is selected
-                var stockEntry = $(this).closest('.stock-entry');
-                var stockId = ui.item.value;
+    let selectedStockIds = new Set();
 
-                // Check if the stock with the same ID is already selected
-                if (!selectedStockIds.has(stockId)) {
-                    stockEntry.find('.stock-name').val(ui.item.name);
-                    stockEntry.find('.stock-id').val(stockId);
+    initAutocomplete(stockNameSelector, autocompleteUrl, selectedStockIds);
+    initDeleteStock(selectedStocksTableSelector, selectedStockIds);
+    initAddStock(addStockButtonSelector, stockNameSelector);
+    initFormSubmission(formSelector, selectedStocksTableSelector, pmsIdSelector, errorMessageSelector, submitUrl);
+}
 
-                    // Display the selected stock in the table
-                    var selectedStocksTable = $("#selectedStocks tbody");
-                    selectedStocksTable.append("<tr data-stock-id='" + stockId + "'>" +
-                        "<td>" + ui.item.name + "</td>" +
-                        "<td>" + ui.item.stock_symbol + "</td>" +
-                        "<td>" + ui.item.isin + "</td>" +
-                        "<td><input type='float' class='quantity-input' value='' min='0' step='any' ></td>" +
-                        "<td><button class='delete-stock'>X</button></td>" +
-                        "</tr>");
-
-                    // Add the stock ID to the set
-                    selectedStockIds.add(stockId);
-
-                    // Clear the stock_name field
-                    $(this).val('');
-
-                    // Focus on the quantity input field
-                    stockEntry.find('.quantity-input').last().focus();
-                } else {
-                    alert("This stock is already selected.");
-                }
-
-                return false; // Prevent the default select behavior
-            }
-        }).autocomplete("instance")._renderItem = function(ul, item) {
-            // Customize the display of each autocomplete item (optional)
-            return $("<li>")
-                .append("<div>" + item.label + "</div>")
-                .appendTo(ul);
-        };
-
-        // Handle delete button click for dynamically added stocks
-        $(document).on('click', '.delete-stock', function() {
-            var stockIdToRemove = $(this).closest('tr').data('stock-id');
-            //alert(' to be removed '+stockIdToRemove);
-
-            // Remove the stock from the table
-            $(this).closest('tr').remove();
-
-            // Remove the stock ID from the set
-            selectedStockIds.delete(stockIdToRemove);
-        });
-
-        // Handle "Add Another Stock" button click
-        $("#addStock").on('click', function() {
-            // Clone the first stock entry and append it to the form
-            var newStockEntry = $(".stock-entry:first").clone();
-            newStockEntry.find('input').val(''); // Clear input values in the cloned entry
-            $("#stockForm").append(newStockEntry);
-        });
-
-        // Handle form submission
-        $("#stockForm").submit(function(event) {
-
-            // Add logic to handle form submission
-            event.preventDefault(); // Prevent the default form submission
-
-            // Create an array to store selected stock data
-            var selectedStockData = [];
-
-            // Iterate over each selected stock in the table
-            $("#selectedStocks tbody tr").each(function() {
-                var stockId = $(this).data('stock-id');
-                var quantity = $(this).find('.quantity-input').val();
-
-                // Add the stock ID and quantity to the array
-                selectedStockData.push({
-                    stockId: stockId,
-                    quantity: quantity
-                });
-            });
-
-            
-
-            // Log all selected stock data to the console
-            console.log("Selected Stock Data:", selectedStockData);
-
-            // Get values of additional hidden fields
-                 
-             var pms_id = $("#pms_id").val()
-            //alert(pms_id);
-            
-            var total = 0;
-            $('.quantity-input').each(function() {
-                total += parseFloat($(this).val()) || 0;
-            });
-            if (total > 100) {
-                // alert('The total holding percentage exceeds 100. Please adjust the values.');
-                $('#error-message').text('The total holding percentage exceeds 100. Please adjust the values.');
-                // return false;  // Prevent form submission
-                return false;
-            } else {
-                // alert('Form submitted successfully! Total holding percentage: ' + total);
-                // return true;  // Allow form submission
-            }
-
-            
-
-            // Submit selected stock data and additional fields to the endpoint /selectedstocks
+function initAutocomplete(selector, url, selectedStockIds) {
+    $(selector).autocomplete({
+        source: (request, response) => {
             $.ajax({
-                type: 'POST',
-                url: '/selectedstocks',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    selectedStockData: selectedStockData,
-                    pms_id: pms_id
-                }),
-                headers: {
-                    'X-CSRFToken': $('input[name=csrf_token]').val()
-                },   
-                success: function(response) {
-                    console.log("Selection submitted successfully:", response);
-                    window.location.href = "/pmsdash/" + pms_id;
-                    // alert(' redirecting to pms_id ='+pms_id)
-
-                    //top.location.href="login.htm";
-
-                },
-                error: function(error) {
-                    console.error("Error submitting selection:", error);
-                    console.error("Error submitting selection:");
-                    console.error("Status:", textStatus);
-                    console.error("Error:", errorThrown);
-                    console.error("Response Text:", jqXHR.responseText);
-                    console.error("Status Code:", jqXHR.status);                         
-                }
+                url: url,
+                dataType: 'json',
+                data: { query: request.term },
+                success: (data) => response(data)
             });
-        });
+        },
+        minLength: 3,
+        select: (event, ui) => handleStockSelection(event, ui, selectedStockIds)
+    }).autocomplete("instance")._renderItem = (ul, item) => {
+        return $("<li>").append("<div>" + item.label + "</div>").appendTo(ul);
+    };
+}
+
+function handleStockSelection(event, ui, selectedStockIds) {
+    const stockEntry = $(event.target).closest('.stock-entry');
+    const stockId = ui.item.value;
+
+    if (!selectedStockIds.has(stockId)) {
+        addStockToTable(ui.item, stockId);
+        selectedStockIds.add(stockId);
+        clearAndFocusInput(stockEntry);
+    } else {
+        alert("This stock is already selected.");
+    }
+
+    return false;
+}
+
+function addStockToTable(item, stockId) {
+
+    // alert('addStockToTable() item='+item + '  stockId='+stockId );
+    if (! checkDuplicate(stockId)){
+        // alert(' checkDuplicate is TRUE ');
+        return;
+    }
+
+    $("#selectedStocks tbody").append(`
+        <tr data-stock-id='${stockId}'>
+            <td>${item.name}</td>
+            <td>${item.stock_symbol}</td>
+            <td>${item.isin}</td>
+            <td><input type='number' class='quantity-input' value='' min='0' step='any'></td>
+            <td><button class='delete-stock'>X</button></td>
+        </tr>
+    `);
+}
+function checkDuplicate(stockId) {
+    var tableSelector = '#selectedStocks';
+    const selectedStockData = getSelectedStockData(tableSelector);
+
+    // Check if it's an array and has elements
+    for (let i = 0; i < selectedStockData.length; i++) {
+        record = selectedStockData[i];
+        // alert(record.stockId + ' - '+record.quantity );
+
+        if (stockId == record.stockId) {
+            alert('You have this stock already, pls update that record  '+stockId);
+            return false;
+        }
+
+    }    
+    return true;
+
+
+}
+
+function clearAndFocusInput(stockEntry) {
+    stockEntry.find('.stock-name').val('');
+    stockEntry.find('.quantity-input').last().focus();
+}
+
+function initDeleteStock(tableSelector, selectedStockIds) {
+    $(document).on('click', '.delete-stock', function() {
+        const stockIdToRemove = $(this).closest('tr').data('stock-id');
+        $(this).closest('tr').remove();
+        selectedStockIds.delete(stockIdToRemove);
     });
+}
+
+function initAddStock(buttonSelector, stockEntrySelector) {
+    
+    $(buttonSelector).on('click', function() {
+        const newStockEntry = $(stockEntrySelector).first().clone();
+        newStockEntry.find('input').val('');
+        $("#stockForm").append(newStockEntry);
+    });
+}
+
+
+
+function initFormSubmission(formSelector, tableSelector, pmsIdSelector, errorMessageSelector, submitUrl) {
+    $(formSelector).submit(function(event) {
+        event.preventDefault();
+
+        // alert('tableSelector is:'+tableSelector);
+        const selectedStockData = getSelectedStockData(tableSelector);
+
+        // Check if it's an array and has elements
+        // for (let i = 0; i < selectedStockData.length; i++) {
+        //     record = selectedStockData[i];
+        //     alert(record.stockId + ' - '+record.quantity );
+
+        // }
+
+        const pmsId = $(pmsIdSelector).val();
+
+        if (validateTotalHolding(errorMessageSelector)) {
+            submitStockData(selectedStockData, pmsId, submitUrl);
+        }
+    });
+}
+
+// function getSelectedStockData(tableSelector) {
+//     alert('getSelectedStockData() '+tableSelector);
+//     return $(tableSelector + " tbody tr").map(function() {
+//         return {
+//             stockId: $(this).data('stock-id'),
+//             quantity: $(this).find('.quantity-input').val()
+//         };
+//     }).get();
+// }
+
+// function getSelectedStockData(tableSelector) {
+//     alert('getSelectedStockData() ' + tableSelector);
+    
+//     const selectedStocks = [];
+//     const rows = document.querySelectorAll(tableSelector + " tbody tr");
+
+//     for (let row of rows) {
+//         const stockData = {
+//             stockId: row.dataset.stockId,
+//             quantity: row.querySelector('.quantity-input').value
+//         };
+//         selectedStocks.push(stockData);
+//     }
+
+//     return selectedStocks;
+// }
+
+function getSelectedStockData(tableSelector) {
+    console.log('getSelectedStockData() ' + tableSelector);
+    
+    const selectedStocks = [];
+    const rows = document.querySelectorAll(tableSelector + " tbody tr");
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const stockId = row.getAttribute('data-stock-id');
+        const quantityInput = row.querySelector('.quantity-input');
+        const quantity = quantityInput ? quantityInput.value : '';
+
+        selectedStocks.push({
+            stockId: stockId,
+            quantity: quantity
+        });
+    }
+
+    console.log("Selected stocks:", selectedStocks); // For debugging
+    return selectedStocks;
+}
+
+function validateTotalHolding(errorMessageSelector) {
+    const total = Array.from($('.quantity-input')).reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
+    if (total > 100) {
+        $(errorMessageSelector).text('The total holding percentage exceeds 100. Please adjust the values.');
+        return false;
+    }
+    return true;
+}
+
+function submitStockData(selectedStockData, pmsId, submitUrl) {
+    $.ajax({
+        type: 'POST',
+        url: submitUrl,
+        contentType: 'application/json',
+        data: JSON.stringify({ selectedStockData, pms_id: pmsId }),
+        headers: { 'X-CSRFToken': $('input[name=csrf_token]').val() },
+        success: (response) => {
+            console.log("Selection submitted successfully:", response);
+            window.location.href = "/pmsdash/" + pmsId;
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("Error submitting selection:", jqXHR.responseText);
+        }
+    });
+}
+
+// Usage
+$(function() {
+    initStockSelection({
+        stockNameSelector: ".stock-name",
+        selectedStocksTableSelector: "#selectedStocks",
+        addStockButtonSelector: "#addStock",
+        formSelector: "#stockForm",
+        pmsIdSelector: "#pms_id",
+        errorMessageSelector: "#error-message",
+        autocompleteUrl: '/autocompstock',
+        submitUrl: '/selectedstocks'
+    });
+});
 </script>
 <div class="container">
     <div class="row">
