@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 from app import db
 import csv
 import os
@@ -722,20 +723,20 @@ def store_amc_users(amc_dict):
     users_to_insert = []
     for amc_id, users in amc_dict.items():
         for temp_user in users:
-            users_to_insert.append({
-                'fname': temp_user['user_fname'],
-                'lname': temp_user['user_lname'],
-                'email': temp_user['user_email'],
-                'password': "11111",
-                'userrole_id': submitter_role_id,
-                'amc_id': amc_id,
-                'isactive': 1,
-                'created_at': datetime.now(timezone.utc),
-            })
+            users_to_insert.append(User(
+                fname=temp_user['user_fname'],
+                lname=temp_user['user_lname'],
+                email=temp_user['user_email'],
+                password="11111",
+                userrole_id=submitter_role_id,
+                amc_id=amc_id,
+                isactive=1,
+                created_at=datetime.now(timezone.utc)
+            ))
 
     # Bulk insert
     try:
-        db.session.execute(insert(User).values(users_to_insert))
+        db.session.bulk_save_objects(users_to_insert)
         db.session.commit()
         print(f"Successfully inserted {len(users_to_insert)} users.")
     except IntegrityError as e:
