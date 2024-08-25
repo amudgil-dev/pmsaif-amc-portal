@@ -30,6 +30,8 @@ def stock_holding(pms_id):
     pms_stocks = getPmsStocks(pms_id)
     pms = PMSMaster.query.filter_by(pms_id=pms_id).first()
     return render_template('form_edit_stock_holdings.html', 
+                         is_authenticated = current_user.is_authenticated,
+                         user_name= current_user.fname + " " + current_user.lname,                           
                            form=form,
                            pms_stocks=pms_stocks,
                            page_heading="Stock Holdings for "+pms.name,

@@ -32,7 +32,6 @@ def pmslist():
   print(f" current_user details: {current_user}")
   
   return render_template('pms_listing.html',
-                        #  loggedin=loggedin, 
                          is_authenticated = current_user.is_authenticated,
                          user_name= current_user.fname + " " + current_user.lname,
                          page_heading="List of PMS",

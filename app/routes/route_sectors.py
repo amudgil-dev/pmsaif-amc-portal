@@ -27,6 +27,8 @@ def sector_holding(pms_id):
     pms_sectors = getPmsSectors(pms_id)
     pms = PMSMaster.query.filter_by(pms_id=pms_id).first()
     return render_template('form_edit_sector_holdings.html', 
+                            is_authenticated = current_user.is_authenticated,
+                            user_name= current_user.fname + " " + current_user.lname,                           
                            form=form,
                            pms_sectors=pms_sectors,
                            page_heading="sector Holdings for "+pms.name,
