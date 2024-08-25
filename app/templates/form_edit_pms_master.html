@@ -2,6 +2,44 @@
 
 
 {% block content  %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const largeCap = document.getElementById('large_cap');
+        const midCap = document.getElementById('mid_cap');
+        const smallCap = document.getElementById('small_cap');
+        const cash = document.getElementById('cash');
+        const errorMessage = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+    
+        function validateTotal() {
+            const total = parseFloat(largeCap.value || 0) + 
+                          parseFloat(midCap.value || 0) + 
+                          parseFloat(smallCap.value || 0) + 
+                          parseFloat(cash.value || 0);
+    
+            if (total > 100) {
+                errorMessage.textContent = 'Total cannot exceed 100%';
+                submitBtn.disabled = true;
+            } else {
+                errorMessage.textContent = '';
+                submitBtn.disabled = false;
+            }
+        }
+    
+        // Add event listeners to all input fields
+        [largeCap, midCap, smallCap, cash].forEach(input => {
+            input.addEventListener('input', validateTotal);
+        });
+    
+        // Validate on form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            validateTotal();
+            if (submitBtn.disabled) {
+                e.preventDefault(); // Prevent form submission if validation fails
+            }
+        });
+    });
+    </script>
 <div class="container">
     <div class="row">
       <div class="col-sm-12 m-auto">
