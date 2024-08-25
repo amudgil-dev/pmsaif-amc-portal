@@ -1,0 +1,13 @@
+[Unit]
+Description=PMS Portal Gunicorn Service
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/pmsweb
+Environment="PATH=/home/ubuntu/pmsweb/venv/bin"
+ExecStart=/home/ubuntu/pmsweb/venv/bin/gunicorn --workers 4 --bind 0.0.0.0:5002 wsgi:app
+
+[Install]
+WantedBy=multi-user.target

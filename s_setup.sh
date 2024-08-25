@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# update apt
+sudo apt update
+
+# install python tools
+sudo apt install python3.12-venv
+
 
 # Create a new virtual environment
 python3 -m venv venv
