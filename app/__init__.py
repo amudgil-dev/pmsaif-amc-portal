@@ -6,6 +6,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from app.cli import load_sample_data_command
 import os
+from app.helpers.helper_jinja import month_year_format
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -22,11 +23,20 @@ def create_app(config_class=Config):
     from app.routes.route_txn import bp_txn
     from app.routes.route_auth import bp_auth
     from app.routes.route_pms import bp_pms
+    from app.routes.route_stocks import bp_stocks
+    from app.routes.route_sectors import bp_sectors     
+    from app.routes.route_nav import bp_nav            
+    
+    
     
     app.register_blueprint(bp_home)
     app.register_blueprint(bp_txn)
     app.register_blueprint(bp_auth)
     app.register_blueprint(bp_pms)
+    app.register_blueprint(bp_stocks)
+    app.register_blueprint(bp_sectors)
+    app.register_blueprint(bp_nav)    
+    
 
     # Set up logging
     # logging.basicConfig(filename='app.log', level=logging.INFO)
@@ -56,6 +66,9 @@ def create_app(config_class=Config):
     #     print('retuning error...')
     #     return str(e)
     
+    
+    # Register the custom filter
+    app.jinja_env.filters['month_year_format'] = month_year_format
     
     # Register CLI command
     app.cli.add_command(load_sample_data_command)    

@@ -305,27 +305,37 @@ def deletePmsStocks(pms_id):
     print("pms_id ==>", pms_id)
     # delete_query = 'delete from pms_stock where pms_id = ' + str(pms_id)
     # delete_query = 'delete from pms_stock where pms_id = ' + str(pms_id)
-    query = 'delete from pms_stock where pms_id = ' + str(pms_id)
-    sql = text(query)
-    records = db.engine.execute(sql)
-    # print(records)
-    db.session.commit()
+    query = "delete from pms_stock where pms_id = :pms_id"
 
-    return True
+    try:
+        result = db.session.execute(text(query), {'pms_id': pms_id})
+        # db.session.commit()
+        print(f"Deleted {result.rowcount} rows from pms_stock")
+        return True
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting PMS stocks: {str(e)}")
+        return False
+        
 
 
-def deletePmsSectors(pms_id):
-    print('deletePmsSectors()')
-    print("pms_id ==>", pms_id)
-    # delete_query = 'delete from pms_stock where pms_id = ' + str(pms_id)
-    # delete_query = 'delete from pms_stock where pms_id = ' + str(pms_id)
-    query = 'delete from pms_sector where pms_id = ' + str(pms_id)
-    sql = text(query)
-    records = db.engine.execute(sql)
-    print(records)
-    db.session.commit()
-
-    return True
+# def deletePmsSectors(pms_id):
+#     print('deletePmsSectors()')
+#     print("pms_id ==>", pms_id)
+#     # delete_query = 'delete from pms_stock where pms_id = ' + str(pms_id)
+#     # delete_query = 'delete from pms_stock where pms_id = ' + str(pms_id)
+#     query = text("delete from pms_sector where pms_id = :pms_id")
+    
+#     try:
+#         result = db.session.execute(text(query), {'pms_id': pms_id})
+#         # db.session.commit()
+#         print(f"Deleted {result.rowcount} rows from pms_stock")
+#         return True
+#     except Exception as e:
+#         db.session.rollback()
+#         print(f"Error deleting PMS stocks: {str(e)}")
+#         return False
+        
 
 def getIndexListing():
     print('getIndexListing()')

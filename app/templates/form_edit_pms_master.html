@@ -1,0 +1,167 @@
+{% extends 'navbar.html' %}
+
+
+{% block content  %}
+<div class="container">
+    <div class="row">
+      <div class="col-sm-12 m-auto">
+
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="alert alert-{{category}} alert-dismissible">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            </div>
+
+        {% endfor %}
+        <br>
+        <div class="row">
+            <!-- 2 4 column divs, the second offset by 4 -->
+            <div class="col-md-1" ></div>
+            <div class="col-md-4" > <h2><i>AMC - {{amc.name}}  </i></h3></div>
+            <div class="col-md-2 offset-md-3" >
+               
+            </div>
+          </div>        
+
+        <!-- </div> -->
+
+        <form method = "POST" id="pmsform">
+            {{ form.hidden_tag() }}
+            <div class="container">
+            <div class="row">
+                <div class="col-sm-6 m-auto"> 
+        
+                        <br/>
+                        <!-- Tables -->
+                        <div class="container mt-1">
+                            
+                        
+
+                            </div>
+                        
+                        
+                            <div class="row mt-3 mt-4 mr-0">
+                                
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+                                        <!-- <thead class="thead-dark">
+                                            <tr>
+                                                <th class="table-info"> 
+                                                    
+                            
+                                                </th>
+                                                <th >Stock Holdings  <br>% Deployed </th>
+                                
+
+                                            </tr>
+                                        </thead> -->
+                                        <tbody id="table1-body">
+                                            
+                                            {{ form.aum.label(class="form-label") }}
+                                            {{ form.aum(class="form-control") }}
+                        
+                                            {{ form.stocks_min.label(class="form-label") }}
+                                            {{ form.stocks_min(class="form-control") }}
+                        
+                                            {{ form.stocks_max.label(class="form-label") }}
+                                            {{ form.stocks_max(class="form-control") }}
+                        
+                                            {{ form.portfolio_pe.label(class="form-label") }}
+                                            {{ form.portfolio_pe(class="form-control") }}    
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                        
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+                                        <!-- <thead class="thead-dark">
+                                            <tr>
+                                                <th class="table-info"> 
+                                                    <button class="btn btn-info" onclick="window.location.href='../pmssectors/{{pms.pms_id}}'"> Edit</button>  
+                        
+                                                </th>
+                                                <th >Sector Holdings <br> % Deployed </th>
+                                            </tr>
+                                        </thead> -->
+                                        <tbody id="table1-body">
+                                            {{ form.large_cap.label(class="form-label") }}
+                                            {{ form.large_cap(class="form-control") }}            
+                        
+                                            {{ form.mid_cap.label(class="form-label") }}
+                                            {{ form.mid_cap(class="form-control") }}          
+                            
+                                            {{ form.small_cap.label(class="form-label") }}
+                                            {{ form.small_cap(class="form-control") }}          
+                        
+                                            {{ form.cash.label(class="form-label") }}
+                                            {{ form.cash(class="form-control") }}     
+
+                                            <br>
+                                            <br>
+                                            <!-- Error message container -->
+                                            <div id="error-message" style="color: red; margin-top: 20px;"></div>
+                                              <br>                                            
+                                            {{ form.submit(class="btn btn-primary") }}
+                        
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                        
+                </div>
+            </div>
+        </form>
+      </div>   
+
+
+        </div>
+    </div>
+</div>   
+
+<script>
+    function checkBounds() {
+        const aumValue = parseFloat($('#aum').val());
+        if (isNaN(aumValue) || aumValue < 1 || aumValue > 999999) {
+            $('#error-message').text('Please enter a numeric value between 1 and 999,999.');
+            return false;
+        } else {
+            $('#error-message').text('');
+            return true;
+        }
+        
+        // Check total allocation percentage
+        const largeCap = parseFloat($('#large_cap').val()) || 0;
+        const midCap = parseFloat($('#mid_cap').val()) || 0;
+        const smallCap = parseFloat($('#small_cap').val()) || 0;
+        const cash = parseFloat($('#cash').val()) || 0;
+
+        const totalAllocation = largeCap + midCap + smallCap + cash;
+
+        if (totalAllocation > 100) {
+            $('#error-message').text('Total allocation percentage cannot exceed 100%.');
+            return false;
+        } else {
+            $('#error-message').text('');
+        }
+    }
+  
+
+
+    $(document).ready(function() {
+        $('#pmsform').on('submit', function(event) {
+            if (!checkBounds()) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+
+
+
+{% endblock %}
