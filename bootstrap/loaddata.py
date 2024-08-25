@@ -714,69 +714,72 @@ def load_amc_users():
     store_amc_users(amc_dict)
     return " amc users loaded"    
 
-
 def store_amc_users(amc_dict):
     print('store_amc_users()')
-    
-    # print(amc_dict)
-    # print('00000000000')
 
-    submitter_role_id = (
-        db.session.query(UserRole).filter(UserRole.name == "SUBMITTER").first().id
-    )
-        
+    submitter_role_id = db.session.query(UserRole.id).filter(UserRole.name == "SUBMITTER").scalar()
+
+    users_to_insert = []
     for amc_id, users in amc_dict.items():
         for temp_user in users:
-            user = User(
-                # structure_id = structure_id,
-                
-                fname=temp_user['user_fname'],
-                lname=temp_user['user_lname'],
-                email=temp_user['user_email'],
-                password="11111",         
-                userrole_id = submitter_role_id,
-                amc_id = amc_id,
-                isactive = 1,
-                created_at=datetime.now(timezone.utc),
-            )
-            db.session.add(user)
+            users_to_insert.append({
+                'fname': temp_user['user_fname'],
+                'lname': temp_user['user_lname'],
+                'email': temp_user['user_email'],
+                'password': "11111",
+                'userrole_id': submitter_role_id,
+                'amc_id': amc_id,
+                'isactive': 1,
+                'created_at': datetime.now(timezone.utc),
+            })
 
-    # Commit the changes
-    db.session.commit()
+    # Bulk insert
+    try:
+        db.session.execute(insert(User).values(users_to_insert))
+        db.session.commit()
+        print(f"Successfully inserted {len(users_to_insert)} users.")
+    except IntegrityError as e:
+        db.session.rollback()
+        print(f"Error inserting users: {str(e)}")
+        # Handle duplicate emails or other integrity errors
+        # You might want to update existing users or skip duplicates
+    except Exception as e:
+        db.session.rollback()
+        print(f"An error occurred: {str(e)}")
         
+
+
 def df_to_amc_dict(df):
-    
     print('df_to_amc_dict()')
     
-    # print(df)
     amc_dict = {}
     
-    for _, row in df.iterrows():
-        amc_id = row['amc_id']
+    # Get all AMC IDs
+    amc_ids = df['amc_id'].unique()
+    
+    for amc_id in amc_ids:
+        amc_df = df[df['amc_id'] == amc_id]
+        
         users = []
-        
         for i in range(1, 7):  # Assuming you have POC1 to POC6
-            fname = row[f'user{i}_fname']
-            lname = row[f'user{i}_lname']
-            email = row[f'user{i}_email']
+            user_data = amc_df[[f'user{i}_fname', f'user{i}_lname', f'user{i}_email']]
             
-            # Only add user if at least one field is not null
-            if pd.notna(fname) or pd.notna(lname) or pd.notna(email):
-                user = {
-                    'user_fname': fname if pd.notna(fname) else '',
-                    'user_lname': lname if pd.notna(lname) else '',
-                    'user_email': email if pd.notna(email) else ''
+            # Check if any field is not null
+            mask = user_data.notna().any(axis=1)
+            valid_users = user_data[mask]
+            
+            users.extend([
+                {
+                    'user_fname': row[f'user{i}_fname'] if pd.notna(row[f'user{i}_fname']) else '',
+                    'user_lname': row[f'user{i}_lname'] if pd.notna(row[f'user{i}_lname']) else '',
+                    'user_email': row[f'user{i}_email'] if pd.notna(row[f'user{i}_email']) else ''
                 }
-                users.append(user)
+                for _, row in valid_users.iterrows()
+            ])
         
-        if amc_id not in amc_dict:
-            amc_dict[amc_id] = users
-        else:
-            amc_dict[amc_id].extend(users)
+        amc_dict[amc_id] = users
     
     return amc_dict
-
-
 
 
 # @bp.route("/populate-pms-nav", methods=["GET"])

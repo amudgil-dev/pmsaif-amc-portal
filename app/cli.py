@@ -9,7 +9,7 @@ def load_sample_data_command():
     create_schema()
     click.echo('Schema Created.')
     
-    """Load sample data into the database."""
+    # """Load sample data into the database."""
     # load_sample_data()
     click.echo('Sample data loaded.')
     

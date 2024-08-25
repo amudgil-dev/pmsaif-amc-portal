@@ -1,6 +1,6 @@
 ### rsync to ubuntu
 
-rsync -avz -e "ssh -i ~/.ssh/dm_mumbai_aws_key.pem" --exclude '**pycache**' --exclude='vcwk' ~/projects/pms-aif/pmsportal_aug_2024/ ubuntu@52.66.87.168:pmsweb2/
+rsync -avz -e "ssh -i ~/.ssh/dm_mumbai_aws_key.pem" --exclude '**pycache**' --exclude='venv' --exclude='.git' ~/projects/pms-aif/pmsportal_aug_2024/ ubuntu@52.66.87.168:pmsweb2/
 
 ### ssh into remote server
 

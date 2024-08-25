@@ -11,6 +11,7 @@ __pycache__/
 # Flask file uploads
 instance/
 
+
 # SQLite database files
 *.db
 *.sqlite
