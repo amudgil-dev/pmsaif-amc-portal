@@ -13,7 +13,8 @@ bp_pms = Blueprint('pms', __name__)
 
 @bp_pms.route('/pmslist')
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def pmslist():
   print('pmslist()')
   # loggedin = 0
@@ -50,9 +51,11 @@ def pmslist():
 
 @bp_pms.route('/pmsdash/<int:pms_id>')
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def pms_dashboard(pms_id):
   print('pms_dashboard()')
+  print('pms_id ==>',pms_id)
 
   # loggedin,user_name = get_user_status()
   # if loggedin == 0:
@@ -91,7 +94,8 @@ def pms_dashboard(pms_id):
 
 @bp_pms.route('/editpms/<int:pms_id>', methods=['GET', 'POST'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def edit_pms(pms_id):
   print('in edit_pms()()')
 
@@ -169,7 +173,8 @@ def edit_pms(pms_id):
 
 @bp_pms.route('/editpmsperf/<int:pms_id>', methods=['GET', 'POST'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def edit_pmsperf(pms_id):
   print('in edit_pmsperf()')
 
@@ -246,25 +251,12 @@ def edit_pmsperf(pms_id):
 
 @bp_pms.route('/newpmsperf/<int:pms_id>', methods=['GET', 'POST'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def new_pmsperf(pms_id):
   print('in new_pmsperf()')
 
-  # loggedin,user_name = get_user_status()
-  # if loggedin == 0:
-  #   flash('Please login to continue!', 'danger')
-  #   print('login is not valid')
-  #   return redirect(url_for('users.logout'))
-  
-  # # if userEntitledToChange(current_user.id,pms_id) == False:
-  # #   flash('You are not authorised to change this PMS, please contat PMSAIF Administrator!', 'danger')
-  # #   print('Authorization not valid')
-  # #   # return redirect(url_for('pmslist'))
-  # #   return redirect(url_for('pms_dashboard', pms_id=pms_id))
-  
-  # if not enforceAuthz(pms_id):
-  #   print('AuthZ Failed and redirecting')
-  #   return redirect(url_for('pms.pms_dashboard',pms_id=pms_id))
+
   
   # form = PMSMasterForm()
       # load the event from the database

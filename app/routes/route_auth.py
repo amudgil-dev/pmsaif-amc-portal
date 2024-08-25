@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash,current_app,request
 from flask_login import login_user, logout_user, login_required, current_user
-from app.helpers.helper_util import generate_resetlink,email_resetlink
+from app.helpers.helper_util import generate_resetlink,email_resetlink, isAdmin
 from app.models.models import User
 from app.forms.forms import ResetPasswordForm, ResetRequestForm, SigninForm
 from app.helpers.auth_helper import AuthHelper
@@ -32,7 +32,7 @@ def login():
         # user = User1.query.filter_by(username=form.email.data).first()
         user = User.query.filter_by(email=email).first()
         
-        print(' after db lookup')
+        print(f"after db lookup user = {user.userrole_id}")
         if user is None or not user.check_password(password):
             warning(f"Failed login attempt for user: {email}")
             flash('Invalid username or password')
@@ -43,14 +43,22 @@ def login():
         # admin_role, user_id, user_role = isAdmin(session)
         
 
-        print(f"current_user.id = {current_user.id}")
-        print(f"current user = {current_user.is_authenticated}")
+        # print(f"current_user.id = {current_user.id}")
+        # print(f"current user = {current_user.is_authenticated}")
         user.user_id = current_user.id
         
         # user.user_role = user_role
         flash("Welcome back, " + user.fname + " " + user.lname + " !", 'success')
-        print('session created and now sending to /pmslist')
-        return redirect('/pmslist')
+        
+        # print(f" user = {user}")
+        
+        if  isAdmin(user.userrole_id):
+            print('session created role is admin and now sending to /admin')
+            return redirect('/admin')
+        else:
+            
+            print('session created and role is submitter now sending to /pmslist')
+            return redirect('/pmslist')
           
         # return redirect(url_for('txn.transactions'))
     # info('Successful login for user: %s', user.username)

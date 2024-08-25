@@ -10,22 +10,18 @@ import uuid
 
 class AuthHelper:
     @staticmethod
-    def check_session_and_authorize(func):
-        print('check_session_and_authorize()')
+    def check_session(func):
+        print('check_session()')
         print(f"func = {func}")
         @wraps(func)
         def decorated_view(*args, **kwargs):
-            print(f" check_session_and_authorize() decorated_view func= {func} , args= {args} and kwargs = {kwargs}")
+            print(f" check_session() decorated_view func= {func} , args= {args} and kwargs = {kwargs}")
 
-            
-                
             print(f"current_user.id = {current_user.id}")
             print(f"current user = {current_user.is_authenticated}")            
             if not current_user.is_authenticated:
                 print(' current_user.is_authenticated is not authenticated, sending to login ')
                 return redirect(url_for('auth.login'))
-            
-            
             
             print('checking user_session from the sessions db')
             session = Session.query.filter_by(user_id=current_user.id).first()
@@ -36,34 +32,36 @@ class AuthHelper:
                 flash('Your session has expired. Please log in again.', 'warning')
                 return redirect(url_for('auth.login'))
             
-            
-                        # Check if 'pmsid' is in the kwargs
+            # # Check if 'pmsid' is in the kwargs
+            # if 'pms_id' in kwargs:
+            #     pms_id = kwargs['pms_id']
+            #     print(f"pmsid is passed - pmsid = {pms_id}")
+            #     if not enforceEntitlements(current_user.id,pms_id):
+            #         print('AuthZ Failed and redirecting')
+            #         return redirect(url_for('pms.pmslist'))
+                            
+            return func(*args, **kwargs)
+        return decorated_view
+
+    @staticmethod
+    def check_pms_authorisations(func):
+        print('check_pms_authorisations()')
+        print(f"func = {func}")
+        @wraps(func)
+        def decorated_view(*args, **kwargs):
+            print(f" check_session_and_authorize() decorated_view func= {func} , args= {args} and kwargs = {kwargs}")
+
+            # Check if 'pmsid' is in the kwargs
             if 'pms_id' in kwargs:
                 pms_id = kwargs['pms_id']
                 print(f"pmsid is passed - pmsid = {pms_id}")
                 if not enforceEntitlements(current_user.id,pms_id):
                     print('AuthZ Failed and redirecting')
                     return redirect(url_for('pms.pmslist'))
-                
-            # else:
-            #      print(f"pmsid is NOT in kwarks  - pmsid = {kwargs['pms_id']}")
-            
-            # Check if 'pmsid' is in the args (assuming it's the first argument)
-            # elif args and len(args) > 0 and isinstance(args[0], (int, str)) and str(args[0]).isdigit():
-            #     print("pmsid is passed as a positional argument")
-            
-            # # Check the function name
-            # if func.__name__ == 'pmslist':
-            #     print('FUNCTION IS PMSLIST !!!!!')
-            # else:
-            #     print(f"FUNCTION IS NOT PMSLIST !!!!! {func.__name__} and {type(func)}")
-                
-
-  
-            
+                            
             return func(*args, **kwargs)
         return decorated_view
-
+    
     @staticmethod
     def create_session(user):
         print(f"create_session({user.id})")
@@ -95,7 +93,6 @@ def enforceEntitlements(user_id,pms_id):
     if user is None:
         return False
     
-  
     admin_role_id = UserRole.query.filter_by(name="ADMIN").first().id
     
     # Admins are entitled to access all PMSs

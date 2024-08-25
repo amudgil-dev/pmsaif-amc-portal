@@ -1,0 +1,190 @@
+{% extends 'admin_navbar.html' %}
+
+
+{% block content  %}
+<div class="container">
+    <div class="row">
+      <div class="col-sm-12 m-auto">
+
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="alert alert-{{category}} alert-dismissible">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            </div>
+
+        {% endfor %}
+        <br>
+        <div class="row">
+            <!-- 2 4 column divs, the second offset by 4 -->
+            <div class="col-md-1" ></div>
+            <div class="col-md-4" > <h2><i>Index Data for - {{form.p_year.data}} {{form.p_month.data}} </i></h3></div>
+            <div class="col-md-2 offset-md-3" >
+               
+            </div>
+          </div>        
+
+        <!-- </div> -->
+
+        <form method = "POST">
+            {{ form.hidden_tag() }}
+            <div class="container">
+            <div class="row">
+                <div class="col-sm-6 m-auto">
+        
+                        <br/>
+                        <!-- Tables -->
+                        <!-- <div class="container mt-1">
+                            
+                        
+
+                        </div> -->
+                        
+                        
+                            <div class="row mt-3 mt-4 mr-0">
+                                
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+                                        <!-- <thead class="thead-dark">
+                                            <tr>
+                                                <th class="table-info"> 
+                                                    
+                            
+                                                </th>
+                                                <th >Stock Holdings  <br>% Deployed </th>
+                                
+
+                                            </tr>
+                                        </thead> -->
+                                        <tbody id="table1-body">
+                                            
+                                            {{ form.one_month.label(class="form-label") }}
+                                            {{ form.one_month(class="form-control") }}
+                        
+                                            {{ form.three_months.label(class="form-label") }}
+                                            {{ form.three_months(class="form-control") }}
+                        
+                                            {{ form.six_months.label(class="form-label") }}
+                                            {{ form.six_months(class="form-control") }}
+                        
+                                            {{ form.twelve_months.label(class="form-label") }}
+                                            {{ form.twelve_months(class="form-control") }}    
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                        
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+
+                                        <tbody id="table1-body">
+                                            {{ form.two_year_cagr.label(class="form-label") }}
+                                            {{ form.two_year_cagr(class="form-control") }}            
+                        
+                                            {{ form.three_year_cagr.label(class="form-label") }}
+                                            {{ form.three_year_cagr(class="form-control") }}          
+                            
+                                            {{ form.five_year_cagr.label(class="form-label") }}
+                                            {{ form.five_year_cagr(class="form-control") }}          
+                        
+                                            {{ form.ten_year_cagr.label(class="form-label") }}
+                                            {{ form.ten_year_cagr(class="form-control") }}     
+
+
+                        
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                            <!-- NEW TABLE BELO STARTS HERE -->
+                            <hr>
+
+                            <div class="row mt-3 mt-4 mr-0">
+                                
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+
+                                        <tbody id="table1-body">
+                                            
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                        
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+
+                                        <tbody id="table1-body">
+
+                                        <!-- Error message container -->
+                                            <div id="error-message" style="color: red; margin-top: 20px;"></div>
+                                                      
+
+                                            <br>
+                                            {{ form.submit(class="btn btn-primary") }}
+                        
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                            <!-- NEW TABLE ENDS HERE -->
+                        </div>
+                        
+                </div>
+            </div>
+        </form>
+      </div>   
+
+
+        </div>
+    </div>
+</div>   
+
+<!-- 
+<script>
+
+        function checkValidity() {
+            var inputs = document.querySelectorAll('.form-control');
+            var isValid = true;
+            var pattern = /^\d+(\.\d{1,2})?$/;
+
+            inputs.forEach(function(input) {
+                var value = input.value.trim();
+                if (value === '' || !pattern.test(value)) {
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        }
+
+    function validateInput() {
+        const m1 = parseFloat($('#one_month').val());
+        if (isNaN(m1) || m1 < 1 || aumValue > 999999) {
+            $('#error-message').text('Please enter a numeric value between 1 and 999,999.');
+            return false;
+        } else {
+            $('#error-message').text('');
+            return true;
+        }
+    }
+
+    $(document).ready(function() {
+        $('#pmsform').on('submit', function(event) {
+            if (!checkBounds()) {
+                event.preventDefault();
+            }
+        });
+    });
+</script> -->
+
+{% endblock %}

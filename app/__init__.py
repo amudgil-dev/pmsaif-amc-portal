@@ -25,7 +25,8 @@ def create_app(config_class=Config):
     from app.routes.route_pms import bp_pms
     from app.routes.route_stocks import bp_stocks
     from app.routes.route_sectors import bp_sectors     
-    from app.routes.route_nav import bp_nav            
+    from app.routes.route_nav import bp_nav      
+    from app.routes.route_admin import bp_admin                
     
     
     
@@ -36,6 +37,7 @@ def create_app(config_class=Config):
     app.register_blueprint(bp_stocks)
     app.register_blueprint(bp_sectors)
     app.register_blueprint(bp_nav)    
+    app.register_blueprint(bp_admin)        
     
 
     # Set up logging

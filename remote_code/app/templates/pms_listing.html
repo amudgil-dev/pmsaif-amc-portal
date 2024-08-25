@@ -1,0 +1,74 @@
+
+{% extends 'navbar.html' %}
+
+{% block content  %}
+<div class="container">
+    <div class="row">
+      <div class="col-sm-12 m-auto">
+
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="alert alert-{{category}} alert-dismissible">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            </div>
+
+        {% endfor %}
+
+                <br/>
+                
+
+                  <!-- Creting PMS Table -->
+  <section id="pms">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h4>AMC - {{pms_list[0].amc_name}}</h4>
+            </div>
+            <table class="table table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <th>#</th>
+                  <th>PMS Name</th>
+                  <th>Index</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pms in pms_list %}
+                <tr>
+                  <td>{{loop.index}}</td>
+                  <td>{{pms.pms_name}}</td>
+                  <td>{{pms.index_name}}</td>
+                  <td>
+                    <a href="pmsdash/{{pms.pms_id}}" class="btn btn-secondary">
+                      <i class="fas fa-angle-double-right"></i> Submit Performance
+                    </a>
+                  </td>
+                  <td>
+                    <a href="pms_nav/{{pms.pms_id}}" class="btn btn-secondary">
+                      <i class="fas fa-angle-double-right"></i> Submit NAV
+                    </a>
+                  </td>                  
+                </tr>
+              
+                {% endfor %}
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+       
+
+      </div>
+    </div>
+  </section>
+
+        </div>
+    </div>
+</div>   
+{% endblock %}

@@ -1,0 +1,102 @@
+
+{% extends 'admin_navbar.html' %}
+
+{% block content  %}
+<div class="container">
+    <div class="row">
+      <div class="col-sm-12 m-auto">
+
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="alert alert-{{category}} alert-dismissible">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            </div>
+
+        {% endfor %}
+
+                <br/>
+                  <!-- Creting Index Performance Table -->
+  <section id="indexperf">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          
+          <div class="card">
+
+            <div class="card-header">
+              <h4>Index - {{index_perf[0].index_name}}
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+
+
+                <a href="{{url_for('admin.new_indexperf',index_id=index_perf[0].index_id)}}" class="btn btn-secondary">
+                  <i class="fas fa-angle-double-right"></i> Add New
+                </a>
+              </h4>
+            </div>
+
+            <table class="table table-striped">
+              <thead class="thead-dark">
+                <tr>
+
+                  <th> Year</th>
+                  <th>Month</th>
+                  <th>1 Month</th>       
+                  <th>3 Month</th>                                
+                  <th>6 Month</th>   
+                  <th>12 Month</th> 
+                  <th>2Y Cagr</th>  
+                  <th>3Y Cagr</th>
+                  <th>5Y Cagr</th>
+                  <th>10Y Cagr</th>
+                  <th>Cagr SI</th>
+                  <th>Edit</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {% for index in index_perf %}
+                <tr>
+
+                  <td>{{index.year}}</td>
+                  <td>{{index.month}}</td>
+                  <td>{{index.one_month}}</td>
+                  <td>{{index.three_months}}</td>
+                  <td>{{index.six_months}}</td>
+                  <td>{{index.twelve_months}}</td>
+                  <td>{{index.two_year_cagr}}</td>
+                  <td>{{index.three_year_cagr}}</td>
+                  <td>{{index.five_year_cagr}}</td>
+                  <td>{{index.ten_year_cagr}}</td>
+                  <td>{{index.cagr_si}}</td>
+                  <td>
+                    
+                    <a href="{{url_for('admin.edit_indexperf',index_id=index.id)}}" class="btn btn-secondary">
+                      <i class="fas fa-angle-double-right"></i>Edit
+                    </a>
+                  </td>
+
+
+
+                </tr>
+              
+                {% endfor %}
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+       
+
+      </div>
+    </div>
+  </section>
+
+        </div>
+    </div>
+</div>   
+{% endblock %}

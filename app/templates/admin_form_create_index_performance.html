@@ -1,0 +1,307 @@
+{% extends 'admin_navbar.html' %}
+
+
+{% block content  %}
+
+<script>
+
+
+    $(function() {
+        // Maintain a set to track selected sector IDs
+        var selectedSectorIds = new Set();
+
+
+        // Attach autocomplete to the sector_name input fields
+        $(".sector-name").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: '/autocompsector',
+                    dataType: 'json',
+                    data: {
+                        query: request.term
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 3, // Minimum characters to trigger autocomplete
+            select: function(event, ui) {
+                // Update the additional fields when an option is selected
+                var sectorEntry = $(this).closest('.sector-entry');
+                var sectorId = ui.item.value;
+
+                // Check if the sector with the same ID is already selected
+                if (!selectedSectorIds.has(sectorId)) {
+                    sectorEntry.find('.sector-name').val(ui.item.name);
+                    sectorEntry.find('.sector-id').val(sectorId);
+
+                    // Display the selected sector in the table
+                    var selectedSectorsTable = $("#selectedSectors tbody");
+                    selectedSectorsTable.append("<tr data-sector-id='" + sectorId + "'>" +
+                        "<td>" + ui.item.name + "</td>" +
+
+                        "<td><input type='float' class='quantity-input' value='' min='0' step='any' ></td>" +
+                        "<td><button class='delete-sector'>X</button></td>" +
+                        "</tr>");
+
+                    // Add the sector ID to the set
+                    selectedSectorIds.add(sectorId);
+
+                    // Clear the sector_name field
+                    $(this).val('');
+
+                    // Focus on the quantity input field
+                    sectorEntry.find('.quantity-input').last().focus();
+                } else {
+                    alert("This sector is already selected.");
+                }
+
+                return false; // Prevent the default select behavior
+            }
+        }).autocomplete("instance")._renderItem = function(ul, item) {
+            // Customize the display of each autocomplete item (optional)
+            return $("<li>")
+                .append("<div>" + item.label + "</div>")
+                .appendTo(ul);
+        };
+
+        // Handle delete button click for dynamically added sectors
+        $(document).on('click', '.delete-sector', function() {
+            var sectorIdToRemove = $(this).closest('tr').data('sector-id');
+            //alert(' to be removed '+sectorIdToRemove);
+
+            // Remove the sector from the table
+            $(this).closest('tr').remove();
+
+            // Remove the sector ID from the set
+            selectedSectorIds.delete(sectorIdToRemove);
+        });
+
+        // Handle "Add Another Sector" button click
+        $("#addSector").on('click', function() {
+            // Clone the first sector entry and append it to the form
+            var newSectorEntry = $(".sector-entry:first").clone();
+            newSectorEntry.find('input').val(''); // Clear input values in the cloned entry
+            $("#sectorForm").append(newSectorEntry);
+        });
+
+        // Handle form submission
+        $("#sectorForm").submit(function(event) {
+
+            // Add logic to handle form submission
+            event.preventDefault(); // Prevent the default form submission
+
+            // Create an array to store selected sector data
+            var selectedSectorData = [];
+
+            // Iterate over each selected sector in the table
+            $("#selectedSectors tbody tr").each(function() {
+                var sectorId = $(this).data('sector-id');
+                var quantity = $(this).find('.quantity-input').val();
+
+                // Add the sector ID and quantity to the array
+                selectedSectorData.push({
+                    sectorId: sectorId,
+                    quantity: quantity
+                });
+            });
+
+            
+
+            // Log all selected sector data to the console
+            console.log("Selected Sector Data:", selectedSectorData);
+
+            // Get values of additional hidden fields
+                 
+             var pmsId = $("#pms_id").val()
+            //alert(pmsId);
+            
+            // alert('before check');
+
+            // alert('check100PctBounds');
+            var total = 0;
+            $('.quantity-input').each(function() {
+                total += parseFloat($(this).val()) || 0;
+            });
+            if (total > 100) {
+                // alert('The total holding percentage exceeds 100. Please adjust the values.');
+                $('#error-message').text('The total holding percentage exceeds 100. Please adjust the values.');
+                // return false;  // Prevent form submission
+                return false;
+            } else {
+                // alert('Form submitted successfully! Total holding percentage: ' + total);
+                // return true;  // Allow form submission
+            }
+        
+
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: '/selectedsectors',
+        //         contentType: 'application/json',
+        //         data: JSON.stringify({
+        //             selectedSectorData: selectedSectorData,
+        //             pmsId: pmsId
+        //         }),
+        //         success: function(response) {
+        //             console.log("Selection submitted successfully:", response);
+        //             //alert(' redirecting to pmsid ='+pmsId)
+
+        //             window.location.href = "/pmsdash/"+pmsId;
+        //             //top.location.href="login.htm";
+
+        //         },
+        //         error: function(error) {
+        //             console.error("Error submitting selection:", error);
+        //         }
+        //     });
+            
+        // });
+    });
+</script>
+
+<div class="container">
+    <div class="row">
+      <div class="col-sm-12 m-auto">
+
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="alert alert-{{category}} alert-dismissible">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            </div>
+
+        {% endfor %}
+        <br>
+        <div class="row">
+            <!-- 2 4 column divs, the second offset by 4 -->
+            <div class="col-md-2" ></div>
+            <div class="col-md-6" > <h3>
+                
+                Performance for : {{date_display}}
+            </h3></div>
+            <div class="col-md-2 offset-md-3" >
+               
+            </div>
+          </div>        
+
+        <!-- </div> -->
+
+        <form method = "POST">
+            {{ form.hidden_tag() }}
+            <div class="container">
+            <div class="row">
+                <div class="col-sm-6 m-auto">
+        
+                        <br/>
+                        <!-- Tables -->
+                        <!-- <div class="container mt-1">
+                            
+                    
+                        </div> -->
+                        
+                        
+                            <div class="row mt-3 mt-4 mr-0">
+                                
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+                                        <!-- <thead class="thead-dark">
+                                            <tr>
+                                                <th class="table-info"> 
+                                                    
+                            
+                                                </th>
+                                                <th >Stock Holdings  <br>% Deployed </th>
+                                
+
+                                            </tr>
+                                        </thead> -->
+                                        <tbody id="table1-body">
+                                            
+                                            {{ form.one_month.label(class="form-label") }}
+                                            {{ form.one_month(class="form-control") }}
+                        
+                                            {{ form.three_months.label(class="form-label") }}
+                                            {{ form.three_months(class="form-control") }}
+                        
+                                            {{ form.six_months.label(class="form-label") }}
+                                            {{ form.six_months(class="form-control") }}
+                        
+                                            {{ form.twelve_months.label(class="form-label") }}
+                                            {{ form.twelve_months(class="form-control") }}    
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                        
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+
+                                        <tbody id="table1-body">
+                                            {{ form.two_year_cagr.label(class="form-label") }}
+                                            {{ form.two_year_cagr(class="form-control") }}            
+                        
+                                            {{ form.three_year_cagr.label(class="form-label") }}
+                                            {{ form.three_year_cagr(class="form-control") }}          
+                            
+                                            {{ form.five_year_cagr.label(class="form-label") }}
+                                            {{ form.five_year_cagr(class="form-control") }}          
+                        
+                                            {{ form.ten_year_cagr.label(class="form-label") }}
+                                            {{ form.ten_year_cagr(class="form-control") }}     
+
+
+                        
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                            <!-- NEW TABLE BELO STARTS HERE -->
+                            <hr>
+
+                            <div class="row mt-3 mt-4 mr-0">
+                                
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+
+                                        <tbody id="table1-body">
+                                            
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                        
+                                <div class="col-md-6 mb-1">
+                                    <!--Table for PMS Hoding Data -->
+                                    <table class="table table-sm table-bordered table-striped">
+
+                                        <tbody id="table1-body">                                            
+
+                                            <br>
+                                            {{ form.submit(class="btn btn-primary") }}
+                        
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                            <!-- NEW TABLE ENDS HERE -->
+                        </div>
+                        
+                </div>
+            </div>
+        </form>
+      </div>   
+
+
+        </div>
+    </div>
+</div>   
+{% endblock %}

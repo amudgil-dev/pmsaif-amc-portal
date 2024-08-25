@@ -246,15 +246,15 @@ def pop_user_in_session(session):
     return user_id
 
 
-def isAdmin(session):
+def isAdmin(role_id):
     
     try: 
-        user_id, user_role = get_user_role_in_session(session)
+        # user_id, user_role = get_user_role_in_session(session)
         admin_role_id = UserRole.query.filter_by(name="ADMIN").first().id
-        if user_role == admin_role_id:
-            return True, user_id, user_role
+        if role_id == admin_role_id:
+            return True
         else:
-            return False , user_id, user_role
+            return False 
     except:
         return False
 

@@ -16,7 +16,8 @@ bp_sectors = Blueprint('sectors', __name__)
 
 @bp_sectors.route('/pmssectors/<int:pms_id>', methods=['GET'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def sector_holding(pms_id):
     print("sector_holding()")
 
@@ -38,7 +39,8 @@ from app.forms.forms import SectorSearchForm
 
 @bp_sectors.route('/autocompsector', methods=['GET'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def autocomplete_sector():
     # print('autocomplete_sector')
     # Simulate fetching relevant data based on the user's input
@@ -85,7 +87,8 @@ def findMatchingSectors(query):
 
 @bp_sectors.route('/selectedsectors', methods=['POST'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def selected_sectors():
     print('selected_sectors()')
     print('POST')

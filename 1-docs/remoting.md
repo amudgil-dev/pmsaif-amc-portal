@@ -2,6 +2,11 @@
 
 rsync -avz -e "ssh -i ~/.ssh/dm_mumbai_aws_key.pem" --exclude '**pycache**' --exclude='venv' --exclude='.git' ~/projects/pms-aif/pmsportal_aug_2024/ ubuntu@52.66.87.168:pmsweb2/
 
+### downloading database from remote into local location
+
+rsync -avz -e "ssh -i ~/.ssh/dm_mumbai_aws_key.pem" --exclude '**pycache**' --exclude='venv' --exclude='.git'  ubuntu@52.66.87.168:pmsweb2/ ~/projects/pms-aif/pmsportal_aug_2024/remote_code/
+
+
 ### ssh into remote server
 
 ssh -i "dm_mumbai_aws_key.pem" ubuntu@ec2-52-66-87-168.ap-south-1.compute.amazonaws.com

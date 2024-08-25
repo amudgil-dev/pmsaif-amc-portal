@@ -23,7 +23,7 @@ def getPmsListing(user_id):
 
     try:
         with current_app.app_context():
-            with db.engine.connect() as connection:
+            with db.session.connect() as connection:
                 result = connection.execute(text(query), {"user_id": user_id})
                 records = result.fetchall()
 
@@ -36,7 +36,7 @@ def getPmsListing(user_id):
         return None    
 
     # sql = text(query)
-    # records = db.engine.execute(sql)
+    # records = db.session.execute(sql)
     # print(records)
 
     # #iterate through object and create seperate arrays to be rendered by highcharts
@@ -57,7 +57,7 @@ def getPmsListing(user_id):
 
 def getPmsDashDataList(pms_id):
     print('getPmsDashDataList()')
-    # print("pms_id ==>", pms_id)
+    print("pms_id ==>", pms_id)
     
     pms_perf, pms_label = getPmsPerformance(pms_id)
     # print(f" type(pms_perf) ====>><<<<< {type(pms_perf)} and {pms_perf.month}")
@@ -84,7 +84,7 @@ def getPmsPerformance(pms_id):
     label_pms_perf = ('perf_id','amc_name','pms_id', 'pms_name', 'index_id', 'index_name', 'month', 'year', 'one_month', 'three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr', 'cagr_si', 'si') 
 
     # sql = text(query)
-    # records = db.engine.execute(sql)
+    # records = db.session.execute(sql)
 
     # tuple_list = [i for i in records]
 
@@ -93,7 +93,7 @@ def getPmsPerformance(pms_id):
 
     try:
         with current_app.app_context():
-            with db.engine.connect() as connection:
+            with db.session.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
 
@@ -128,7 +128,7 @@ def getPmsIndexPerformance(pms_id,month, year):
 
     try:
         with current_app.app_context():
-            with db.engine.connect() as connection:
+            with db.session.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
                 
@@ -177,7 +177,7 @@ def getIndexPerformance(index_id):
     label_index_perf = ('id','index_name', 'index_id', 'month', 'year', 'one_month', 'three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr')
 
     sql = text(query)
-    records = db.engine.execute(sql)
+    records = db.session.execute(sql)
     # print(records)
 
     tuple_list = [i for i in records]
@@ -198,7 +198,7 @@ def getPmsDetails(pms_id):
 
     try:
         with current_app.app_context():
-            with db.engine.connect() as connection:
+            with db.session.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
                 
@@ -225,7 +225,7 @@ def getPmsStocks(pms_id):
 
     try:
         with current_app.app_context():
-            with db.engine.connect() as connection:
+            with db.session.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
                 
@@ -251,7 +251,7 @@ def getPmsSectors(pms_id):
 
     try:
         with current_app.app_context():
-            with db.engine.connect() as connection:
+            with db.session.connect() as connection:
                 result = connection.execute(text(query), {"pms_id": pms_id})
                 records = result.fetchall()
                 
@@ -345,7 +345,7 @@ def getIndexListing():
     
 
     sql = text(query)
-    records = db.engine.execute(sql)
+    records = db.session.execute(sql)
     # print(records)
 
     tuple_list = [i for i in records]
@@ -405,7 +405,7 @@ def getPMSPerfDF(month, year):
             ' where amc_id > 0'
 
     sql = text(query)
-    records = db.engine.execute(sql)
+    records = db.session.execute(sql)
     df_amc = pd.DataFrame(records.fetchall(), columns=records.keys())
     df_amc = df_amc.drop(columns=['id','created_at'], axis=1)
     df_amc = df_amc.rename(columns={'name': 'Company Name'}) 
@@ -414,7 +414,7 @@ def getPMSPerfDF(month, year):
             ' from  pms_master t1 '\
             
     sql = text(query)
-    records = db.engine.execute(sql)
+    records = db.session.execute(sql)
     df_pms = pd.DataFrame(records.fetchall(), columns=records.keys())
     df_pms.drop(columns=['id','created_at'], axis=1,inplace=True)
     df_pms = df_pms.rename(columns={
@@ -474,7 +474,7 @@ def getPMSPerfDF(month, year):
     sql = text(query)
 
     # print(sql)
-    records = db.engine.execute(sql)
+    records = db.session.execute(sql)
     df_pms_perf = pd.DataFrame(records.fetchall(), columns=records.keys())
     df_pms_perf = df_pms_perf.drop(columns=['id','created_at','user_id','p_month','p_year'], axis=1)
     df_pms_perf = df_pms_perf.rename(columns={
@@ -513,7 +513,7 @@ def getIndexPerfDF(month, year):
             ' from  index_master t1 '\
             
     sql = text(query)
-    records = db.engine.execute(sql)
+    records = db.session.execute(sql)
     df_index = pd.DataFrame(records.fetchall(), columns=records.keys())
     df_index.drop(columns=['created_at','index_code','index_ref'], axis=1,inplace=True)
     df_index = df_index.rename(columns={'name': 'Index','id':'index_id'}) 
@@ -528,7 +528,7 @@ def getIndexPerfDF(month, year):
     
     sql = text(query)
     # print(sql)
-    records = db.engine.execute(sql)
+    records = db.session.execute(sql)
     df_idx_perf = pd.DataFrame(records.fetchall(), columns=records.keys())
     # print(df_idx_perf)
     df_idx_perf = df_idx_perf.drop(columns=['id','created_at','user_id','p_month','p_year'], axis=1)

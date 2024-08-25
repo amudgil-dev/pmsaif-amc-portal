@@ -16,7 +16,8 @@ bp_stocks = Blueprint('stocks', __name__)
 
 @bp_stocks.route('/pmsstocks/<int:pms_id>', methods=['GET'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def stock_holding(pms_id):
     print("stock_holding()")
     # print(' PMSID ==> view holding £££££££££££££ ==>', pms_id)
@@ -40,7 +41,8 @@ from app.forms.forms import StockSearchForm
 
 @bp_stocks.route('/autocompstock', methods=['GET'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def autocomplete_stocks():
     # print('autocomplete_stocks()')
     # Simulate fetching relevant data based on the user's input
@@ -87,7 +89,8 @@ def findMatchingStocks(query):
 
 @bp_stocks.route('/selectedstocks', methods=['POST'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def selected_stocks():
     print('selected_stocks')
 

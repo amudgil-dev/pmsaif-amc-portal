@@ -13,7 +13,8 @@ bp_nav = Blueprint('nav', __name__)
 
 @bp_nav.route('/pmsnav/<int:pms_id>')
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def pms_nav_dashboard(pms_id):
   print('pms_nav_dashboard()')
 
@@ -44,7 +45,8 @@ def pms_nav_dashboard(pms_id):
 # Route to display NAV entries for a given PMS_ID
 @bp_nav.route('/pms_nav/<int:pms_id>')
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def pms_nav_list(pms_id):
     print('pms_nav_list()')
     
@@ -61,7 +63,8 @@ def pms_nav_list(pms_id):
 # Route to add or edit a NAV entry
 @bp_nav.route('/pms_nav/<int:pms_id>/edit/<int:year>/<int:month>', methods=['GET', 'POST'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def edit_nav(pms_id, year, month):
     
         
@@ -101,7 +104,8 @@ def edit_nav(pms_id, year, month):
 # Route to add missing NAV entries
 @bp_nav.route('/pms_nav/<int:pms_id>/add_missing', methods=['GET', 'POST'])
 @login_required
-@AuthHelper.check_session_and_authorize
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
 def add_missing_nav(pms_id):
     
     form = DummyForm()

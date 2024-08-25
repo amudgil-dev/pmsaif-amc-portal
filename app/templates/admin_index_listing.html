@@ -1,0 +1,64 @@
+
+{% extends 'admin_navbar.html' %}
+
+{% block content  %}
+<div class="container">
+    <div class="row">
+      <div class="col-sm-12 m-auto">
+
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="alert alert-{{category}} alert-dismissible">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            </div>
+
+        {% endfor %}
+
+                <br/>
+                  <!-- Creting Index Table -->
+  <section id="pms">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-9">
+          <div class="card">
+
+            <table class="table table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Index Name</th>
+                  <th>Index Code</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for index in index_list %}
+                <tr>
+                  <td>1</td>
+                  <td>{{index.index_name}}</td>
+                  <td>{{index.index_code}}</td>
+                  <td>
+                    <a href="viewindexperf/{{index.id}}" class="btn btn-secondary">
+                      <i class="fas fa-angle-double-right"></i> View Performance
+                    </a>
+                  </td>
+                </tr>
+              
+                {% endfor %}
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+       
+
+      </div>
+    </div>
+  </section>
+
+        </div>
+    </div>
+</div>   
+{% endblock %}
