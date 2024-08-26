@@ -4,7 +4,7 @@
 {% block content  %}
 <script>
   // Main function to initialize everything
-function initStockSelection(config) {
+  function initStockSelection(config) {
     const {
         stockNameSelector,
         selectedStocksTableSelector,
@@ -16,8 +16,6 @@ function initStockSelection(config) {
         submitUrl
     } = config;
 
-    // let selectedStockIds = new Set();
-
     let selectedStockIds = new Set(
         Array.from(document.querySelectorAll(selectedStocksTableSelector + " tbody tr"))
             .map(row => row.getAttribute('data-stock-id'))
@@ -25,13 +23,14 @@ function initStockSelection(config) {
 
     console.log("Initial selectedStockIds:", Array.from(selectedStockIds));
 
-    initAutocomplete(stockNameSelector, autocompleteUrl, selectedStockIds);
+    initAutocomplete(stockNameSelector, autocompleteUrl, selectedStockIds, errorMessageSelector);
     initDeleteStock(selectedStocksTableSelector, selectedStockIds);
     initAddStock(addStockButtonSelector, stockNameSelector);
     initFormSubmission(formSelector, selectedStocksTableSelector, pmsIdSelector, errorMessageSelector, submitUrl);
 }
 
-function initAutocomplete(selector, url, selectedStockIds) {
+
+function initAutocomplete(selector, url, selectedStockIds, errorMessageSelector) {
     $(selector).autocomplete({
         source: (request, response) => {
             $.ajax({
@@ -42,13 +41,13 @@ function initAutocomplete(selector, url, selectedStockIds) {
             });
         },
         minLength: 3,
-        select: (event, ui) => handleStockSelection(event, ui, selectedStockIds)
+        select: (event, ui) => handleStockSelection(event, ui, selectedStockIds, errorMessageSelector, selector)
     }).autocomplete("instance")._renderItem = (ul, item) => {
         return $("<li>").append("<div>" + item.label + "</div>").appendTo(ul);
     };
 }
 
-function handleStockSelection(event, ui, selectedStockIds) {
+function handleStockSelection(event, ui, selectedStockIds,errorMessageSelector) {
     const stockEntry = $(event.target).closest('.stock-entry');
     const stockId = String(ui.item.value).trim();
 
@@ -69,9 +68,13 @@ function handleStockSelection(event, ui, selectedStockIds) {
         addStockToTable(ui.item, stockId);
         selectedStockIds.add(stockId);
         clearAndFocusInput(stockEntry);
+        $(errorMessageSelector).text(''); // Clear any existing error message
+
     } else {
         console.log("This stock is already selected.");
-        alert("This stock is already selected.");
+        // alert("This stock is already selected.");
+        $(errorMessageSelector).text("This stock is already selected.");
+        $(event.target).val(''); // Clear the input box that triggered this event        
     }
 
     return false;
@@ -79,12 +82,7 @@ function handleStockSelection(event, ui, selectedStockIds) {
 
 function addStockToTable(item, stockId) {
 
-    // alert('addStockToTable() item='+item + '  stockId='+stockId );
-    // if (! checkDuplicate(stockId)){
-    //     // alert(' checkDuplicate is TRUE ');
-    //     return;
-    // }
-
+ 
     $("#selectedStocks tbody").append(`
         <tr data-stock-id='${stockId}'>
             <td>${item.name}</td>
@@ -94,30 +92,6 @@ function addStockToTable(item, stockId) {
             <td><button class='delete-stock'>X</button></td>
         </tr>
     `);
-}
-function checkDuplicate(stockId) {
-    var tableSelector = '#selectedStocks';
-    const selectedStockData = getSelectedStockData(tableSelector);
-
-    // Check if it's an array and has elements
-    for (let i = 0; i < selectedStockData.length; i++) {
-        record = selectedStockData[i];
-        // alert(record.stockId + ' - '+record.quantity );
-
-        if (stockId == record.stockId) {
-            alert('You have this stock already, pls update that record  '+stockId);
-            // $(errorMessageSelector).text('You have this stock already, pls update that record!');
-            // stockEntry.find('.stock-name').val('');
-            // stockEntry.find('.quantity-input').last().focus();
-            
-
-            return false;
-        }
-
-    }    
-    return true;
-
-
 }
 
 function clearAndFocusInput(stockEntry) {
@@ -141,8 +115,6 @@ function initAddStock(buttonSelector, stockEntrySelector) {
         $("#stockForm").append(newStockEntry);
     });
 }
-
-
 
 function initFormSubmission(formSelector, tableSelector, pmsIdSelector, errorMessageSelector, submitUrl) {
     $(formSelector).submit(function(event) {

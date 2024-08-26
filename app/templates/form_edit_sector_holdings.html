@@ -5,336 +5,164 @@
 
 <script>
     // Main function to initialize everything
-  function initSectorSelection(config) {
-      const {
-          sectorNameSelector,
-          selectedSectorsTableSelector,
-          addSectorButtonSelector,
-          formSelector,
-          pmsIdSelector,
-          errorMessageSelector,
-          autocompleteUrl,
-          submitUrl
-      } = config;
-  
-      let selectedSectorIds = new Set();
-  
-      initAutocomplete(sectorNameSelector, autocompleteUrl, selectedSectorIds);
-      initDeleteStock(selectedSectorsTableSelector, selectedSectorIds);
-      initAddStock(addSectorButtonSelector, sectorNameSelector);
-      initFormSubmission(formSelector, selectedSectorsTableSelector, pmsIdSelector, errorMessageSelector, submitUrl);
-  }
-  
-  function initAutocomplete(selector, url, selectedStockIds) {
-      $(selector).autocomplete({
-          source: (request, response) => {
-              $.ajax({
-                  url: url,
-                  dataType: 'json',
-                  data: { query: request.term },
-                  success: (data) => response(data)
-              });
-          },
-          minLength: 3,
-          select: (event, ui) => handleSectorSelection(event, ui, selectedSectorIds)
-      }).autocomplete("instance")._renderItem = (ul, item) => {
-          return $("<li>").append("<div>" + item.label + "</div>").appendTo(ul);
-      };
-  }
-  
-  function handleSectorSelection(event, ui, selectedSectorIds) {
-      const sectorEntry = $(event.target).closest('.sector-entry');
-      const sectorId = ui.item.value;
-  
-      if (!selectedSectorIds.has(sectorId)) {
-          addSectorToTable(ui.item, sectorId);
-          selectedSectorIds.add(sectorId);
-          clearAndFocusInput(sectorEntry);
-      } else {
-          alert("This sector is already selected.");
-      }
-  
-      return false;
-  }
-  
-  function addSectorToTable(item, sectorId) {
-  
-      // alert('addStockToTable() item='+item + '  stockId='+stockId );
-      if (! checkDuplicate(sectorId)){
-          // alert(' checkDuplicate is TRUE ');
-          return;
-      }
-  
-      $("#selectedSectors tbody").append(`
-          <tr data-sector-id='${sectorId}'>
-              <td>${item.name}</td>
-              <td>${item.sector_symbol}</td>
-              <td>${item.isin}</td>
-              <td><input type='number' class='quantity-input' value='' min='0' step='any'></td>
-              <td><button class='delete-sector'>X</button></td>
-          </tr>
-      `);
-  }
-  function checkDuplicate(sectorId) {
-      var tableSelector = '#selectedSectors';
-      const selectedSectorData = getSelectedSectorData(tableSelector);
-  
-      // Check if it's an array and has elements
-      for (let i = 0; i < selectedSectorData.length; i++) {
-          record = selectedSectorData[i];
-          // alert(record.stockId + ' - '+record.quantity );
-  
-          if (sectorId == record.sectorId) {
-              alert('You have this sector already, pls update that record  '+sectorId);
-              return false;
-          }
-  
-      }    
-      return true;
-  
-  
-  }
-  
-  function clearAndFocusInput(sectorEntry) {
-      sectorEntry.find('.sector-name').val('');
-      sectorEntry.find('.quantity-input').last().focus();
-  }
-  
-  function initDeleteSector(tableSelector, selectedSectorIds) {
-      $(document).on('click', '.delete-sector', function() {
-          const sectorIdToRemove = $(this).closest('tr').data('sector-id');
-          $(this).closest('tr').remove();
-          selectedSectorIds.delete(sectorIdToRemove);
-      });
-  }
-  
-  function initAddStock(buttonSelector, sectorEntrySelector) {
-      
-      $(buttonSelector).on('click', function() {
-          const newSectorEntry = $(sectorEntrySelector).first().clone();
-          newSectorEntry.find('input').val('');
-          $("#sectorForm").append(newSectorEntry);
-      });
-  }
-  
-  
-  
-  function initFormSubmission(formSelector, tableSelector, pmsIdSelector, errorMessageSelector, submitUrl) {
-      $(formSelector).submit(function(event) {
-          event.preventDefault();
-  
-          // alert('tableSelector is:'+tableSelector);
-          const selectedSectorData = getSelectedSectorData(tableSelector);
-  
-          // Check if it's an array and has elements
-          // for (let i = 0; i < selectedStockData.length; i++) {
-          //     record = selectedStockData[i];
-          //     alert(record.stockId + ' - '+record.quantity );
-  
-          // }
-  
-          const pmsId = $(pmsIdSelector).val();
-  
-          if (validateTotalHolding(errorMessageSelector)) {
-              submitSectorData(selectedSectorData, pmsId, submitUrl);
-          }
-      });
-  }
-  
-  function getSelectedSectorData(tableSelector) {
-      console.log('getSelectedSectorData() ' + tableSelector);
-      
-      const selectedSectors = [];
-      const rows = document.querySelectorAll(tableSelector + " tbody tr");
-  
-      for (let i = 0; i < rows.length; i++) {
-          const row = rows[i];
-          const stockId = row.getAttribute('data-sector-id');
-          const quantityInput = row.querySelector('.quantity-input');
-          const quantity = quantityInput ? quantityInput.value : '';
-  
-          selectedSectors.push({
-              sectorId: sectorId,
-              quantity: quantity
-          });
-      }
-  
-      console.log("Selected sectors:", selectedSectors); // For debugging
-      return selectedSectors;
-  }
-  
-  function validateTotalHolding(errorMessageSelector) {
-      const total = Array.from($('.quantity-input')).reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
-      if (total > 100) {
-          $(errorMessageSelector).text('The total holding percentage exceeds 100. Please adjust the values.');
-          return false;
-      }
-      return true;
-  }
-  
-  function submitSectorData(selectedSectorData, pmsId, submitUrl) {
-      $.ajax({
-          type: 'POST',
-          url: submitUrl,
-          contentType: 'application/json',
-          data: JSON.stringify({ selectedSectorData, pms_id: pmsId }),
-          headers: { 'X-CSRFToken': $('input[name=csrf_token]').val() },
-          success: (response) => {
-              console.log("Selection submitted successfully:", response);
-              window.location.href = "/pmsdash/" + pmsId;
-          },
-          error: (jqXHR, textStatus, errorThrown) => {
-              console.error("Error submitting selection:", jqXHR.responseText);
-          }
-      });
-  }
-  
-  // Usage
-  $(function() {
-      initSectorSelection({
-          sectorNameSelector: ".sector-name",
-          selectedSectorsTableSelector: "#selectedSectors",
-          addSectorButtonSelector: "#addSector",
-          formSelector: "#sectorForm",
-          pmsIdSelector: "#pms_id",
-          errorMessageSelector: "#error-message",
-          autocompleteUrl: '/autocompsector',
-          submitUrl: '/selectedsectors'
-      });
-  });
-  </script>
-  
-<script>
+function initSectorSelection(config) {
+    const {
+        sectorNameSelector,
+        selectedSectorsTableSelector,
+        formSelector,
+        pmsIdSelector,
+        errorMessageSelector,
+        autocompleteUrl,
+        submitUrl
+    } = config;
 
+    let selectedSectorIds = new Set(
+        Array.from(document.querySelectorAll(selectedSectorsTableSelector + " tbody tr"))
+            .map(row => row.getAttribute('data-sector-id').trim())
+    );
 
-    $(function() {
-        // Maintain a set to track selected sector IDs
-        var selectedSectorIds = new Set();
+    console.log("Initial selectedSectorIds:", Array.from(selectedSectorIds));
 
+    initAutocomplete(sectorNameSelector, autocompleteUrl, selectedSectorIds, errorMessageSelector);
+    initDeleteSector(selectedSectorsTableSelector, selectedSectorIds);
+    initFormSubmission(formSelector, selectedSectorsTableSelector, pmsIdSelector, errorMessageSelector, submitUrl);
+}
 
-        // Attach autocomplete to the sector_name input fields
-        $(".sector-name").autocomplete({
-            source: function(request, response) {
-                $.ajax({
-                    url: '/autocompsector',
-                    dataType: 'json',
-                    data: {
-                        query: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 3, // Minimum characters to trigger autocomplete
-            select: function(event, ui) {
-                // Update the additional fields when an option is selected
-                var sectorEntry = $(this).closest('.sector-entry');
-                var sectorId = ui.item.value;
-
-                // Check if the sector with the same ID is already selected
-                if (!selectedSectorIds.has(sectorId)) {
-                    sectorEntry.find('.sector-name').val(ui.item.name);
-                    sectorEntry.find('.sector-id').val(sectorId);
-
-                    // Display the selected sector in the table
-                    var selectedSectorsTable = $("#selectedSectors tbody");
-                    selectedSectorsTable.append("<tr data-sector-id='" + sectorId + "'>" +
-                        "<td>" + ui.item.name + "</td>" +
-
-                        "<td><input type='float' class='quantity-input' value='' min='0' step='any' ></td>" +
-                        "<td><button class='delete-sector'>X</button></td>" +
-                        "</tr>");
-
-                    // Add the sector ID to the set
-                    selectedSectorIds.add(sectorId);
-
-                    // Clear the sector_name field
-                    $(this).val('');
-
-                    // Focus on the quantity input field
-                    sectorEntry.find('.quantity-input').last().focus();
-                } else {
-                    alert("This sector is already selected.");
-                }
-
-                return false; // Prevent the default select behavior
-            }
-        }).autocomplete("instance")._renderItem = function(ul, item) {
-            // Customize the display of each autocomplete item (optional)
-            return $("<li>")
-                .append("<div>" + item.label + "</div>")
-                .appendTo(ul);
-        };
-
-        // Handle delete button click for dynamically added sectors
-        $(document).on('click', '.delete-sector', function() {
-            var sectorIdToRemove = $(this).closest('tr').data('sector-id');
-            //alert(' to be removed '+sectorIdToRemove);
-
-            // Remove the sector from the table
-            $(this).closest('tr').remove();
-
-            // Remove the sector ID from the set
-            selectedSectorIds.delete(sectorIdToRemove);
-        });
-
-        // Handle "Add Another Sector" button click
-        $("#addSector").on('click', function() {
-            // Clone the first sector entry and append it to the form
-            var newSectorEntry = $(".sector-entry:first").clone();
-            newSectorEntry.find('input').val(''); // Clear input values in the cloned entry
-            $("#sectorForm").append(newSectorEntry);
-        });
-
-        // Handle form submission
-        $("#sectorForm").submit(function(event) {
-            event.preventDefault();
-            
-            var selectedSectorData = [];
-            $("#selectedSectors tbody tr").each(function() {
-                var sectorId = $(this).data('sector-id');
-                var quantity = $(this).find('.quantity-input').val();
-                selectedSectorData.push({
-                    sectorId: sectorId,
-                    quantity: quantity
-                });
-            });
-
-            var pms_id = $("#pms_id").val();
-            
-            var dataToSend = {
-                selectedSectorData: selectedSectorData,
-                pms_id: pms_id
-            };
-
-            console.log('Attempting to send data:', JSON.stringify(dataToSend));
-
+function initAutocomplete(selector, url, selectedSectorIds, errorMessageSelector) {
+    $(selector).autocomplete({
+        source: (request, response) => {
             $.ajax({
-                type: 'POST',
-                url: '/selectedsectors',
-                contentType: 'application/json',
-                data: JSON.stringify(dataToSend),
-                headers: {
-                    'X-CSRFToken': $('input[name=csrf_token]').val()
-                },                
-                success: function(response) {
-                    console.log("Selection submitted successfully:", response);
-                    window.location.href = "/pmsdash/" + pms_id;
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error("Error submitting selection:");
-                    console.error("Status:", textStatus);
-                    console.error("Error:", errorThrown);
-                    console.error("Response Text:", jqXHR.responseText);
-                    console.error("Status Code:", jqXHR.status);
-                    $('#error-message').text('Error submitting data. Please check console for details.');
-                }
+                url: url,
+                dataType: 'json',
+                data: { query: request.term },
+                success: (data) => response(data)
             });
-        });
+        },
+        minLength: 3,
+        select: (event, ui) => handleSectorSelection(event, ui, selectedSectorIds, errorMessageSelector)
+    }).autocomplete("instance")._renderItem = (ul, item) => {
+        return $("<li>").append("<div>" + item.label + "</div>").appendTo(ul);
+    };
+}
 
+function handleSectorSelection(event, ui, selectedSectorIds, errorMessageSelector) {
+    const sectorEntry = $(event.target).closest('.sector-entry');
+    const sectorId = String(ui.item.value).trim();
 
+    console.log('In handleSectorSelection() - sectorId:', sectorId);
+    console.log('Current selectedSectorIds:', Array.from(selectedSectorIds));
+
+    if (!selectedSectorIds.has(sectorId)) {
+        console.log('Not a duplicate, adding to table and set');
+        addSectorToTable(ui.item, sectorId);
+        selectedSectorIds.add(sectorId);
+        clearAndFocusInput(sectorEntry);
+        $(errorMessageSelector).text(''); // Clear any existing error message
+    } else {
+        console.log("This sector is already selected.");
+        $(errorMessageSelector).text("This sector is already selected.");
+        $(event.target).val(''); // Clear the input box that triggered this event        
+    }
+
+    return false;
+}
+
+function addSectorToTable(item, sectorId) {
+    $("#selectedSectors tbody").append(`
+        <tr data-sector-id='${sectorId}'>
+            <td>${item.name}</td>
+            <td><input type='number' class='quantity-input' value='' min='0' step='any'></td>
+            <td><button class='delete-sector'>X</button></td>
+        </tr>
+    `);
+}
+
+function clearAndFocusInput(sectorEntry) {
+    sectorEntry.find('.sector-name').val('');
+    sectorEntry.find('.quantity-input').last().focus();
+}
+
+function initDeleteSector(tableSelector, selectedSectorIds) {
+    $(document).on('click', '.delete-sector', function() {
+        const sectorIdToRemove = $(this).closest('tr').data('sector-id');
+        $(this).closest('tr').remove();
+        selectedSectorIds.delete(sectorIdToRemove);
     });
+}
+
+function initFormSubmission(formSelector, tableSelector, pmsIdSelector, errorMessageSelector, submitUrl) {
+    $(formSelector).submit(function(event) {
+        event.preventDefault();
+
+        const selectedSectorData = getSelectedSectorData(tableSelector);
+        const pmsId = $(pmsIdSelector).val();
+
+        if (validateTotalHolding(errorMessageSelector)) {
+            submitSectorData(selectedSectorData, pmsId, submitUrl);
+        }
+    });
+}
+
+function getSelectedSectorData(tableSelector) {
+    console.log('getSelectedSectorData() ' + tableSelector);
+    
+    const selectedSectors = [];
+    const rows = document.querySelectorAll(tableSelector + " tbody tr");
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const sectorId = row.getAttribute('data-sector-id');
+        const quantityInput = row.querySelector('.quantity-input');
+        const quantity = quantityInput ? quantityInput.value : '';
+
+        selectedSectors.push({
+            sectorId: sectorId,
+            quantity: quantity
+        });
+    }
+
+    console.log("Selected sectors:", selectedSectors); // For debugging
+    return selectedSectors;
+}
+
+function validateTotalHolding(errorMessageSelector) {
+    const total = Array.from($('.quantity-input')).reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
+    if (total > 100) {
+        $(errorMessageSelector).text('The total holding percentage exceeds 100. Please adjust the values.');
+        return false;
+    }
+    return true;
+}
+
+function submitSectorData(selectedSectorData, pmsId, submitUrl) {
+    $.ajax({
+        type: 'POST',
+        url: submitUrl,
+        contentType: 'application/json',
+        data: JSON.stringify({ selectedSectorData, pms_id: pmsId }),
+        headers: { 'X-CSRFToken': $('input[name=csrf_token]').val() },
+        success: (response) => {
+            console.log("Selection submitted successfully:", response);
+            window.location.href = "/pmsdash/" + pmsId;
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("Error submitting selection:", jqXHR.responseText);
+        }
+    });
+}
+
+// Usage
+$(function() {
+    initSectorSelection({
+        sectorNameSelector: ".sector-name",
+        selectedSectorsTableSelector: "#selectedSectors",
+        formSelector: "#sectorForm",
+        pmsIdSelector: "#pms_id",
+        errorMessageSelector: "#error-message",
+        autocompleteUrl: '/autocompsector',
+        submitUrl: '/selectedsectors'
+    });
+});
 </script>
 
 <div class="container">
