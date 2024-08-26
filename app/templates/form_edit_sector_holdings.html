@@ -2,6 +2,208 @@
 {% extends 'navbar.html' %}
 
 {% block content  %}
+
+<script>
+    // Main function to initialize everything
+  function initSectorSelection(config) {
+      const {
+          sectorNameSelector,
+          selectedSectorsTableSelector,
+          addSectorButtonSelector,
+          formSelector,
+          pmsIdSelector,
+          errorMessageSelector,
+          autocompleteUrl,
+          submitUrl
+      } = config;
+  
+      let selectedSectorIds = new Set();
+  
+      initAutocomplete(sectorNameSelector, autocompleteUrl, selectedSectorIds);
+      initDeleteStock(selectedSectorsTableSelector, selectedSectorIds);
+      initAddStock(addSectorButtonSelector, sectorNameSelector);
+      initFormSubmission(formSelector, selectedSectorsTableSelector, pmsIdSelector, errorMessageSelector, submitUrl);
+  }
+  
+  function initAutocomplete(selector, url, selectedStockIds) {
+      $(selector).autocomplete({
+          source: (request, response) => {
+              $.ajax({
+                  url: url,
+                  dataType: 'json',
+                  data: { query: request.term },
+                  success: (data) => response(data)
+              });
+          },
+          minLength: 3,
+          select: (event, ui) => handleSectorSelection(event, ui, selectedSectorIds)
+      }).autocomplete("instance")._renderItem = (ul, item) => {
+          return $("<li>").append("<div>" + item.label + "</div>").appendTo(ul);
+      };
+  }
+  
+  function handleSectorSelection(event, ui, selectedSectorIds) {
+      const sectorEntry = $(event.target).closest('.sector-entry');
+      const sectorId = ui.item.value;
+  
+      if (!selectedSectorIds.has(sectorId)) {
+          addSectorToTable(ui.item, sectorId);
+          selectedSectorIds.add(sectorId);
+          clearAndFocusInput(sectorEntry);
+      } else {
+          alert("This sector is already selected.");
+      }
+  
+      return false;
+  }
+  
+  function addSectorToTable(item, sectorId) {
+  
+      // alert('addStockToTable() item='+item + '  stockId='+stockId );
+      if (! checkDuplicate(sectorId)){
+          // alert(' checkDuplicate is TRUE ');
+          return;
+      }
+  
+      $("#selectedSectors tbody").append(`
+          <tr data-sector-id='${sectorId}'>
+              <td>${item.name}</td>
+              <td>${item.sector_symbol}</td>
+              <td>${item.isin}</td>
+              <td><input type='number' class='quantity-input' value='' min='0' step='any'></td>
+              <td><button class='delete-sector'>X</button></td>
+          </tr>
+      `);
+  }
+  function checkDuplicate(sectorId) {
+      var tableSelector = '#selectedSectors';
+      const selectedSectorData = getSelectedSectorData(tableSelector);
+  
+      // Check if it's an array and has elements
+      for (let i = 0; i < selectedSectorData.length; i++) {
+          record = selectedSectorData[i];
+          // alert(record.stockId + ' - '+record.quantity );
+  
+          if (sectorId == record.sectorId) {
+              alert('You have this sector already, pls update that record  '+sectorId);
+              return false;
+          }
+  
+      }    
+      return true;
+  
+  
+  }
+  
+  function clearAndFocusInput(sectorEntry) {
+      sectorEntry.find('.sector-name').val('');
+      sectorEntry.find('.quantity-input').last().focus();
+  }
+  
+  function initDeleteSector(tableSelector, selectedSectorIds) {
+      $(document).on('click', '.delete-sector', function() {
+          const sectorIdToRemove = $(this).closest('tr').data('sector-id');
+          $(this).closest('tr').remove();
+          selectedSectorIds.delete(sectorIdToRemove);
+      });
+  }
+  
+  function initAddStock(buttonSelector, sectorEntrySelector) {
+      
+      $(buttonSelector).on('click', function() {
+          const newSectorEntry = $(sectorEntrySelector).first().clone();
+          newSectorEntry.find('input').val('');
+          $("#sectorForm").append(newSectorEntry);
+      });
+  }
+  
+  
+  
+  function initFormSubmission(formSelector, tableSelector, pmsIdSelector, errorMessageSelector, submitUrl) {
+      $(formSelector).submit(function(event) {
+          event.preventDefault();
+  
+          // alert('tableSelector is:'+tableSelector);
+          const selectedSectorData = getSelectedSectorData(tableSelector);
+  
+          // Check if it's an array and has elements
+          // for (let i = 0; i < selectedStockData.length; i++) {
+          //     record = selectedStockData[i];
+          //     alert(record.stockId + ' - '+record.quantity );
+  
+          // }
+  
+          const pmsId = $(pmsIdSelector).val();
+  
+          if (validateTotalHolding(errorMessageSelector)) {
+              submitSectorData(selectedSectorData, pmsId, submitUrl);
+          }
+      });
+  }
+  
+  function getSelectedSectorData(tableSelector) {
+      console.log('getSelectedSectorData() ' + tableSelector);
+      
+      const selectedSectors = [];
+      const rows = document.querySelectorAll(tableSelector + " tbody tr");
+  
+      for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const stockId = row.getAttribute('data-sector-id');
+          const quantityInput = row.querySelector('.quantity-input');
+          const quantity = quantityInput ? quantityInput.value : '';
+  
+          selectedSectors.push({
+              sectorId: sectorId,
+              quantity: quantity
+          });
+      }
+  
+      console.log("Selected sectors:", selectedSectors); // For debugging
+      return selectedSectors;
+  }
+  
+  function validateTotalHolding(errorMessageSelector) {
+      const total = Array.from($('.quantity-input')).reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
+      if (total > 100) {
+          $(errorMessageSelector).text('The total holding percentage exceeds 100. Please adjust the values.');
+          return false;
+      }
+      return true;
+  }
+  
+  function submitSectorData(selectedSectorData, pmsId, submitUrl) {
+      $.ajax({
+          type: 'POST',
+          url: submitUrl,
+          contentType: 'application/json',
+          data: JSON.stringify({ selectedSectorData, pms_id: pmsId }),
+          headers: { 'X-CSRFToken': $('input[name=csrf_token]').val() },
+          success: (response) => {
+              console.log("Selection submitted successfully:", response);
+              window.location.href = "/pmsdash/" + pmsId;
+          },
+          error: (jqXHR, textStatus, errorThrown) => {
+              console.error("Error submitting selection:", jqXHR.responseText);
+          }
+      });
+  }
+  
+  // Usage
+  $(function() {
+      initSectorSelection({
+          sectorNameSelector: ".sector-name",
+          selectedSectorsTableSelector: "#selectedSectors",
+          addSectorButtonSelector: "#addSector",
+          formSelector: "#sectorForm",
+          pmsIdSelector: "#pms_id",
+          errorMessageSelector: "#error-message",
+          autocompleteUrl: '/autocompsector',
+          submitUrl: '/selectedsectors'
+      });
+  });
+  </script>
+  
 <script>
 
 

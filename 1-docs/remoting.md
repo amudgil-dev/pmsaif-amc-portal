@@ -1,6 +1,6 @@
 ### rsync to ubuntu
 
-rsync -avz -e "ssh -i ~/.ssh/dm_mumbai_aws_key.pem" --exclude '**pycache**' --exclude='venv' --exclude='.git' ~/projects/pms-aif/pmsportal_aug_2024/ ubuntu@13.235.16.153:pmsweb/
+╰─$ rsync -avz -e "ssh -i ~/.ssh/dm_mumbai_aws_key.pem" --exclude '**pycache**' --exclude='venv' --exclude='.git' --exclude='logs' --exclude='logs/' ~/projects/pms-aif/pmsportal_aug_2024/ ubuntu@13.235.16.153:pmsweb/
 
 ### downloading database from remote into local location
 

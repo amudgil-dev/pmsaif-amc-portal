@@ -16,7 +16,14 @@ function initStockSelection(config) {
         submitUrl
     } = config;
 
-    let selectedStockIds = new Set();
+    // let selectedStockIds = new Set();
+
+    let selectedStockIds = new Set(
+        Array.from(document.querySelectorAll(selectedStocksTableSelector + " tbody tr"))
+            .map(row => row.getAttribute('data-stock-id'))
+    );
+
+    console.log("Initial selectedStockIds:", Array.from(selectedStockIds));
 
     initAutocomplete(stockNameSelector, autocompleteUrl, selectedStockIds);
     initDeleteStock(selectedStocksTableSelector, selectedStockIds);
@@ -43,13 +50,27 @@ function initAutocomplete(selector, url, selectedStockIds) {
 
 function handleStockSelection(event, ui, selectedStockIds) {
     const stockEntry = $(event.target).closest('.stock-entry');
-    const stockId = ui.item.value;
+    const stockId = String(ui.item.value).trim();
 
-    if (!selectedStockIds.has(stockId)) {
+    console.log('In handleStockSelection() - stockId:', stockId);
+    console.log('Current selectedStockIds:', Array.from(selectedStockIds));
+
+    let isDuplicate = false;
+    for (let existingId of selectedStockIds) {
+        console.log(`Comparing - Existing: "${existingId}" (${typeof existingId}), New: "${stockId}" (${typeof stockId})`);
+        if (String(existingId).trim().toLowerCase() === stockId.toLowerCase()) {
+            isDuplicate = true;
+            break;
+        }
+    }
+
+    if (!isDuplicate) {
+        console.log('Not a duplicate, adding to table and set');
         addStockToTable(ui.item, stockId);
         selectedStockIds.add(stockId);
         clearAndFocusInput(stockEntry);
     } else {
+        console.log("This stock is already selected.");
         alert("This stock is already selected.");
     }
 
@@ -59,10 +80,10 @@ function handleStockSelection(event, ui, selectedStockIds) {
 function addStockToTable(item, stockId) {
 
     // alert('addStockToTable() item='+item + '  stockId='+stockId );
-    if (! checkDuplicate(stockId)){
-        // alert(' checkDuplicate is TRUE ');
-        return;
-    }
+    // if (! checkDuplicate(stockId)){
+    //     // alert(' checkDuplicate is TRUE ');
+    //     return;
+    // }
 
     $("#selectedStocks tbody").append(`
         <tr data-stock-id='${stockId}'>
@@ -85,6 +106,11 @@ function checkDuplicate(stockId) {
 
         if (stockId == record.stockId) {
             alert('You have this stock already, pls update that record  '+stockId);
+            // $(errorMessageSelector).text('You have this stock already, pls update that record!');
+            // stockEntry.find('.stock-name').val('');
+            // stockEntry.find('.quantity-input').last().focus();
+            
+
             return false;
         }
 
@@ -122,15 +148,7 @@ function initFormSubmission(formSelector, tableSelector, pmsIdSelector, errorMes
     $(formSelector).submit(function(event) {
         event.preventDefault();
 
-        // alert('tableSelector is:'+tableSelector);
         const selectedStockData = getSelectedStockData(tableSelector);
-
-        // Check if it's an array and has elements
-        // for (let i = 0; i < selectedStockData.length; i++) {
-        //     record = selectedStockData[i];
-        //     alert(record.stockId + ' - '+record.quantity );
-
-        // }
 
         const pmsId = $(pmsIdSelector).val();
 
@@ -140,32 +158,6 @@ function initFormSubmission(formSelector, tableSelector, pmsIdSelector, errorMes
     });
 }
 
-// function getSelectedStockData(tableSelector) {
-//     alert('getSelectedStockData() '+tableSelector);
-//     return $(tableSelector + " tbody tr").map(function() {
-//         return {
-//             stockId: $(this).data('stock-id'),
-//             quantity: $(this).find('.quantity-input').val()
-//         };
-//     }).get();
-// }
-
-// function getSelectedStockData(tableSelector) {
-//     alert('getSelectedStockData() ' + tableSelector);
-    
-//     const selectedStocks = [];
-//     const rows = document.querySelectorAll(tableSelector + " tbody tr");
-
-//     for (let row of rows) {
-//         const stockData = {
-//             stockId: row.dataset.stockId,
-//             quantity: row.querySelector('.quantity-input').value
-//         };
-//         selectedStocks.push(stockData);
-//     }
-
-//     return selectedStocks;
-// }
 
 function getSelectedStockData(tableSelector) {
     console.log('getSelectedStockData() ' + tableSelector);
@@ -229,6 +221,8 @@ $(function() {
     });
 });
 </script>
+
+
 <div class="container">
     <div class="row">
       <div class="col-sm-12 m-auto">
