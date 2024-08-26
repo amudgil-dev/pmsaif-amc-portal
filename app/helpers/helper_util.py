@@ -2,6 +2,7 @@ from datetime import date, timedelta
 import random
 from flask_login import current_user
 from flask_mail import Mail, Message
+
 import os , ssl ,smtplib
 from flask import Flask, render_template, url_for,send_file,session,redirect,jsonify,flash,current_app
 
@@ -21,15 +22,6 @@ from dateutil.relativedelta import relativedelta
 # from extensions import mail
 
 
-# current_app.config['MAIL_SERVER']='smtp.gmail.com'
-# current_app.config['MAIL_PORT'] = 465
-# current_app.config['MAIL_USERNAME'] = 'dmudgilfun@gmail.com' 
-# current_app.config['MAIL_PASSWORD'] = 'nzfv kjce umlt nmsz'
-# current_app.config['MAIL_USE_TLS'] = False
-# current_app.config['MAIL_USE_SSL'] = True
-# mail = Mail(current_app)
-
-
 from app.models.models import  PMSMaster, PMSMaster, UserRole
 from app.extensions import db,mail
 
@@ -38,9 +30,9 @@ def email_resetlink(reset_link, receiver_email):
     print(reset_link)
     print(receiver_email)
     print(len(receiver_email))    
-    subject = 'reset your password for PMSAIFWorld AMC Portal'
-    msg = Message('Password Reset Request!', sender='noreply@demo.com', recipients=[receiver_email])
-    msg.body = f''' 
+    subject = 'reset your password for portal.pmsaifworld Portal'
+    msg = Message('Password Reset Request!', sender='noreply@pmsaifworld.com', recipients=[receiver_email])
+    body = f''' 
 
             To reset your password, please follow the link below
 
@@ -51,8 +43,32 @@ def email_resetlink(reset_link, receiver_email):
             If you didn't send a password reset request, please ignore this email.
 
         '''
-    print(f" msg = {msg}")
-    mail.send(msg)
+   # Send email asynchronously
+    send_email(subject, body, [receiver_email])
+    # Can use the below to send different types of email with different sender
+    # send_email(subject, body, [receiver_email], sender='someotheremail@gmail.com') 
+        
+    print(f"Email task queued for {receiver_email}")
+    
+    
+def send_async_email(app, msg):
+    with app.app_context():
+        try:
+            current_app.extensions['mail'].send(msg)
+            print(f"Email sent successfully to {msg.recipients}")
+        except Exception as e:
+            print(f"Failed to send email: {str(e)}")
+
+def send_email(subject, body, recipients, sender=None):
+    if sender is None:
+        sender = current_app.config['MAIL_DEFAULT_SENDER']
+    msg = Message(subject, sender=sender, recipients=recipients, body=body)
+    
+    app = current_app._get_current_object()
+    threading.Thread(target=send_async_email, args=(app, msg)).start()
+
+
+    
 
 def email_activationlink(activation_link, receiver_email):
     print('in email_resetlink()')
