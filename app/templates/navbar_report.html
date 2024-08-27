@@ -18,76 +18,80 @@
 
   {% set local_css_url = url_for('static', filename='css/style.css') %}
   <link rel="stylesheet" href="{{local_css_url}}">
-
   <title>PMSAIF World</title>
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-sm navbar-dark bg-dark p-3 ">
-    <div class="container">
-      <a href="/" class="navbar-brand">PMSAIF World</a>
+  <nav class="navbar navbar-expand-sm navbar-dark bg-dark p-3 " >
+    <div class="container" >
+      <a href="" class="navbar-brand">PMSAIFWorld</a>
       <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
 
 
-        <ul class="navbar-nav">
-          {% if is_authenticated %}
-            {% if is_admin %}
 
-              <li class="nav-item">
-                <a href="{{url_for('admin.amclist')}}" class="nav-link">
-                  AMC List
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{url_for('admin.index_list')}}" class="nav-link">
-                  INDEX List
-                </a>
-              </li>
-    
-              <li class="nav-item">
-                <a href="{{url_for('admin.pms_reports')}}" class="nav-link">
-                  PMS Reports
-                </a>
-              </li>              
 
-            {% else %}            
+          <ul class="navbar-nav">
+            {% if is_authenticated %}
+            <li>...</li>
+            <li>...</li>
+              {% if is_admin %}
 
-              <li class="nav-item">
-                <a href="{{url_for('pms.pmslist')}}" class="nav-link">
-                  My PMS
-                </a>
-              </li>
+                <li class="nav-item">
+                  <a href="{{url_for('admin.amclist')}}" class="nav-link">
+                    AMC List &nbsp; | 
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{url_for('admin.index_list')}}" class="nav-link">
+                    INDEX List &nbsp; | 
+                  </a>
+                </li>
+      
+                <li class="nav-item">
+                  <a href="{{url_for('admin.pms_reports')}}" class="nav-link">
+                    PMS Reports
+                  </a>
+                </li>              
+  
+              {% else %}            
+
+                <li class="nav-item">
+                  <a href="{{url_for('pms.pmslist')}}" class="nav-link">
+                    My PMS List
+                  </a>
+                </li>
+              {% endif %}
             {% endif %}
-          {% endif %}
-        </ul>
+          </ul>
 
-        
-        {% if is_authenticated %}
+
+
+          {% if is_authenticated %}
           {% set log_out = "" %}
-
+  
             {% set href_val = 'auth.logout' %}
             {% set menu_val = 'Logout' %}
             {% set welcome_display = '' %}
             {% set user_name_val = user_name %}
-
-        {% else %}
-
-            {% set href_val = 'auth.login' %}
-            {% set menu_val = 'Login' %}
-            {% set welcome_display = 'd-none' %}
-
-        {% endif %}
-
-
+  
+          {% else %}
+  
+              {% set href_val = 'auth.login' %}
+              {% set menu_val = 'Login' %}
+              {% set pms_menu = '' %}
+              {% set welcome_display = 'd-none' %}
+  
+          {% endif %}
+          
         <ul class="navbar-nav ml-auto">
 
           <div class="{{ welcome_display }}">
             <li class="nav-item dropdown mr-3">
               <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                <i class="fas fa-user"></i> Welcome {{ user_name_val }}
+                <i class="fas fa-user"></i> {{ user_name_val }}
               </a>
             </li>
           </div>
@@ -110,12 +114,13 @@
   </nav>
 
   <!-- HEADER -->
-  <header id="main-header" class="py-2 bg-primary text-white" style="background-color: #916416;">
+  <header id="main-header" class="py-2 text-white" style="background-color: #916416;">
     <div class="container">
       <div class="row">
         <div class="col-md-12">
           <h1>
-            <i class="fas fa-cog"></i> {{page_heading}}</h1>
+            <i class="fas fa-cog"></i> {{page_heading}}
+          </h1>
         </div>
       </div>
     </div>
@@ -131,7 +136,6 @@
         
 
         {% endblock %}
-
 
 
 

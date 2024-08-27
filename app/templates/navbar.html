@@ -24,7 +24,7 @@
 <body>
   <nav class="navbar navbar-expand-sm navbar-dark bg-dark p-3 " >
     <div class="container" >
-      <a href="" class="navbar-brand">PMSAIF World</a>
+      <a href="" class="navbar-brand">PMSAIFWorld</a>
       <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -35,16 +35,18 @@
 
           <ul class="navbar-nav">
             {% if is_authenticated %}
+            <li>...</li>
+            <li>...</li>
               {% if is_admin %}
 
                 <li class="nav-item">
                   <a href="{{url_for('admin.amclist')}}" class="nav-link">
-                    AMC List
+                    AMC List &nbsp; | 
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="{{url_for('admin.index_list')}}" class="nav-link">
-                    INDEX List
+                    INDEX List  &nbsp; |
                   </a>
                 </li>
       
@@ -58,7 +60,7 @@
 
                 <li class="nav-item">
                   <a href="{{url_for('pms.pmslist')}}" class="nav-link">
-                    My PMS
+                    My PMS List
                   </a>
                 </li>
               {% endif %}
@@ -89,7 +91,7 @@
           <div class="{{ welcome_display }}">
             <li class="nav-item dropdown mr-3">
               <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                <i class="fas fa-user"></i> Welcome {{ user_name_val }}
+                <i class="fas fa-user"></i> {{ user_name_val }}
               </a>
             </li>
           </div>
