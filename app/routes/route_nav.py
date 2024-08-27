@@ -38,10 +38,7 @@ def pms_nav_dashboard(pms_id):
                          user_name= current_user.fname + " " + current_user.lname,
                          page_heading="PMS NAV Dashboard - "+pms.pms_name,
                          pms=pms,
-                         date_display=date_display,
-                         pms_details=pms_details,
-                         pms_stocks=pms_stocks,
-                         pms_sectors=pms_sectors
+                         date_display=date_display
                          )
   
 # Route to display NAV entries for a given PMS_ID
