@@ -2,6 +2,7 @@ from sqlite3 import IntegrityError
 from app import db
 import csv
 import os
+import numpy as np
 import pandas as pd
 from datetime import datetime, timezone
 from app.models.models import (
@@ -710,77 +711,202 @@ def load_amc_users():
         'POC 6_E-mail': 'POC6_Email'
     })
 
-    amc_dict = df_to_amc_dict(df)
+    # print(f" df = \n{df}")
     
-    store_amc_users(amc_dict)
+    # df.to_csv('output_file.csv', index=False)
+    
+    # amc_dict = df_to_amc_dict(df)
+    
+    # print(f" amc_dict = {amc_dict}")
+    
+    final_df = convert(df)
+    # final_df.to_csv('output_file.csv', index=False)
+    # Usage example:
+    load_users_to_database(final_df, submitter_id=2, p_password='11111')
+    
+    # store_amc_users(amc_dict)
     return " amc users loaded"    
 
-def store_amc_users(amc_dict):
-    print('store_amc_users()')
 
-    submitter_role_id = db.session.query(UserRole.id).filter(UserRole.name == "SUBMITTER").scalar()
+def load_users_to_database(final_df, submitter_id, p_password):
+    # Create engine and session
 
     users_to_insert = []
-    for amc_id, users in amc_dict.items():
-        for temp_user in users:
-            users_to_insert.append(User(
-                fname=temp_user['user_fname'],
-                lname=temp_user['user_lname'],
-                email=temp_user['user_email'],
-                password="11111",
-                userrole_id=submitter_role_id,
-                amc_id=amc_id,
-                isactive=1,
-                created_at=datetime.now(timezone.utc)
-            ))
+    users_to_update = []
 
-    # Bulk insert
     try:
-        db.session.bulk_save_objects(users_to_insert)
+        for _, row in final_df.iterrows():
+            existing_user = db.session.query(User).filter_by(email=row['email']).first()
+            
+            if existing_user:
+                # Update existing user
+                existing_user.fname = row['first_name']
+                existing_user.lname = row['last_name']
+                existing_user.amc_id = row['amc_id']
+                existing_user.isactive = 1
+                existing_user.created_at = datetime.utcnow()
+                users_to_update.append(existing_user)
+            else:
+                # Create new user
+                new_user = User(
+                    fname=row['first_name'],
+                    lname=row['last_name'],
+                    email=row['email'],
+                    password=p_password,
+                    userrole_id=submitter_id,
+                    amc_id=row['amc_id'],
+                    isactive=1,
+                    created_at=datetime.utcnow()
+                )
+                users_to_insert.append(new_user)
+
+        # Bulk insert new users
+        if users_to_insert:
+            db.session.bulk_save_objects(users_to_insert)
+
+        # Bulk update existing users
+        if users_to_update:
+            db.session.bulk_save_objects(users_to_update, update_changed_only=True)
+
+        # Commit the changes
         db.session.commit()
-        print(f"Successfully inserted {len(users_to_insert)} users.")
-    except IntegrityError as e:
-        db.session.rollback()
-        print(f"Error inserting users: {str(e)}")
-        # Handle duplicate emails or other integrity errors
-        # You might want to update existing users or skip duplicates
+
+        print(f"Data loading completed. Inserted {len(users_to_insert)} new users and updated {len(users_to_update)} existing users.")
+
     except Exception as e:
         db.session.rollback()
         print(f"An error occurred: {str(e)}")
+    finally:
+        db.session.close()
+
+
+
+
+def convert (df):
+    
+    # Assuming your original DataFrame is called 'df'
+
+    # Step 1: Melt the DataFrame
+    melted_df = pd.melt(df, 
+                        id_vars=['ID', 'amc_id', 'amc_name'], 
+                        value_vars=[col for col in df.columns if col.startswith('user')],
+                        var_name='user_field', 
+                        value_name='value')
+
+    # Step 2: Create separate columns for fname, lname, email
+    melted_df['field_type'] = melted_df['user_field'].str.split('_').str[-1]
+    melted_df['user_number'] = melted_df['user_field'].str.extract('(\d+)')
+
+    # Step 3: Pivot the melted DataFrame
+    pivoted_df = melted_df.pivot_table(index=['ID', 'amc_id', 'amc_name', 'user_number'], 
+                                    columns='field_type', 
+                                    values='value', 
+                                    aggfunc='first')
+
+    # Step 4: Reset index and rename columns
+    pivoted_df = pivoted_df.reset_index()
+    pivoted_df.columns.name = None
+    pivoted_df = pivoted_df.rename(columns={'fname': 'first_name', 'lname': 'last_name'})
+
+    # Step 5: Replace empty strings with NaN, then replace NaN in first_name and last_name with '-'
+    pivoted_df = pivoted_df.replace(r'^\s*$', np.nan, regex=True)
+    pivoted_df['first_name'] = pivoted_df['first_name'].fillna('-')
+    pivoted_df['last_name'] = pivoted_df['last_name'].fillna('-')
+
+    # Step 6: Remove rows where email is null
+    pivoted_df = pivoted_df.dropna(subset=['email'])
+
+    # Step 7: Remove double quotes and commas from all columns
+    for col in pivoted_df.columns:
+        if pivoted_df[col].dtype == 'object':
+            pivoted_df[col] = pivoted_df[col].str.replace('"', '', regex=False)
+            pivoted_df[col] = pivoted_df[col].str.replace(',', '', regex=False)
+
+    # Step 8: Drop unnecessary columns and reset index
+    final_df = pivoted_df.drop(['ID', 'amc_name', 'user_number'], axis=1).reset_index(drop=True)
+
+    # Display the result
+    print(final_df)
+    return final_df
+
+
+
+# def store_amc_users(amc_dict):
+#     print('store_amc_users()')
+    
+#     # print( len(amc_dict))
+#     # print(amc_dict[0])
+    
+#     # first_key, first_value = next(iter(amc_dict.items()))
+#     # print(f"First key: {first_key}, First value: {first_value}")
+
+#     submitter_role_id = db.session.query(UserRole.id).filter(UserRole.name == "SUBMITTER").scalar()
+
+#     users_to_insert = []
+#     for amc_id, users in amc_dict.items():
+#         print(" in for looooooppppp")
+#         print(f"amc_id = {amc_id}")
+#         for temp_user in users:
+#             users_to_insert.append(User(
+#                 fname=temp_user['user_fname'],
+#                 lname=temp_user['user_lname'],
+#                 email=temp_user['user_email'],
+#                 password="11111",
+#                 userrole_id=submitter_role_id,
+#                 amc_id=amc_id,
+#                 isactive=1,
+#                 created_at=datetime.now(timezone.utc)
+#             ))
+
+#     # Bulk insert
+#     try:
+#         db.session.bulk_save_objects(users_to_insert)
+#         db.session.commit()
+#         print(f"Successfully inserted {len(users_to_insert)} users.")
+#     except IntegrityError as e:
+#         db.session.rollback()
+#         print(f"Error inserting users: {str(e)}")
+#         # Handle duplicate emails or other integrity errors
+#         # You might want to update existing users or skip duplicates
+#     except Exception as e:
+#         db.session.rollback()
+#         print(f"An error occurred: {str(e)}")
         
 
 
-def df_to_amc_dict(df):
-    print('df_to_amc_dict()')
+# def df_to_amc_dict(df):
+#     print('df_to_amc_dict()')
     
-    amc_dict = {}
+#     amc_dict = {}
     
-    # Get all AMC IDs
-    amc_ids = df['amc_id'].unique()
+#     # Get all AMC IDs
+#     amc_ids = df['amc_id'].unique()
     
-    for amc_id in amc_ids:
-        amc_df = df[df['amc_id'] == amc_id]
+#     for amc_id in amc_ids:
+#         amc_df = df[df['amc_id'] == amc_id]
         
-        users = []
-        for i in range(1, 7):  # Assuming you have POC1 to POC6
-            user_data = amc_df[[f'user{i}_fname', f'user{i}_lname', f'user{i}_email']]
+#         users = []
+#         for i in range(1, 7):  # Assuming you have POC1 to POC6
+#             user_data = amc_df[[f'user{i}_fname', f'user{i}_lname', f'user{i}_email']]
             
-            # Check if any field is not null
-            mask = user_data.notna().any(axis=1)
-            valid_users = user_data[mask]
+#             # Check if any field is not null
+#             mask = user_data.notna().any(axis=1)
+#             valid_users = user_data[mask]
             
-            users.extend([
-                {
-                    'user_fname': row[f'user{i}_fname'] if pd.notna(row[f'user{i}_fname']) else '',
-                    'user_lname': row[f'user{i}_lname'] if pd.notna(row[f'user{i}_lname']) else '',
-                    'user_email': row[f'user{i}_email'] if pd.notna(row[f'user{i}_email']) else ''
-                }
-                for _, row in valid_users.iterrows()
-            ])
+#             users.extend([
+#                 {
+#                     'user_fname': row[f'user{i}_fname'] if pd.notna(row[f'user{i}_fname']) else '',
+#                     'user_lname': row[f'user{i}_lname'] if pd.notna(row[f'user{i}_lname']) else '',
+#                     'user_email': row[f'user{i}_email'] if pd.notna(row[f'user{i}_email']) else ''
+#                 }
+#                 for _, row in valid_users.iterrows()
+#             ])
         
-        amc_dict[amc_id] = users
+#         amc_dict[amc_id] = users
+        
+#         # print(amc_dict)
     
-    return amc_dict
+#     return amc_dict
 
 
 # @bp.route("/populate-pms-nav", methods=["GET"])

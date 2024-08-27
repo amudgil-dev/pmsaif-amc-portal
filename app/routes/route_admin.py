@@ -5,8 +5,8 @@ from flask import Blueprint, render_template, redirect, send_file, url_for, flas
 from flask_login import login_user, logout_user, login_required, current_user
 from app.helpers.helper_excel import write_Excel_report
 from app.helpers.helper_util import generate_resetlink,email_resetlink, getLastMonthYYMM, isAdmin
-from app.helpers.queries import getIndexListing, getIndexPerformance, getPerformanceReport,getAmcListing,getAdminPmsListing
-from app.models.models import IndexMaster, IndexPerformance, User
+from app.helpers.queries import getIndexListing, getIndexPerformance, getPerformanceReport,getAmcListing,getAdminPmsListing, getUserListing
+from app.models.models import AMCMaster, IndexMaster, IndexPerformance, User
 from app.forms.forms import DummyForm, IndexPerformanceEditForm, IndexPerformanceForm, ResetPasswordForm, ResetRequestForm, SigninForm
 from app.helpers.auth_helper import AuthHelper
 from app.helpers.logging_helper import debug, info, warning, error, critical, log_exception, log_function_call
@@ -30,11 +30,6 @@ def amclist():
   amc_list = getAmcListing()
   # print(pms_list)
   
-    
-  # loggedin,user_name = get_user_status()
-  
-  # print(f" current_user details: {current_user}")
-  
   return render_template('admin_amc_listing.html',
                          is_authenticated = current_user.is_authenticated,
                          is_admin=isAdmin(current_user.userrole_id),                         
@@ -44,20 +39,6 @@ def amclist():
 
 
 
-# @bp_admin.route('/admin')
-# @login_required
-# @AuthHelper.check_session
-# @AuthHelper.check_admin_authorisations
-# def admin_home():
-#   # print('admin_home()')
-
-#   # user_id, user_name, user_role, auth_status, pms_list = get_user_details_in_session(session)
-    
-#   return render_template('admin_home.html',
-#                          is_authenticated = current_user.is_authenticated,
-#                          user_name= current_user.fname + " " + current_user.lname,
-#                          )
-
 
 @bp_admin.route('/indexlist')
 @login_required
@@ -65,21 +46,9 @@ def amclist():
 @AuthHelper.check_admin_authorisations
 def index_list():
   # print('index_list()')
-  # loggedin = 0
-  # user_name = ""
-
-  # user_id, user_name, user_role, auth_status,pms_list = get_user_details_in_session(session)
-
-  # if isAdmin(session) == False:
-  #    flash('You are not authorised to view this page, please contact Administrator!', 'danger' )
-  #    return redirect(url_for('users.logout'))
-
-  # loggedin = 1
 
       
   index_list = getIndexListing()
-  
-  # booking_id = db.session.query(Booking).filter(and_(Booking.event_id==event_id, Booking.user_id == uid  )).order_by(Booking.id.desc()).first().id
   
   return render_template('admin_index_listing.html',
                          is_authenticated = current_user.is_authenticated,
@@ -95,17 +64,6 @@ def index_list():
 @AuthHelper.check_admin_authorisations
 def view_indexperf(index_id):
   print('view_indexperf()')
-  # loggedin = 0
-  # user_name = ""
-
-  # user_id, user_name, user_role, auth_status,pms_list = get_user_details_in_session(session)
-
-  # if isAdmin(session) == False:
-  #    flash('You are not authorised to view this page, please contact Administrator!', 'danger' )
-  #    return redirect(url_for('users.logout'))
-
-  # loggedin = 1
-
       
   index_perf = getIndexPerformance(index_id)
 
@@ -125,16 +83,6 @@ def view_indexperf(index_id):
 @AuthHelper.check_admin_authorisations
 def edit_indexperf(index_id):
   # print('in edit_indexperf()')
-
-  # print("index_id ==>", index_id)
-  
-  # user_id, user_name, user_role, auth_status,pms_list = get_user_details_in_session(session)
-  # if isAdmin(session) == False:
-  #    flash('You are not authorised to view this page, please contact Administrator!', 'danger' )
-  #    return redirect(url_for('users.logout'))
-
-  # loggedin = 1
-
 
   index_perf = IndexPerformance.query.filter_by(id=index_id).order_by(IndexPerformance.id.desc()).first()
 
@@ -205,15 +153,6 @@ def edit_indexperf(index_id):
 @AuthHelper.check_admin_authorisations
 def new_indexperf(index_id):
   # print('in new_indexperf()')
-
-  # # print("index_id ==>", index_id)
-  # user_id, user_name, user_role, auth_status,pms_list = get_user_details_in_session(session)
-  # if isAdmin(session) == False:
-  #    flash('You are not authorised to view this page, please contact Administrator!', 'danger' )
-  #    return redirect(url_for('users.logout'))
-
-  # loggedin = 1
-
 
   index = index = IndexMaster.query.filter_by(id=index_id).first()
 
@@ -317,13 +256,7 @@ def new_indexperf(index_id):
 def pms_reports():
   # print('in pms_reports()')
   form = DummyForm()
-  # if isAdmin(session) == False:
-  #    flash('You are not authorised to view this page, please contact Administrator!', 'danger' )
-  #    return redirect(url_for('users.logout'))
 
-  # user_id, user_name, user_role, auth_status, pms_list = get_user_details_in_session(session)
-  
-  # loggedin = 1
 
   if request.method == 'POST':
     # print('in post')
@@ -423,7 +356,7 @@ def download_excel():
 @bp_admin.route('/admin/<int:amc_id>')
 @login_required
 @AuthHelper.check_session
-@AuthHelper.check_pms_authorisations
+@AuthHelper.check_admin_authorisations
 def admin_pmslist(amc_id):
   print('admin_pmslist()')
   print(f"amc_id = {amc_id}")
@@ -441,6 +374,34 @@ def admin_pmslist(amc_id):
                          user_name= current_user.fname + " " + current_user.lname,
                          page_heading="List of PMS",
                          pms_list=pms_list)
+
+
+@bp_admin.route('/admin/users/<int:amc_id>')
+@login_required
+@AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
+def admin_userlist(amc_id):
+  print('admin_userlist()')
+  # print(f"amc_id = {amc_id}")
+  user_list = getUserListing(amc_id)
+  # print(user_list)
+  amc_record = AMCMaster.query.filter_by(amc_id=amc_id).first()
+  
+  # print(amc_record)
+  # print(amc_record.name)
+    
+  # loggedin,user_name = get_user_status()
+  
+  # print(f" current_user details: {current_user}")
+  
+  return render_template('admin_amc_user_listing.html',
+                         is_authenticated = current_user.is_authenticated,
+                         is_admin=isAdmin(current_user.userrole_id),                         
+                         user_name= current_user.fname + " " + current_user.lname,
+                         page_heading="List of AMC Users",
+                         amc_name = amc_record.name,
+                         user_list=user_list)
+
 
 
 

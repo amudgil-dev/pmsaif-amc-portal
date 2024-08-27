@@ -18,43 +18,43 @@
                 <br/>
                 
 
-                  <!-- Creting AMC Table -->
+                  <!-- Creating User Table -->
   <section id="pms">
     <div class="container">
       <div class="row">
         <div class="col-md-12">
           <div class="card">
             <div class="card-header">
-
+              <h4>AMC - {{amc_name}}</h4>
             </div>
             <table class="table table-striped">
               <thead class="thead-dark">
                 <tr>
                   <th>#</th>
-                  <th>AMC Id</th>
-                  <th>AMC Name</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Email</th>
                   <th></th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                {% for amc in amc_list %}
+                {% for user in user_list %}
                 <tr>
                   <td>{{loop.index}}</td>
-                  <td>{{amc.amc_id}}</td>
-                  <td>{{amc.amc_name}}</td>
+                  <td>{{user.fname}}</td>
+                  <td>{{user.lname}}</td>
+                  <td>{{user.email}}</td>
                   <td>
-                    <a href="admin/{{amc.amc_id}}" class="btn btn-secondary">
-                      <i class="fas fa-angle-double-right"></i> View Schemes
+                    <a href="" class="btn btn-secondary">
+                      <i class="fas fa-angle-double-right"></i> Edit User
                     </a>
                   </td>
                   <td>
-                    <a href="admin/users/{{amc.amc_id}}" class="btn btn-secondary">
-                      <i class="fas fa-angle-double-right"></i> View Users
+                    <a href="" class="btn btn-secondary">
+                      <i class="fas fa-angle-double-right"></i> Deactivate User
                     </a>
-                  </td>
-
-                  
+                  </td>                  
                 </tr>
               
                 {% endfor %}

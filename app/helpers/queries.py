@@ -75,6 +75,41 @@ def getAdminPmsListing(amc_id):
         
         return None    
     
+
+
+    
+    
+def getUserListing(amc_id):
+    print('getUserListing()')
+    
+    query = 'select t1.fname fname, t1.lname lname, t1.email email, t1.isactive isactive, t1.amc_id amc_id   '\
+            ' from user t1   '\
+            '  where t1.amc_id =   '+str(amc_id) +' '\
+    
+    
+    label_tuple = ('fname', 'lname', 'email', 'isactive', 'amc_id')    
+
+
+    try:
+
+        with current_app.app_context():
+            
+            with db.engine.connect() as connection:
+ 
+                result = connection.execute(text(query), {"amc_id": amc_id})
+                records = result.fetchall()
+  
+            user_array = [dict(zip(label_tuple, row)) for row in records]
+     
+            # print(user_array)
+            return user_array
+    except Exception as e:
+        print(f"in getUserListing() exception : {e}" )
+        current_app.logger.error(f"Error in getUserListing: {e}")
+        
+        return None    
+    
+    
 def getAmcListing():
     print('getAmcListing()')
     
