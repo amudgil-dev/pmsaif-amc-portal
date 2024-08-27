@@ -2,7 +2,7 @@ from sqlite3 import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, get_flashed_messages, render_template, request,flash,redirect, url_for,jsonify
 from flask_login import login_required, current_user
-from app.helpers.helper_util import enforceAuthz, getLastMonthYYMM
+from app.helpers.helper_util import enforceAuthz, getLastMonthYYMM, isAdmin
 from app.helpers.queries import getPmsListing, getPmsDashDataList, getPmsSectors
 from app.models.models import AMCMaster, PMSMaster, PMSPerformance, PMSSector, SectorMaster, Transaction
 from app.extensions import db
@@ -15,6 +15,7 @@ bp_sectors = Blueprint('sectors', __name__)
 
 
 @bp_sectors.route('/pmssectors/<int:pms_id>', methods=['GET'])
+@bp_sectors.route('/admin/pmssectors/<int:pms_id>', methods=['GET'])
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
@@ -28,6 +29,7 @@ def sector_holding(pms_id):
     pms = PMSMaster.query.filter_by(pms_id=pms_id).first()
     return render_template('form_edit_sector_holdings.html', 
                             is_authenticated = current_user.is_authenticated,
+                            is_admin=isAdmin(current_user.userrole_id),      
                             user_name= current_user.fname + " " + current_user.lname,                           
                            form=form,
                            pms_sectors=pms_sectors,
@@ -88,6 +90,7 @@ def findMatchingSectors(query):
 
 
 @bp_sectors.route('/selectedsectors', methods=['POST'])
+@bp_sectors.route('/admin/selectedsectors', methods=['POST'])
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations

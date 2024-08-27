@@ -10,6 +10,8 @@ from app.helpers.helper_util import generate_range
 
 def getPmsListing(user_id):
     print('getPmsListing()')
+    # print(user_id)
+    # print(' 999999')
     
     query = 'select t1.amc_id amc_id, t1.name amc_name, t2.name pms_name, t2.pms_id pms_id, t2.index_id index_id, t3.name index_name   '\
             ' from amc_master t1 , pms_master t2 , index_master t3  '\
@@ -40,6 +42,68 @@ def getPmsListing(user_id):
         current_app.logger.error(f"Error in getPmsListing: {e}")
         
         return None    
+
+def getAdminPmsListing(amc_id):
+    print('getAdminPmsListing()')
+    
+    query = 'select t1.amc_id amc_id, t1.name amc_name, t2.name pms_name, t2.pms_id pms_id, t2.index_id index_id, t3.name index_name   '\
+            ' from amc_master t1 , pms_master t2 , index_master t3  '\
+            '  where t1.amc_id =   '+str(amc_id) +' '\
+            ' and t1.amc_id = t2.amc_id ' \
+            ' and t2.index_id = t3.id '
+    
+    
+    label_tuple = ('amc_id', 'amc_name', 'pms_name', 'pms_id', 'index_id', 'index_name')    
+
+
+    try:
+
+        with current_app.app_context():
+            
+            with db.engine.connect() as connection:
+ 
+                result = connection.execute(text(query), {"amc_id": amc_id})
+                records = result.fetchall()
+  
+            pms_array = [dict(zip(label_tuple, row)) for row in records]
+     
+            # print(pms_array)
+            return pms_array
+    except Exception as e:
+        print(f"in getPmsListing() exception : {e}" )
+        current_app.logger.error(f"Error in getPmsListing: {e}")
+        
+        return None    
+    
+def getAmcListing():
+    print('getAmcListing()')
+    
+    query = 'select t1.amc_id amc_id, t1.name amc_name   '\
+            ' from amc_master t1   '
+    
+    
+    label_tuple = ('amc_id', 'amc_name')    
+
+
+    try:
+
+        with current_app.app_context():
+            
+            with db.engine.connect() as connection:
+ 
+                result = connection.execute(text(query))
+                records = result.fetchall()
+  
+            amc_array = [dict(zip(label_tuple, row)) for row in records]
+     
+            # print(pms_array)
+            return amc_array
+    except Exception as e:
+        print(f"in getAmcListing() exception : {e}" )
+        current_app.logger.error(f"Error in getAmcListing: {e}")
+        
+        return None    
+    
 
 
 def getPmsDashDataList(pms_id):

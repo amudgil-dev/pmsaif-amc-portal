@@ -1,0 +1,71 @@
+
+{% extends 'navbar.html' %}
+
+{% block content  %}
+<div class="container">
+    <div class="row">
+      <div class="col-sm-12 m-auto">
+
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="alert alert-{{category}} alert-dismissible">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            </div>
+
+        {% endfor %}
+
+                <br/>
+                
+
+                  <!-- Creting AMC Table -->
+  <section id="pms">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+
+            </div>
+            <table class="table table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <th>#</th>
+                  <th>AMC Id</th>
+                  <th>AMC Name</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for amc in amc_list %}
+                <tr>
+                  <td>{{loop.index}}</td>
+                  <td>{{amc.amc_id}}</td>
+                  <td>{{amc.amc_name}}</td>
+                  <td>
+                    <a href="admin/{{amc.amc_id}}" class="btn btn-secondary">
+                      <i class="fas fa-angle-double-right"></i> View Schemes
+                    </a>
+                  </td>
+
+                  
+                </tr>
+              
+                {% endfor %}
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+       
+
+      </div>
+    </div>
+  </section>
+
+        </div>
+    </div>
+</div>   
+{% endblock %}

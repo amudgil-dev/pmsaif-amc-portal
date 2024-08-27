@@ -1,3 +1,4 @@
+from app.helpers.helper_util import isAdmin
 from flask import Blueprint, render_template
 from flask_login import current_user
 
@@ -15,5 +16,8 @@ def index():
   user_name = ""
   is_authenticated = current_user.is_authenticated
 
-  return render_template('index.html',is_authenticated=is_authenticated, user_name=user_name)
+  return render_template('index.html',
+                         is_authenticated=is_authenticated, 
+                        # is_admin=isAdmin(current_user.userrole_id),      
+                         user_name=user_name)
 #   if current_user.is_authenticated:

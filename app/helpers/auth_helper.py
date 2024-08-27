@@ -20,7 +20,7 @@ class AuthHelper:
             # print(f"current_user.id = {current_user.id}")
             # print(f"current user = {current_user.is_authenticated}")            
             if not current_user.is_authenticated:
-                print(' current_user.is_authenticated is not authenticated, sending to login ')
+                # print(' current_user.is_authenticated is not authenticated, sending to login ')
                 return redirect(url_for('auth.login'))
             
             # print('checking user_session from the sessions db')
@@ -102,15 +102,17 @@ def enforceSubmitterEntitlements(user_id,pms_id):
     if user is None:
         return False
     
-    submitter_role_id = UserRole.query.filter_by(name="SUBMITTER").first().id
+    admin_role_id = UserRole.query.filter_by(name="ADMIN").first().id
+    
+    # print(f"admin_role_id= {admin_role_id} and user.userrole_id = {user.userrole_id} ")
+    # print(' checking Admin role')
     
     # Admins are entitled to access all PMSs
-    # print(f" user = {user}")
-    if not user.userrole_id == submitter_role_id:
-        return False
+    if user.userrole_id == admin_role_id:
+        # print(' ADMIN IS TRUE')
+        return True
     
     # If the role is Submitter (any other than Admin) check that the user can only access the PMS belong to their AMC
-            
     return checkEntitlementsFromDB(user_id,pms_id)
 
 def enforceAdminEntitlements(user_id):

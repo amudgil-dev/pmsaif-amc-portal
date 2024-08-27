@@ -4,8 +4,8 @@ from sqlite3 import IntegrityError
 from flask import Blueprint, render_template, redirect, send_file, url_for, flash,current_app,request
 from flask_login import login_user, logout_user, login_required, current_user
 from app.helpers.helper_excel import write_Excel_report
-from app.helpers.helper_util import generate_resetlink,email_resetlink, getLastMonthYYMM
-from app.helpers.queries import getIndexListing, getIndexPerformance, getPerformanceReport
+from app.helpers.helper_util import generate_resetlink,email_resetlink, getLastMonthYYMM, isAdmin
+from app.helpers.queries import getIndexListing, getIndexPerformance, getPerformanceReport,getAmcListing,getAdminPmsListing
 from app.models.models import IndexMaster, IndexPerformance, User
 from app.forms.forms import DummyForm, IndexPerformanceEditForm, IndexPerformanceForm, ResetPasswordForm, ResetRequestForm, SigninForm
 from app.helpers.auth_helper import AuthHelper
@@ -18,21 +18,51 @@ bp_admin = Blueprint('admin', __name__)
 @bp_admin.route('/admin')
 @login_required
 @AuthHelper.check_session
-@AuthHelper.check_admin_authorisations
-def admin_home():
-  # print('admin_home()')
+@AuthHelper.check_pms_authorisations
+def amclist():
+  print('amclist()')
+  # loggedin = 0
+  user_name = ""
 
-  # user_id, user_name, user_role, auth_status, pms_list = get_user_details_in_session(session)
+  # print('getting pms listing...')
+  
+  # print(f"current_user.id = {current_user.id}")
+  amc_list = getAmcListing()
+  # print(pms_list)
+  
     
-  return render_template('admin_home.html',
+  # loggedin,user_name = get_user_status()
+  
+  # print(f" current_user details: {current_user}")
+  
+  return render_template('admin_amc_listing.html',
                          is_authenticated = current_user.is_authenticated,
+                         is_admin=isAdmin(current_user.userrole_id),                         
                          user_name= current_user.fname + " " + current_user.lname,
-                         )
+                         page_heading="List of AMC",
+                         amc_list=amc_list)
+
+
+
+# @bp_admin.route('/admin')
+# @login_required
+# @AuthHelper.check_session
+# @AuthHelper.check_admin_authorisations
+# def admin_home():
+#   # print('admin_home()')
+
+#   # user_id, user_name, user_role, auth_status, pms_list = get_user_details_in_session(session)
+    
+#   return render_template('admin_home.html',
+#                          is_authenticated = current_user.is_authenticated,
+#                          user_name= current_user.fname + " " + current_user.lname,
+#                          )
 
 
 @bp_admin.route('/indexlist')
 @login_required
 @AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
 def index_list():
   # print('index_list()')
   # loggedin = 0
@@ -53,6 +83,7 @@ def index_list():
   
   return render_template('admin_index_listing.html',
                          is_authenticated = current_user.is_authenticated,
+                         is_admin=isAdmin(current_user.userrole_id),                         
                          user_name= current_user.fname + " " + current_user.lname,
                          page_heading="List of Index",
                          index_list=index_list)
@@ -61,6 +92,7 @@ def index_list():
 @bp_admin.route('/viewindexperf/<int:index_id>')
 @login_required
 @AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
 def view_indexperf(index_id):
   print('view_indexperf()')
   # loggedin = 0
@@ -79,6 +111,7 @@ def view_indexperf(index_id):
 
   return render_template('admin_index_perf.html',
                          is_authenticated = current_user.is_authenticated,
+                         is_admin=isAdmin(current_user.userrole_id),                         
                          user_name= current_user.fname + " " + current_user.lname,
                          page_heading="Index Performance - History",
                          index_perf=index_perf)
@@ -89,6 +122,7 @@ def view_indexperf(index_id):
 @bp_admin.route('/editindexperf/<int:index_id>', methods=['GET', 'POST'])
 @login_required
 @AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
 def edit_indexperf(index_id):
   # print('in edit_indexperf()')
 
@@ -120,6 +154,7 @@ def edit_indexperf(index_id):
   if request.method == 'GET':
       return render_template('admin_form_edit_index_performance.html', 
                                 is_authenticated = current_user.is_authenticated,
+                                is_admin=isAdmin(current_user.userrole_id),                                
                                 user_name= current_user.fname + " " + current_user.lname,
                                 page_heading="Change Index Performance  - "+index.name,                         
                                 form=form
@@ -167,6 +202,7 @@ def edit_indexperf(index_id):
 @bp_admin.route('/newindexperf/<int:index_id>', methods=['GET', 'POST'])
 @login_required
 @AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
 def new_indexperf(index_id):
   # print('in new_indexperf()')
 
@@ -200,6 +236,7 @@ def new_indexperf(index_id):
   if request.method == 'GET':
       return render_template('admin_form_create_index_performance.html', 
                                 is_authenticated = current_user.is_authenticated,
+                                is_admin=isAdmin(current_user.userrole_id),                                
                                 user_name= current_user.fname + " " + current_user.lname,
                                 page_heading="Add Index Performance  - "+index.name,       
                                 date_display = date_display,         
@@ -273,9 +310,10 @@ def new_indexperf(index_id):
         # Process the data as needed (e.g., store in a database)
 
 
-@bp_admin.route('/pmsreports', methods=['GET', 'POST'])
+@bp_admin.route('/admin/pmsreports', methods=['GET', 'POST'])
 @login_required
 @AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
 def pms_reports():
   # print('in pms_reports()')
   form = DummyForm()
@@ -329,6 +367,7 @@ def pms_reports():
  
     return render_template('admin_pms_report.html', 
                                   is_authenticated = current_user.is_authenticated,
+                                  is_admin=isAdmin(current_user.userrole_id),                                  
                                   user_name= current_user.fname + " " + current_user.lname,
                                   month=month,
                                   year= year,
@@ -340,6 +379,7 @@ def pms_reports():
     # print('in get')
     return render_template('admin_pms_report.html', 
                                 is_authenticated = current_user.is_authenticated,
+                                is_admin=isAdmin(current_user.userrole_id),                                
                                 user_name= current_user.fname + " " + current_user.lname,
                                 form=form,
                                 page_heading=" PMS Report  " 
@@ -349,6 +389,7 @@ def pms_reports():
 @bp_admin.route('/download_excel', methods=['GET','POST'])
 @login_required
 @AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
 def download_excel():
     # print('in download_excel()')
     form = DummyForm()
@@ -378,15 +419,29 @@ def download_excel():
 
 
 
-# @bp.route('/loadamc', methods=['GET'])
-# def check_loac_amc():
-#     load_amc()
 
-#     return "AMC Loaded"
+@bp_admin.route('/admin/<int:amc_id>')
+@login_required
+@AuthHelper.check_session
+@AuthHelper.check_pms_authorisations
+def admin_pmslist(amc_id):
+  print('admin_pmslist()')
+  print(f"amc_id = {amc_id}")
+  pms_list = getAdminPmsListing(amc_id)
+  print(pms_list)
+  
+    
+  # loggedin,user_name = get_user_status()
+  
+  # print(f" current_user details: {current_user}")
+  
+  return render_template('pms_listing.html',
+                         is_authenticated = current_user.is_authenticated,
+                         is_admin=isAdmin(current_user.userrole_id),                         
+                         user_name= current_user.fname + " " + current_user.lname,
+                         page_heading="List of PMS",
+                         pms_list=pms_list)
 
-# @bp.route('/loadpms', methods=['GET'])
-# def check_loac_pms():
-#     load_pms()
 
-#     return "AMC Loaded"
+
 

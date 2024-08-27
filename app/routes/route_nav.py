@@ -1,7 +1,7 @@
 from sqlite3 import IntegrityError
 from flask import Blueprint, get_flashed_messages, render_template, request,flash,redirect, url_for
 from flask_login import login_required, current_user
-from app.helpers.helper_util import enforceAuthz, get_missing_months, getLastMonthYYMM
+from app.helpers.helper_util import enforceAuthz, get_missing_months, getLastMonthYYMM, isAdmin
 from app.helpers.queries import getPmsListing, getPmsDashDataList, getPmsNavDataList
 from app.models.models import AMCMaster, PMSMaster, PMSNav, PMSPerformance, Transaction
 from app.extensions import db
@@ -12,6 +12,7 @@ from datetime import date, datetime, timedelta
 bp_nav = Blueprint('nav', __name__)
 
 @bp_nav.route('/pmsnav/<int:pms_id>')
+@bp_nav.route('/admin/pmsnav/<int:pms_id>')
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
@@ -33,6 +34,7 @@ def pms_nav_dashboard(pms_id):
 
   return render_template('pms_nav_dashboard.html',
                          is_authenticated = current_user.is_authenticated,
+                        is_admin=isAdmin(current_user.userrole_id),      
                          user_name= current_user.fname + " " + current_user.lname,
                          page_heading="PMS NAV Dashboard - "+pms.pms_name,
                          pms=pms,
@@ -44,6 +46,7 @@ def pms_nav_dashboard(pms_id):
   
 # Route to display NAV entries for a given PMS_ID
 @bp_nav.route('/pms_nav/<int:pms_id>')
+@bp_nav.route('/admin/pms_nav/<int:pms_id>')
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
@@ -55,6 +58,7 @@ def pms_nav_list(pms_id):
     navs = PMSNav.query.filter_by(pms_id=pms_id).order_by(PMSNav.p_year.desc(), PMSNav.p_month.desc()).all()
     return render_template('pms_nav_list.html',
                           is_authenticated = current_user.is_authenticated,
+                        is_admin=isAdmin(current_user.userrole_id),      
                           user_name= current_user.fname + " " + current_user.lname,                           
                           page_heading="PMS NAV History ",
                           pms=pms, pms_id=pms_id, 
@@ -62,6 +66,7 @@ def pms_nav_list(pms_id):
 
 # Route to add or edit a NAV entry
 @bp_nav.route('/pms_nav/<int:pms_id>/edit/<int:year>/<int:month>', methods=['GET', 'POST'])
+@bp_nav.route('/admin/pms_nav/<int:pms_id>/edit/<int:year>/<int:month>', methods=['GET', 'POST'])
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
@@ -92,6 +97,7 @@ def edit_nav(pms_id, year, month):
 
     return render_template('pms_nav_edit.html', 
                           is_authenticated = current_user.is_authenticated,
+                        is_admin=isAdmin(current_user.userrole_id),      
                           user_name= current_user.fname + " " + current_user.lname,                                  
                           form=form, 
                           page_heading="EDIT PMS NAV ",
@@ -103,6 +109,7 @@ def edit_nav(pms_id, year, month):
 
 # Route to add missing NAV entries
 @bp_nav.route('/pms_nav/<int:pms_id>/add_missing', methods=['GET', 'POST'])
+@bp_nav.route('/admin/pms_nav/<int:pms_id>/add_missing', methods=['GET', 'POST'])
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
@@ -153,6 +160,7 @@ def add_missing_nav(pms_id):
     
     return render_template('pms_nav_add_missing.html', 
                             is_authenticated = current_user.is_authenticated,
+                            is_admin=isAdmin(current_user.userrole_id),      
                             user_name= current_user.fname + " " + current_user.lname,                              
                             page_heading="Add Missing NAV Data",
                             pms_id=pms_id, 

@@ -1,7 +1,7 @@
 from sqlite3 import IntegrityError
 from flask import Blueprint, get_flashed_messages, render_template, request,flash,redirect, url_for
 from flask_login import login_required, current_user
-from app.helpers.helper_util import enforceAuthz, getLastMonthYYMM
+from app.helpers.helper_util import enforceAuthz, getLastMonthYYMM, isAdmin
 from app.helpers.queries import getPmsListing, getPmsDashDataList
 from app.models.models import AMCMaster, PMSMaster, PMSPerformance, Transaction
 from app.extensions import db
@@ -12,6 +12,7 @@ from datetime import date, datetime, timedelta
 bp_pms = Blueprint('pms', __name__)
 
 @bp_pms.route('/pmslist')
+@bp_pms.route('/admin/pmslist')
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
@@ -29,32 +30,27 @@ def pmslist():
     
   # loggedin,user_name = get_user_status()
   
-  print(f" current_user details: {current_user}")
+  # print(f" current_user details: {current_user} and current_user.userrole_id ={current_user.userrole_id} ")
   
   return render_template('pms_listing.html',
                          is_authenticated = current_user.is_authenticated,
+                         is_admin=isAdmin(current_user.userrole_id),
                          user_name= current_user.fname + " " + current_user.lname,
                          page_heading="List of PMS",
                          pms_list=pms_list)
 
 
-# def get_user_status():
-#   if current_user.is_authenticated:
-#       loggedin = 1
-#       user_name = current_user.fname + " " + current_user.lname
-
-#       return loggedin, user_name
-#   else:
-#       return 0, "BHOLA"
 
 
 @bp_pms.route('/pmsdash/<int:pms_id>')
+@bp_pms.route('/admin/pmsdash/<int:pms_id>')
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
 def pms_dashboard(pms_id):
   print('pms_dashboard()')
-  print('pms_id ==>',pms_id)
+  # print('pms_id ==>',pms_id)
+  # print (' IN THE RIGHT METHOD--------------------------------')
 
   # loggedin,user_name = get_user_status()
   # if loggedin == 0:
@@ -67,10 +63,10 @@ def pms_dashboard(pms_id):
   
   pms,index_perf,pms_details,pms_stocks, pms_sectors = getPmsDashDataList(pms_id)  
 
-  print('--- BEFORE ROUTE ---')
-  print(pms.one_month)
-  print(pms.pms_id)
-  print('--- JUST BEFORE ROUTE ---')
+  # print('--- BEFORE ROUTE ---')
+  # print(pms.one_month)
+  # print(pms.pms_id)
+  # print('--- JUST BEFORE ROUTE ---')
   
   # booking_id = db.session.query(Booking).filter(and_(Booking.event_id==event_id, Booking.user_id == uid  )).order_by(Booking.id.desc()).first().id
   temp_date  = datetime(pms.year, pms.month, 1)
@@ -78,6 +74,7 @@ def pms_dashboard(pms_id):
 
   return render_template('pms_dashboard.html',
                          is_authenticated = current_user.is_authenticated,
+                        is_admin=isAdmin(current_user.userrole_id),      
                          user_name= current_user.fname + " " + current_user.lname,
                          page_heading="PMS Dashboard - "+pms.pms_name,
                          pms=pms,
@@ -92,6 +89,7 @@ def pms_dashboard(pms_id):
 
 
 @bp_pms.route('/editpms/<int:pms_id>', methods=['GET', 'POST'])
+@bp_pms.route('/admin/editpms/<int:pms_id>', methods=['GET', 'POST'])
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
@@ -122,6 +120,7 @@ def edit_pms(pms_id):
   if request.method == 'GET':
       return render_template('form_edit_pms_master.html', 
                                 is_authenticated = current_user.is_authenticated,
+                                is_admin=isAdmin(current_user.userrole_id),      
                                 user_name= current_user.fname + " " + current_user.lname,
                                 page_heading="Change PMS Details - "+pms_name,                         
                                 form=form,
@@ -171,6 +170,7 @@ def edit_pms(pms_id):
 
 
 @bp_pms.route('/editpmsperf/<int:pms_id>', methods=['GET', 'POST'])
+@bp_pms.route('/admin/editpmsperf/<int:pms_id>', methods=['GET', 'POST'])
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
@@ -201,6 +201,7 @@ def edit_pmsperf(pms_id):
   if request.method == 'GET':
       return render_template('form_edit_pms_performance.html', 
                                 is_authenticated = current_user.is_authenticated,
+                                is_admin=isAdmin(current_user.userrole_id),      
                                 user_name= current_user.fname + " " + current_user.lname,
                                 page_heading="Change PMS Performance  - "+pms_name,                         
                                 form=form,
@@ -249,6 +250,7 @@ def edit_pmsperf(pms_id):
 
 
 @bp_pms.route('/newpmsperf/<int:pms_id>', methods=['GET', 'POST'])
+@bp_pms.route('/admin/newpmsperf/<int:pms_id>', methods=['GET', 'POST'])
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
@@ -292,6 +294,7 @@ def new_pmsperf(pms_id):
   if request.method == 'GET':
       return render_template('form_create_pms_performance.html', 
                                 is_authenticated = current_user.is_authenticated,
+                                is_admin=isAdmin(current_user.userrole_id),      
                                 user_name= current_user.fname + " " + current_user.lname,
                                 page_heading="Add PMS Performance  - "+pms_name,       
                                 date_display = date_display,         
@@ -363,8 +366,8 @@ def new_pmsperf(pms_id):
 
 
     else:
-        print('form validation failed')
-        print(form.errors)
+        # print('form validation failed')
+        # print(form.errors)
         flash(form.errors,'danger')
         # return redirect('/pmslist')
         return redirect(url_for('pms.pms_dashboard', pms_id=pms_id))

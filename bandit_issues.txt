@@ -1,0 +1,186 @@
+Run started:2024-08-27 05:48:40.807592
+
+Test results:
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./app/helpers/queries.py:14:12
+13	    
+14	    query = 'select t1.amc_id amc_id, t1.name amc_name, t2.name pms_name, t2.pms_id pms_id, t2.index_id index_id, t3.name index_name   '\
+15	            ' from amc_master t1 , pms_master t2 , index_master t3  '\
+16	            '  where t1.amc_id =   '\
+17	            ' (select amc_id from user where id = '+str(user_id)+')  '\
+18	            ' and t1.amc_id = t2.amc_id ' \
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./app/helpers/queries.py:61:12
+60	    print('getPmsPerformance()')
+61	    query = '' \
+62	        'select t2.id perf_id, t4.name amc_name,t2.pms_id pms_id, t1.name pms_name, t1.index_id index_id, t3.name index_name , '\
+63	        ' t2.p_month month, t2.p_year year,one_month, three_months,six_months,twelve_months,two_year_cagr,three_year_cagr,five_year_cagr,ten_year_cagr,cagr_si,si '\
+64	        ' from pms_master t1 , pms_performance t2 , index_master t3 , amc_master t4 '\
+65	        ' where t1.pms_id = t2.pms_id '\
+66	        ' and t1.index_id = t3.id '\
+67	        ' and t4.amc_id = t1.amc_id '\
+68	        ' and t2.pms_id =  '+ str(pms_id) +''\
+69	        ' order by year desc, month desc, t2.id desc limit 1'
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./app/helpers/queries.py:106:12
+105	
+106	    query = ' select t2.id, t1.name index_name, t2.index_id index_id, '\
+107	        ' t2.p_month month, t2.p_year year,one_month, three_months,six_months,twelve_months,two_year_cagr,three_year_cagr,five_year_cagr,ten_year_cagr '\
+108	        ' from index_performance t2, index_master t1 '\
+109	        ' where t1.id = t2.index_id '\
+110	        ' and t2.index_id = (select index_id from pms_master where pms_id = '+str(pms_id)+') '\
+111	        ' and t2.p_month = '+str(month)+' and t2.p_year = '+str(year)+' '\
+
+--------------------------------------------------
+>> Issue: [B110:try_except_pass] Try, Except, Pass detected.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b110_try_except_pass.html
+   Location: ./app/helpers/queries.py:123:4
+122	                tuple_list = [i for i in records]
+123	    except:
+124	        pass
+125	
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./app/helpers/queries.py:153:12
+152	
+153	    query = ' select t2.id,t1.name index_name, t2.index_id index_id, '\
+154	        ' t2.p_month month, t2.p_year year,one_month, three_months,six_months,twelve_months,two_year_cagr,three_year_cagr,five_year_cagr,ten_year_cagr '\
+155	        ' from index_performance t2, index_master t1 '\
+156	        ' where t1.id = t2.index_id '\
+157	        ' and t2.index_id = '+str(index_id)+' '\
+158	        ' order by year desc, month desc, t2.id desc limit 100 ' 
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./app/helpers/queries.py:178:12
+177	
+178	    query = ' select '\
+179	            ' t1.id pms_internal_id, t1.name pms_name, stocks_min min, stocks_max max, aum ,portfolio_pe, large_cap, mid_cap, small_cap, cash, t2.name index_name '\
+180	            ' from pms_master t1 , index_master t2'\
+181	            ' where pms_id = '+str(pms_id) + ''\
+182	            ' and t1.index_id = t2.id '
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./app/helpers/queries.py:206:12
+205	
+206	    query = ' select ' \
+207	            ' t1.pct_deployed , t2.name stock_name ,t1.stock_id stock_id,t2.stock_symbol, t2.isin_code'\
+208	            ' from pms_stock t1, stock_master t2 '\
+209	            ' where t1.stock_id = t2.id '\
+210	            ' and t1.pms_id ='+ str(pms_id) 
+211	                
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./app/helpers/queries.py:232:12
+231	
+232	    query = ' select '\
+233	            ' t1.pct_deployed , t2.name sector_name ,t1.sector_id sector_id, t2.sector_code'\
+234	            ' from pms_sector t1, sector_master t2 '\
+235	            ' where t1.sector_id = t2.id '\
+236	            ' and t1.pms_id = '+str(pms_id)
+237	                
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./app/helpers/queries.py:456:12
+455	    
+456	    query = 'select *   '\
+457	            ' from  pms_performance t1  '\
+458	            ' where p_month = '+str(month)+' '\
+459	            ' and p_year = '+str(year)+''
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./app/helpers/queries.py:511:12
+510	    
+511	    query = 'select *   '\
+512	            ' from  index_performance t1  '\
+513	            ' where p_month = '+str(month)+' '\
+514	            ' and p_year = '+str(year)+''
+
+--------------------------------------------------
+>> Issue: [B106:hardcoded_password_funcarg] Possible hardcoded password: 'SERIALIZER_SECRET_KEY'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b106_hardcoded_password_funcarg.html
+   Location: ./app/models/models.py:195:17
+194	    def get_token(self, expires_sec=300):
+195	        serial = Serializer(secret_key="SERIALIZER_SECRET_KEY")
+196	        return serial.dumps({"user_id": self.id})
+
+--------------------------------------------------
+>> Issue: [B106:hardcoded_password_funcarg] Possible hardcoded password: 'SERIALIZER_SECRET_KEY'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b106_hardcoded_password_funcarg.html
+   Location: ./app/models/models.py:200:17
+199	    def verify_token(token):
+200	        serial = Serializer(secret_key="SERIALIZER_SECRET_KEY")
+201	        try:
+
+--------------------------------------------------
+>> Issue: [B110:try_except_pass] Try, Except, Pass detected.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/1.7.9/plugins/b110_try_except_pass.html
+   Location: ./app/routes/route_auth.py:102:4
+101	        print(' session deleted')
+102	    except:
+103	        pass
+104	
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 2215
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 4
+		Medium: 9
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 9
+		Medium: 2
+		High: 2
+Files skipped (0):
