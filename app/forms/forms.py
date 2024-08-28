@@ -26,8 +26,8 @@ class SignupForm(FlaskForm):
   fname = StringField("First Name", validators=[DataRequired(), Length(min=3, max=50)])
   lname = StringField("Last Name", validators=[DataRequired(), Length(min=3, max=50)])  
   email = EmailField("Email", validators=[DataRequired(), Email()])
-  password_hash = PasswordField("Password", validators=[DataRequired(), Length(min=5, max=10), EqualTo('password_hash2', message='Passwords Must Match!')])
-  password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
+#   password_hash = PasswordField("Password", validators=[DataRequired(), Length(min=5, max=10), EqualTo('password_hash2', message='Passwords Must Match!')])
+#   password_hash2 = PasswordField("Confirm Password", validators=[DataRequired()])
   submit = SubmitField("Submit")
 
   # create a SignIn Form class

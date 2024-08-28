@@ -1,28 +1,19 @@
-
 {% extends 'navbar.html' %}
 
-
-{% block content  %}
-
+{% block content %}
 <div class="container">
     <div class="row">
-      <div class="col-sm-6 m-auto">
+        <div class="col-sm-6 m-auto">
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+                <div class="alert alert-{{category}} alert-dismissible">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+                </div>
+            {% endfor %}
 
-
-
-        {% for category, message in get_flashed_messages(with_categories=True) %}
-                        
-            <div class="alert alert-{{category}} alert-dismissible">
-                <strong>{{ message }}</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
-            </div>
-
-         {% endfor %}
-
-
-            <h1>Register a new user </h1>
+            <h1>AMC - {{amc_name}}</h1>
             <br/>
-            <form method = "POST">
+            <form method="POST">
                 {{ form.hidden_tag() }}
 
                 {{ form.fname.label(class="form-label")}}
@@ -31,30 +22,17 @@
                 {{ form.lname.label(class="form-label")}}
                 {{ form.lname(class="form-control")}}  
 
-                <br/>
                 {{ form.email.label(class="form-label")}}
                 {{ form.email(class="form-control")}}  
 
-                <br/>
-                {{ form.password_hash.label(class="form-label")}}
-                {{ form.password_hash(class="form-control")}}  
-
-                <br/>
-                {{ form.password_hash2.label(class="form-label")}}
-                {{ form.password_hash2(class="form-control")}}  
-
-                <br/>
-
-                    {{ form.submit(class="btn btn-primary") }}           
-                    <div class="mt-2 col-md-12">                
-                    <a href="/login" > Already registered ! Login Here</a>      
+                <div class="mt-4 d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    {{ form.submit(class="btn btn-primary") }}
                 </div>
-
-        </form>
+            </form>
         </div>
     </div>
 </div>    
-
 {% endblock %}
-
-

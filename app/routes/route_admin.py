@@ -3,11 +3,12 @@ from datetime import datetime
 from sqlite3 import IntegrityError
 from flask import Blueprint, render_template, redirect, send_file, url_for, flash,current_app,request
 from flask_login import login_user, logout_user, login_required, current_user
+from markupsafe import Markup
 from app.helpers.helper_excel import write_Excel_report
 from app.helpers.helper_util import generate_resetlink,email_resetlink, getLastMonthYYMM, isAdmin
 from app.helpers.queries import getIndexListing, getIndexPerformance, getPerformanceReport,getAmcListing,getAdminPmsListing, getUserListing
-from app.models.models import AMCMaster, IndexMaster, IndexPerformance, User
-from app.forms.forms import DummyForm, IndexPerformanceEditForm, IndexPerformanceForm, ResetPasswordForm, ResetRequestForm, SigninForm
+from app.models.models import AMCMaster, IndexMaster, IndexPerformance, User, UserRole
+from app.forms.forms import DummyForm, IndexPerformanceEditForm, IndexPerformanceForm, ResetPasswordForm, ResetRequestForm, SigninForm, SignupForm
 from app.helpers.auth_helper import AuthHelper
 from app.helpers.logging_helper import debug, info, warning, error, critical, log_exception, log_function_call
 from app.extensions import login_manager, db
@@ -387,22 +388,114 @@ def admin_userlist(amc_id):
   # print(user_list)
   amc_record = AMCMaster.query.filter_by(amc_id=amc_id).first()
   
-  # print(amc_record)
-  # print(amc_record.name)
-    
-  # loggedin,user_name = get_user_status()
-  
-  # print(f" current_user details: {current_user}")
-  
   return render_template('admin_amc_user_listing.html',
                          is_authenticated = current_user.is_authenticated,
                          is_admin=isAdmin(current_user.userrole_id),                         
                          user_name= current_user.fname + " " + current_user.lname,
                          page_heading="List of AMC Users",
                          amc_name = amc_record.name,
+                         amc_id=amc_id,
                          user_list=user_list)
 
 
 
+# create User for an AMC
+# @app.route('/register', methods=['GET','POST'])
+# @app.route('/signup', methods=['GET','POST'])
+@bp_admin.route('/admin/register/<int:amc_id>', methods=['GET','POST'])
+@login_required
+@AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
+  
+def user_registeration(amc_id):
+  print('in user_registeration()')
+  name = None
+  email = None
+  form = SignupForm()
+  
+  amc_record = AMCMaster.query.filter_by(amc_id=amc_id).first()
 
+  if request.method=="POST":
+    # Validate form
+    if form.validate_on_submit():
+
+      fname = form.fname.data.strip()
+      lname = form.lname.data.strip()
+      email = form.email.data.strip()
+      # password = form.password_hash.data.strip()
+
+      # Making it safe against XSS attacks
+      fname = Markup.escape(fname )
+      lname = Markup.escape(lname )      
+      email = Markup.escape(email )
+
+
+      print(fname, email)
+      isactive = 0
+      user_role = db.session.query(UserRole).filter(UserRole.name=="SUBMITTER").first().id
+
+        
+      newUser = User(fname=fname,lname=lname, email=email, amc_id=amc_id, password="11111", userrole_id=user_role,isactive=1,created_at=datetime.now())
+
+      try:
+        db.session.add(newUser)
+        db.session.commit()
+        # # logging user registration 
+        # log_txn(msgType='REGISTER', log_desc='Registered user', user_id=newUser.id, booking_id=None, event_id=None, ticket_id=None, created_at=None)  
+
+        # # sending email notification for activation 
+        # link = generate_act_activation_link (newUser)
+        # email_list = []
+        # email_list.append(email)
+        # send_email_for_activation(link, email_list)
+
+
+
+        # # logging sending of notification
+        # log_txn(msgType='EMAIL_NOTIFICATION', log_desc='Welcome Email Sent', user_id=newUser.id, booking_id=None, event_id=None, ticket_id=None, created_at=None)          
+        # flash("User created Successfully! You can browse but to book tickets you need to activate account.Please follow instructions sent to your email for activating your account!", 'warning')
+
+        # # forcing the user to login after this activity
+        # logout_user()
+        # pop_user_in_session(session)
+
+        # return redirect('/admin/<int:amc_id>')
+        return redirect('/admin/users/'+str(amc_id))
+      
+      except IntegrityError as exc:
+       print('Integrity Error occured!!!')
+       db.session.rollback()
+       flash("EmailId is already registered, login/reset password or register with another email !",'danger')
+      #  log_txn(msgType='REGISTER_FAILURE', log_desc='Email Already Registered ', user_id=None, booking_id=None, event_id=None, ticket_id=None, created_at=None) 
+    #   form.name.data = ''
+    #   form.email.data = ''      
+    else:
+      # print('Validation failed ')
+      # print(form.errors )
+      flash(form.errors, 'danger')
+      # log_txn(msgType='FORM_FAILURE', log_desc='Registeration form validation failed ', user_id=None, booking_id=None, event_id=None, ticket_id=None, created_at=None) 
+    
+    print(' Returning the form back ...')
+    return render_template("form_signup.html", 
+                         is_authenticated = current_user.is_authenticated,
+                         is_admin=isAdmin(current_user.userrole_id),                         
+                         user_name= current_user.fname + " " + current_user.lname,
+                         page_heading="Create AMC User",
+                         amc_name = amc_record.name,     
+                              form= form)
+
+  if request.method=="GET":
+   
+   form.fname.data = ''
+   form.lname.data = ''
+   form.email.data = '' 
+   return render_template("form_signup.html", 
+                         is_authenticated = current_user.is_authenticated,
+                         is_admin=isAdmin(current_user.userrole_id),                         
+                         user_name= current_user.fname + " " + current_user.lname,
+                         page_heading="Create AMC User",
+                         amc_name = amc_record.name,                          
+                          # name = name,
+                          # email= email,
+                          form= form)
 
