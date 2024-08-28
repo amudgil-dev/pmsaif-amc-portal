@@ -499,3 +499,98 @@ def user_registeration(amc_id):
                           # email= email,
                           form= form)
 
+
+@bp_admin.route('/admin/users/delete/<int:user_id>')
+@login_required
+@AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
+def admin_delete_user(user_id):
+  print('admin_delete_user()')
+  
+  user = User.query.filter_by(id=user_id).first()
+  
+  if user:
+    amc_id = user.amc_id
+    # print(f"amc_id = {amc_id}")
+    
+    # Delete the user
+    db.session.delete(user)
+    db.session.commit()
+  else:
+      print("User not found")
+  
+  return redirect('/admin/users/'+str(amc_id))
+  
+
+
+
+
+@bp_admin.route('/admin/users/edit/<int:user_id>', methods=['GET','POST'])
+@login_required
+@AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
+def admin_edit_user(user_id):
+  print('admin_edit_user()')
+  
+  user = User.query.filter_by(id=user_id).first()
+  
+  amc_id = user.amc_id
+  amc_record = AMCMaster.query.filter_by(amc_id=amc_id).first()
+  
+  form = SignupForm()
+  
+  if request.method == 'GET':
+      form.fname.data = user.fname
+      form.lname.data = user.lname
+      form.email.data = user.email
+      
+      return render_template('form_edit_user.html', 
+                              is_authenticated = current_user.is_authenticated,
+                              is_admin=isAdmin(current_user.userrole_id),      
+                              user_name= current_user.fname + " " + current_user.lname,
+                              page_heading="Change User Details",    
+                              amc_name = amc_record.name,                     
+                              form=form
+                              )
+
+      
+  if request.method == 'POST':
+    print('in post')
+    # print(pms.pms_id,pms.name, pms.amc_id, pms.aum, pms.stocks_min, pms.stocks_max, pms.portfolio_pe, pms.large_cap, pms.mid_cap, pms.small_cap, pms.cash)
+    # print(' -----')
+
+    if form.validate_on_submit():
+      print('form validated')
+      user.fname = form.fname.data
+      user.lname = form.lname.data
+      user.email = form.email.data
+
+
+      try:
+         
+        db.session.commit()
+      except Exception as e:
+        print('Exception occured while updating PMS details')
+        print(e)
+        db.session.rollback()
+        flash('PMS details could not be updated, please try again!', 'danger')
+        
+        
+        return redirect('/admin/users/'+str(amc_id))
+      # return redirect('../pmsdash/'+str(pms.pms_id))
+    
+
+      flash('PMS details updated successfully!', 'success')
+      # return redirect('../pmsdash/'+str(pms.pms_id))
+      return redirect('/admin/users/'+str(amc_id))
+    else:
+      print(form.errors)
+      flash('Event could not be updated!', 'danger')
+      flash(form.errors, 'danger')
+      return redirect('/admin/users/'+str(amc_id))
+  
+  return redirect('/admin/users/'+str(amc_id))
+
+
+
+ 

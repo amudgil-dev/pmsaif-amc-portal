@@ -82,12 +82,12 @@ def getAdminPmsListing(amc_id):
 def getUserListing(amc_id):
     print('getUserListing()')
     
-    query = 'select t1.fname fname, t1.lname lname, t1.email email, t1.isactive isactive, t1.amc_id amc_id   '\
+    query = 'select t1.id user_id,t1.fname fname, t1.lname lname, t1.email email, t1.isactive isactive, t1.amc_id amc_id   '\
             ' from user t1   '\
             '  where t1.amc_id =   '+str(amc_id) +' '\
     
     
-    label_tuple = ('fname', 'lname', 'email', 'isactive', 'amc_id')    
+    label_tuple = ('user_id','fname', 'lname', 'email', 'isactive', 'amc_id')    
 
 
     try:
