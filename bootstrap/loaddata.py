@@ -118,8 +118,6 @@ def load_pms_data():
         populate_pms_nav()
         print('*********************** dummy records for PMSNav Loaded *************************')          
 
-        
-
         return (
             jsonify(
                 {"message": "Database initialized successfully. All tables created."}
@@ -184,6 +182,7 @@ def populate_structure_master():
 
 # @bp.route("/populate-index-master", methods=["GET"])
 def populate_index_master():
+    print('populate_index_master()')
     try:
         # Drop the existing table and recreate it
         # db.session.execute(text("DROP TABLE IF EXISTS index_master;"))
@@ -202,7 +201,14 @@ def populate_index_master():
 
             # Iterate through the CSV and add unique benchmarks to the set
             for row in csv_reader:
-                benchmarks.add(row["Strategy Benchmark"])
+                benchmark = row.get("Strategy Benchmark")
+                if benchmark is not None:
+                    # Normalize the benchmark name: strip whitespace and convert to lowercase
+                    normalized_benchmark = benchmark.strip().upper()
+                    
+                    # Add the normalized benchmark to the set if it's not an empty string
+                    if normalized_benchmark:
+                        benchmarks.add(normalized_benchmark)
 
         # Populate the IndexMaster table
         for index, benchmark in enumerate(benchmarks, start=1):
@@ -227,6 +233,7 @@ def populate_index_master():
         )
     except Exception as e:
         db.session.rollback()
+        print(f"error - {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 
