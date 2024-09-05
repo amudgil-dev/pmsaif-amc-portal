@@ -25,7 +25,7 @@ bp_admin_report = Blueprint('admin_report', __name__)
 @AuthHelper.check_session
 @AuthHelper.check_admin_authorisations
 def pms_reports():
-  # print('in pms_reports()')
+  print('in pms_reports()')
   form = DummyForm()
 
 
