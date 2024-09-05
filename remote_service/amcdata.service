@@ -5,8 +5,8 @@ After=network.target
 [Service]
 User=ubuntu
 Group=www-data
-WorkingDirectory=/home/ubuntu/pmsweb
-Environment="PATH=/home/ubuntu/pmsweb/venv/bin"
+WorkingDirectory=/home/ubuntu/amcdata
+Environment="PATH=/home/ubuntu/amcdata/venv/bin"
 ExecStart=/home/ubuntu/pmsweb/venv/bin/gunicorn --workers 4 --bind 0.0.0.0:5002 wsgi:app
 
 [Install]

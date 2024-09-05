@@ -58,4 +58,4 @@ sudo systemctl status nginx
 
 sudo apt-get update
 sudo apt-get install certbot python3-certbot-nginx
-sudo certbot --nginx -d portal.pmsaifdata.co.uk -d graph.pmsaifdata.co.uk
+sudo certbot --nginx -d amcdata.pmsaifworld.com

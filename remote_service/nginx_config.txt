@@ -8,7 +8,8 @@ upstream second_service {
 
 server {
     listen 80;
-    server_name 13.235.16.153;  # Use your IP address here
+    # server_name 43.204.211.87;  # Use your IP address here
+    server_name _;  # for all IPs 
 
     location / {
         proxy_pass http://pmsportal;

@@ -16,38 +16,42 @@
         {% endfor %}
 
                 <br/>
-                  <!-- Creting Index Table -->
+                
+
+                  <!-- Creting PMS Table -->
   <section id="pms">
     <div class="container">
       <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-12">
           <div class="card">
-
+            <div class="card-header">
+              <h4>AMC - {{pms_list[0].amc_name}}</h4>
+            </div>
             <table class="table table-striped">
               <thead class="thead-dark">
                 <tr>
                   <th>#</th>
-                  <th>Index Name</th>
-                  <th></th>
-                  <th></th>
+                  {% if is_admin %}
+                  <th>Scheme Id</th>
+                  {% endif %}
+
+                  <th>PMS Name</th>
+                  <th>Index</th>
+
                 </tr>
               </thead>
               <tbody>
-                {% for index in index_list %}
+                {% for pms in pms_list %}
                 <tr>
                   <td>{{loop.index}}</td>
-                  <td>{{index.index_name}}</td>
-                  <td>
-                    <a href="viewindexperf/{{index.id}}" class="btn btn-secondary">
-                      <i class="fas fa-angle-double-right"></i> View Performance
-                    </a>
-                  </td>
-                  <td>
-                    <a href="{{url_for('admin.admin_pmslist_by_index',index_id=index.id)}}" class="btn btn-secondary">
-                      <i class="fas fa-angle-double-right"></i> PMS List
-                    </a>
-                  </td>                  
+                  {% if is_admin %}
+                  <th>{{pms.pms_id}}</th>
+                  {% endif %}                  
+                  <td>{{pms.pms_name}}</td>
+                  <td>{{pms.index_name}}</td>
+               
                 </tr>
+              
                 {% endfor %}
 
               </tbody>

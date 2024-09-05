@@ -1,0 +1,214 @@
+scheme ID,Company ID,Category ID,PMS Structure ID,Scheme Name,Company Name,Company ID,Strategy Benchmark
+54,21,3,1,Long Term Value Fund,2Point2 Capital,21,BSE 500 TRI
+46,17,3,1,Multicap,360 ONE,17,BSE 500 TRI
+296,17,3,1,Phoenix Portfolio,360 ONE,17,BSE 500 TRI
+386,105,3,1, Diversified Alpha Approach,Abakkus Asset Manager ,105,BSE 500 TRI
+231,105,3,1,All Cap Approach,Abakkus Asset Manager ,105,BSE 500 TRI
+230,105,2,1,Emerging Opportunities Approach ,Abakkus Asset Manager ,105,BSE 500 TRI
+364,56,3,1,Growth & Momentum,ABANS ,56,BSE 500 TRI
+112,56,2,1,Smart Beta Portfolio,ABANS ,56,BSE 500 TRI
+55,22,1,1,Alpha10,AccuraCap,22,Nifty 50 TRI
+58,22,3,1,Alphagen,AccuraCap,22,BSE 500 TRI
+56,22,4,1,PicoPower,AccuraCap,22,BSE 500 TRI
+87,10,3,1,Core Equity Portfolio,Aditya Birla Capital,10,Nifty 50 TRI
+170,10,3,1,India Special Opportunities Portfolio,Aditya Birla Capital,10,BSE 500 TRI
+171,10,3,1,Innovation Portfolio,Aditya Birla Capital,10,BSE 500 TRI
+25,10,3,1,Select Sector Portfolio,Aditya Birla Capital,10,BSE 500 TRI
+111,10,1,1,Top 200 Core Equity Portfolio,Aditya Birla Capital,10,Nifty 50 TRI
+260,112,4,1,India Opportunities Product,Aequitas Investment ,112,Nifty 50 TRI
+365,15,1,1,Alpha 100,Alchemy Capital Management,15,NIFTY 50 TRI
+384,15,4,1,Alpha Small Cap,Alchemy Capital Management,15,BSE 500 TRI
+191,15,3,1,Ascent,Alchemy Capital Management,15,BSE 500 TRI
+41,15,3,1,High Growth,Alchemy Capital Management,15,BSE 500 TRI
+42,15,3,1,High Growth Select Stock,Alchemy Capital Management,15,BSE 500 TRI
+366,15,3,1,Smart Alpha 250,Alchemy Capital Management,15,BSE 500 TRI
+383,15,4,1,Smart Alpha Small & Micro Cap,Alchemy Capital Management,15,BSE 500 TRI
+192,9,3,1,AAA Focus Plan,AlfAccurate Advisors,9,BSE 500 TRI
+304,9,2,1,Budding Beasts,AlfAccurate Advisors,9,BSE 500 TRI
+24,9,3,1,IOP PMS,AlfAccurate Advisors,9,BSE 500 TRI
+352,153,3,1,Alpha Growth,Ambit Global Private Client,153,Nifty 50 TRI
+367,153,3,1,Caliber,Ambit Global Private Client,153,Nifty 50 TRI
+30,13,1,1,Coffee CAN,Ambit Investment Advisors,13,Nifty 50 TRI
+32,13,4,1,Emerging Giants,Ambit Investment Advisors,13,BSE 500 TRI
+31,13,2,1,Good and Clean,Ambit Investment Advisors,13,BSE 500 TRI
+308,13,2,1,TenX Portfolio,Ambit Investment Advisors,13,BSE 500 TRI
+107,50,3,1,Decennium Opportunity,Anand Rathi Advisors Ltd,50,BSE 500 TRI
+108,50,3,1,Impress Portfolio,Anand Rathi Advisors Ltd,50,BSE 500 TRI
+106,50,3,1,MNC Portfolio,Anand Rathi Advisors Ltd,50,BSE 500 TRI
+103,43,1,1,Ace 15,Asit C Mehta,43,NIFTY 50 TRI
+102,43,2,1,Ace Midcap,Asit C Mehta,43,BSE 500 TRI
+91,43,3,1,Ace Multicap,Asit C Mehta,43,BSE 500 TRI
+92,43,3,1,Ace Regular Income,Asit C Mehta,43,HYBRID INDEX
+256,20,2,1,Emerging Opportunities Portfolio (EOP),ASK,20,BSE 500 TRI
+53,20,3,1,Growth Portfolio,ASK,20,BSE 500 TRI
+52,20,3,1,India Select Portfolio (ISP),ASK,20,BSE 500 TRI
+51,20,3,1,Indian Entrepreneurship Portfolio (IEP),ASK,20,BSE 500 TRI
+164,79,3,1,Growth,Avestha Fund Management,79,BSE 500 TRI
+14,5,3,1,Brand Equity,Axis AMC,5,Nifty 50 TRI
+172,5,3,1,Core & Satellite,Axis AMC,5,Nifty 50 TRI
+50,19,3,1,NEO Equity Portfolio,Bandhan AMC,19,BSE 500 TRI
+382,165,3,1,India Opportunities ,Bay Capital,165,BSE 500 TRI
+368,91,3,1,Aegis,Bonanza,91,NIFTY 50 TRI
+369,91,3,1,Edge,Bonanza,91,NIFTY 50 TRI
+188,91,1,1,Growth,Bonanza,91,BSE 500 TRI
+189,91,3,1,Value,Bonanza,91,BSE 500 TRI
+116,41,3,1,Core Value Concentrated,BugleRock Capital ,41,BSE 500 TRI
+89,41,3,1,Core Value Regular,BugleRock Capital ,41,BSE 500 TRI
+363,41,4,1,Special Situations,BugleRock Capital ,41,BSE 500 TRI
+362,41,3,1,Thematic Opportunities,BugleRock Capital ,41,BSE 500 TRI
+63,27,3,1,Opportunities Multi-cap,Buoyant Capital,27,BSE 500 TRI
+113,57,3,1,Growth,CapGrow Capital,57,BSE 500 TRI
+169,57,3,1,Special Situations,CapGrow Capital,57,BSE 500 TRI
+390,169,3,1,Infinity Fund,CAPITAL 8 LLP,169,BSE 500 TRI
+181,86,3,1,Adaptive Momentum,Capitalmind,86,Nifty 50 TRI
+179,86,1,1,Market Fund,Capitalmind,86,Nifty 50 TRI
+180,86,3,1,Surge India,Capitalmind,86,Nifty 50 TRI
+65,30,2,1,Growth Plus Value,Care PMS,30,BSE 500 TRI
+228,30,1,1,Large and Midcap,Care PMS,30,BSE 500 TRI
+168,82,3,1,Compounder Strategy,Carnelian Capital,82,BSE 500 TRI
+227,82,2,1,Shift,Carnelian Capital,82,BSE 500 TRI
+326,82,3,1,YnG Strategy,Carnelian Capital,82,BSE 500 TRI
+153,31,1,1,Built To Last,Centrum,31,BSE 500 TRI
+66,31,2,1,Deep Value,Centrum,31,BSE 500 TRI
+70,31,3,1,Flexicap,Centrum,31,BSE 500 TRI
+140,31,2,1,Good To Great,Centrum,31,BSE 500 TRI
+68,31,4,1,Microcap,Centrum,31,BSE 500 TRI
+69,31,2,1,Multibagger,Centrum,31,BSE 500 TRI
+338,148,3,1,All Weather,Ckredence Wealth ,148,BSE 500 TRI
+339,148,3,1,Diversified,Ckredence Wealth ,148,BSE 500 TRI
+118,59,3,1,Long-Term Growth,Dalal and Broacha Portfolio Managers,59,Nifty 50 TRI
+375,158,3,1,Agile Strategy,East Green PMS ,158,BSE 500 TRI
+26,11,2,1,Focused Mid & Smallcap,Edelweiss,11,BSE 500 TRI
+226,104,3,1,Long Term Value (LTV),Eklavya Capital,104,BSE 500 TRI
+315,138,4,1,Laureate Portfolio  ,Electrum ,138,BSE 500 TRI
+379,161,3,1,India Vision Portfolio,ENAM Asset Management,161,BSE 500 TRI
+337,65,3,1,Core Equity,Equirus,65,BSE 500 TRI
+134,65,4,1,Long Horizon Fund,Equirus,65,BSE 500 TRI
+324,142,4,1,Emerging Opportunities ,Equitree Capital Advisors,142,BSE 500 TRI
+217,101,3,2,I Alpha,Estee Advisors,101,CRISIL Composite Bond Index
+218,101,3,1,Long Alpha,Estee Advisors,101,BSE 500 TRI
+143,71,3,1,Indian Multi-Asset Allocation PMS,First Global,71,BSE 500 TRI
+144,71,3,1,The India Super 50,First Global,71,BSE 500 TRI
+343,119,3,1,FCI LLP Opportunities,Fractal Capital Investments,119,BSE 500 TRI
+272,119,3,1,Wealth Builder,Fractal Capital Investments,119,BSE 500 TRI
+139,68,3,1,Multicap Growth Equity Strategy,Girik Capital,68,Nifty 50 TRI
+276,121,1,1,Alpha Fund,Green Lantern Capital LLP,121,BSE 500 TRI
+277,121,2,1,Growth Fund,Green Lantern Capital LLP,121,BSE 500 TRI
+151,40,3,1,Dividend Yield,Green Portfolio,40,BSE 500 TRI
+322,40,2,1,Impact ESG,Green Portfolio,40,BSE 500 TRI
+152,40,3,1,MNC Advantage Fund,Green Portfolio,40,BSE 500 TRI
+88,40,3,1,Special,Green Portfolio,40,BSE 500 TRI
+297,40,2,1,Super 30,Green Portfolio,40,BSE 500 TRI
+219,102,3,1,India Rising,Helios Capital,102,BSE 500 TRI
+74,6,3,1,Contra Strategy,ICICI Prudential PMS,6,BSE 500 TRI
+17,6,3,1,Growth Leaders Strategy,ICICI Prudential PMS,6,BSE 500 TRI
+16,6,1,1,Largecap Strategy,ICICI Prudential PMS,6,BSE 500 TRI
+205,6,4,1,PIPE Strategy,ICICI Prudential PMS,6,BSE 500 TRI
+15,6,3,1,Value Strategy,ICICI Prudential PMS,6,BSE 500 TRI
+281,125,3,1,Healthcare Portfolio,Incred PMS,125,BSE 500 TRI
+282,125,3,1,Multicap Portfolio,Incred PMS,125,BSE 500 TRI
+255,111,3,1,Growth Fund,Invasset LLP,111,BSE 500 TRI
+342,149,3,1,Alpha Fund,Investsavvy,149,BSE 500 TRI
+177,85,3,1,Fundamental Value Fund,Itus Capital,85,Nifty 50 TRI
+110,52,3,1,Value Fund,JOINDRE CAPITAL,52,BSE 500 TRI
+220,2,3,1,Fintech,Kotak AMC,2,BSE 500 TRI
+6,2,3,1,India Focus- Series 1,Kotak AMC,2,Nifty 50 TRI
+7,2,3,1,India Focus- Series 2,Kotak AMC,2,Nifty 50 TRI
+93,2,3,1,Pharma Fund,Kotak AMC,2,Nifty 50 TRI
+94,2,2,1,Small & Midcap,Kotak AMC,2,BSE 500 TRI
+173,83,3,1,Multi Cap Advantage PMS,KRIIS,83,BSE 500 TRI
+158,75,3,1,PMS,Lake Water,75,Nifty 50 TRI
+299,134,2,1,Future Stars,Magadh Capital Advisors LLP,134,BSE 500 TRI
+300,134,3,1,Value For Growth,Magadh Capital Advisors LLP,134,BSE 500 TRI
+60,24,3,1,Trend Following,Marathon Trends,24,BSE 500 TRI
+59,23,1,1,Consistent Compounders,Marcellus Investment Managers,23,Nifty 50 TRI
+176,23,3,1,Kings of Capital,Marcellus Investment Managers,23,BSE 500 TRI
+174,23,4,1,Little Champs,Marcellus Investment Managers,23,BSE 500 TRI
+374,23,3,1,MeritorQ ,Marcellus Investment Managers,23,BSE 500 TRI
+303,23,2,1,Rising Giants,Marcellus Investment Managers,23,BSE 500 TRI
+212,97,2,1,India Growth Strategy ,Master Trust,97,BSE 500 TRI
+361,157,3,2,Income Fund,Maximal Capital,157,NIFTY Medium to Long Duration Debt Index
+360,157,3,1,Pathfinder Value Fund,Maximal Capital,157,BSE 500 TRI
+241,70,3,1,Special Opportunities Fund ,MOAT Financial Services,70,BSE 500 TRI
+309,70,3,1,Uppercrust Wealth Fund,MOAT Financial Services,70,BSE 500 TRI
+9,3,3,1,Business Opportunities (BOP),Motilal Oswal AMC,3,BSE 500 TRI
+319,3,3,1,Ethical PMS,Motilal Oswal AMC,3,BSE 500 TRI
+372,3,3,1,Founders,Motilal Oswal AMC,3,BSE 500 TRI
+178,3,2,1,Mid to Mega,Motilal Oswal AMC,3,BSE 500 TRI
+318,3,3,1,Multifactor Equity PMS,Motilal Oswal AMC,3,BSE 500 TRI
+8,3,3,1,Next Trillion Dollar Opportunities (NTDOP),Motilal Oswal AMC,3,BSE 500 TRI
+10,3,1,1,Value Migration,Motilal Oswal AMC,3,BSE 500 TRI
+61,25,3,1,Multicap Strategy,Narnolia,25,BSE 500 TRI
+186,89,3,1,Special Situations Fund,Negen Capital,89,BSE 500 TRI
+76,34,4,1,Aurum Small Cap Oppprtunities,Nine Rivers capital,34,BSE 500 TRI
+387,167,3,2,Absolute Return Strategy (NARS),Nuvama Asset Management Ltd.,167,CRISIL Composite Bond Index
+388,167,2,1,Equities eXpansion Target (NEXT),Nuvama Asset Management Ltd.,167,BSE 500 TRI
+254,110,3,1,ABC Equity Portfolio,Oak Asset Management,110,BSE 500 TRI
+96,45,3,1,Core Equity Portfolio,PGIM India,45,BSE 500 TRI
+97,45,3,1,Phoenix ,PGIM India,45,BSE 500 TRI
+203,28,2,1,Emerging India Portfolio,Phillip Capital,28,BSE 500 TRI
+64,28,3,1,Signature India Portfolio,Phillip Capital,28,BSE 500 TRI
+159,76,3,1,Leader Portfolio,Piper Serica,76,BSE 500 TRI
+43,16,3,1,Aqua Strategy,Prabhudas Liladher,16,BSE 500 TRI
+45,16,3,3,Multi Asset Dynamic Portfolio Strategy,Prabhudas Liladher,16,Crisil Moderate Hybrid Index
+145,72,3,1,Flagship PMS,Quest Investment,72,BSE 500 TRI
+146,72,3,1,Multi PMS,Quest Investment,72,BSE 500 TRI
+341,18,3,1,India Next Portfolio ,Renaissance,18,Nifty 50 TRI
+49,18,2,1,Midcap Portfolio,Renaissance,18,Nifty 50 TRI
+48,18,1,1,Opportunities Portfolio,Renaissance,18,NIFTY 50 TRI
+130,49,3,1,Flexi Cap,Right Horizons,49,BSE 500 TRI
+133,49,1,1,India Business Leaders,Right Horizons,49,Nifty 50 TRI
+257,49,3,1,Perennial Fund,Right Horizons,49,BSE 500 TRI
+131,49,2,1,Super Value,Right Horizons,49,BSE 500 TRI
+214,99,2,1,Emerging Champions Portfolio,Roha Asset Managers,99,BSE 500 TRI
+136,67,2,1,Core Portfolio,SageOne Investment,67,BSE 500 TRI
+138,67,4,1,Small Cap Portfolio (SSP),SageOne Investment,67,BSE 500 TRI
+98,46,3,1,Equity Fund,Sameeksha Capital,46,BSE 500 TRI
+350,152,3,1,Active Alpha Multicap,Samvitti Capital ,152,BSE 500 TRI
+349,152,3,1,Aggressive Growth,Samvitti Capital ,152,BSE 500 TRI
+351,152,1,1,Long Term Growth,Samvitti Capital ,152,BSE 500 TRI
+125,51,1,1,Indian Olympians,Sanctum Wealth,51,BSE 500 TRI
+126,51,3,1,Indian Titans,Sanctum Wealth,51,BSE 500 TRI
+335,4,3,1,Aeon Alpha PMS,SBI,4,Nifty 50 TRI
+13,4,3,1,ESG Portfolio,SBI,4,Nifty 50 TRI
+327,143,3,1,Shree Lakshmi Plan,Shree Rama Managers LLP,143,BSE 500 TRI
+328,143,3,1,Shree Vriddhi Plan,Shree Rama Managers LLP,143,BSE 500 TRI
+329,143,3,3,Shree Wealth Builder Plan,Shree Rama Managers LLP,143,NSE Multi Asset Index 2
+160,77,3,1,India Equity Portfolio,Silverarch,77,BSE 500 TRI
+114,53,3,1,Growth Portfolio,SMC Global,53,BSE 500 TRI
+377,159,2,1,Multicap Fund,Sowilo Investment Managers LLP,159,BSE 500 TRI
+376,159,2,1,Target Return Aggressive Fund,Sowilo Investment Managers LLP,159,BSE 500 TRI
+124,62,3,1,Core Fund,Stallion Asset,62,BSE 500 TRI
+184,7,4,1,Rising Stars,Sundaram Alternates,7,BSE 500 TRI
+18,7,2,1,S.E.L.F,Sundaram Alternates,7,BSE 500 TRI
+20,7,3,1,SISOP,Sundaram Alternates,7,BSE 500 TRI
+19,7,3,1,Voyager,Sundaram Alternates,7,BSE 500 TRI
+314,137,1,1,SRE Shield,Sykes & Ray Equities (I) Ltd ,137,BSE 500 TRI
+310,39,3,1, Enterprising India Investment Approach ,TATA Capital,39,BSE 500 TRI
+82,39,3,1,ACT,TATA Capital,39,BSE 500 TRI
+85,39,2,1,Emerging Opportunities Strategy,TATA Capital,39,BSE 500 TRI
+389,168,3,1,Equity Factor Quant,True Beacon ,168,BSE 500 TRI
+381,164,1,1,Large Cap,Tulsian PMS ,164,NIFTY 50 TRI
+325,69,2,1, Growth Mantra,Turtle Wealth Management Pvt. Ltd.-,69,BSE 500 TRI
+141,69,3,1, Wealth Mantra,Turtle Wealth Management Pvt. Ltd.-,69,BSE 500 TRI
+245,14,2,1,BCAD,UNIFI,14,BSE 500 TRI
+311,14,2,1,BCAD2: Breakout 20,UNIFI,14,BSE 500 TRI
+247,14,3,1,Blended Fund-Rangoli,UNIFI,14,BSE 500 TRI
+166,81,3,1,Growing India Strategy,Valcreate Investment Managers,81,BSE 500 TRI
+347,81,3,1,IME Concentrated Microtrends,Valcreate Investment Managers,81,BSE 500 TRI
+348,81,3,1,IME Digital Disruption,Valcreate Investment Managers,81,BSE 500 TRI
+167,81,2,1,Life Sciences and Specialty Opportunities Strategy,Valcreate Investment Managers,81,BSE 500 TRI
+163,78,3,1,Multi-Cap,Valentis Advisors,78,BSE 500 TRI
+229,78,4,1,Rising Star Opportunity Fund,Valentis Advisors,78,BSE 500 TRI
+336,147,2,1,India Discovery Strategy,Vallum Capital Advisors ,147,BSE 500 TRI
+380,162,3,1,Valtrust Momentum,Valtrust Partners LLP,162,BSE 500 TRI
+252,109,3,1,Growth Scheme,ValueQuest,109,BSE 500 TRI
+253,109,3,1,Platinum Scheme,ValueQuest,109,BSE 500 TRI
+371,109,3,1,Poise Scheme,ValueQuest,109,BSE 500 TRI
+305,55,3,1,India Digital Leaders Strategy,White Oak Capital Management,55,BSE 500 TRI
+109,55,3,1,India Pioneers Equity,White Oak Capital Management,55,BSE 500 TRI
+306,55,3,1,Top 200 PMS,White Oak Capital Management,55,BSE 500 TRI
+320,140,3,1,North Star Portfolio,White Whale Partners LLP,140,Nifty 50 TRI
+357,156,3,1,Wright Alpha Fund,Wryght Research & Capital ,156,BSE 500 TRI
+358,156,3,1,Wright Factor Fund,Wryght Research & Capital ,156,BSE 500 TRI
+359,156,3,1,Wright Factor Fund - Hedged,Wryght Research & Capital ,156,BSE 500 TRI

@@ -5,6 +5,7 @@ import os
 import numpy as np
 import pandas as pd
 from datetime import datetime, timezone
+from app.helpers.queries import getAllStocks
 from app.models.models import (
     User1, 
     Transaction,
@@ -138,7 +139,7 @@ def populate_structure_master():
         # db.create_all()
         
         # Construct the path to the CSV file
-        FILE_NAME = os.path.join(current_dir, "init_data", "Scheme_id_Benchmark.csv")
+        FILE_NAME = os.path.join(current_dir, "init_data", "fixeddata_0409.csv")
 
         # Read the CSV file
         with open(FILE_NAME, "r") as file:
@@ -190,7 +191,7 @@ def populate_index_master():
         # db.create_all()
 
         # Construct the path to the CSV file
-        FILE_NAME = os.path.join(current_dir, "init_data", "Scheme_id_Benchmark.csv")
+        FILE_NAME = os.path.join(current_dir, "init_data", "fixeddata_0409.csv")
         
         # Read the CSV file
         with open(FILE_NAME, "r") as file:
@@ -204,7 +205,7 @@ def populate_index_master():
                 benchmark = row.get("Strategy Benchmark")
                 if benchmark is not None:
                     # Normalize the benchmark name: strip whitespace and convert to lowercase
-                    normalized_benchmark = benchmark.strip().upper()
+                    normalized_benchmark = benchmark
                     
                     # Add the normalized benchmark to the set if it's not an empty string
                     if normalized_benchmark:
@@ -239,6 +240,7 @@ def populate_index_master():
 
 # @bp.route("/populate-category-master", methods=["GET"])
 def populate_category_master():
+    print("populate_category_master()")
     try:
         # Drop the existing table and recreate it
         # db.session.execute(text("DROP TABLE IF EXISTS category_master;"))
@@ -246,7 +248,9 @@ def populate_category_master():
         # db.create_all()
         
         # Construct the path to the CSV file
-        FILE_NAME = os.path.join(current_dir, "init_data", "Scheme_id_Benchmark.csv")        
+        
+        # FILE_NAME = os.path.join(current_dir, "init_data", "fixeddata_0409.csv")        
+        FILE_NAME = os.path.join(current_dir, "init_data", "Scheme_ids_and_Benchmark_orig.csv")         
 
         # Read the CSV file
         with open(FILE_NAME, "r") as file:
@@ -297,7 +301,7 @@ def populate_amc_master():
         # db.create_all()
 
         # Construct the path to the CSV file
-        FILE_NAME = os.path.join(current_dir, "init_data", "Scheme_id_Benchmark.csv")
+        FILE_NAME = os.path.join(current_dir, "init_data", "fixeddata_0409.csv")
         
         # Read the CSV file
         with open(FILE_NAME, "r") as file:
@@ -337,6 +341,7 @@ def populate_amc_master():
 
 # @bp.route("/populate-pms-master", methods=["GET"])
 def populate_pms_master():
+    print('populate_pms_master()')
     try:
         # print("PMSMaster attributes:", PMSMaster.__table__.columns.keys())
 
@@ -364,7 +369,7 @@ def populate_pms_master():
         index_mapping = {index.name: index.id for index in IndexMaster.query.all()}
 
         # Construct the path to the CSV file
-        FILE_NAME = os.path.join(current_dir, "init_data", "Scheme_id_Benchmark.csv")
+        FILE_NAME = os.path.join(current_dir, "init_data", "fixeddata_0409.csv")
         
         # Read the CSV file
         with open(FILE_NAME, "r") as file:
@@ -399,6 +404,7 @@ def populate_pms_master():
         return jsonify({"message": "PMSMaster table populated successfully."}), 200
     except Exception as e:
         db.session.rollback()
+        print(f" Error - {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -428,7 +434,7 @@ def populate_stock_master():
         )
     except Exception as e:
         db.session.rollback()
-        print(str(e))
+        print(f" Error - {str(e)}")
         return jsonify({"error": str(e)}), 500
     
 
@@ -683,7 +689,7 @@ def load_amc_users():
     
 
     # Construct the path to the XLS file
-    FILE_NAME = os.path.join(current_dir, "init_data", "ListOfAMCUsers_nav.xlsx")    
+    FILE_NAME = os.path.join(current_dir, "init_data", "ListOfAMCUsers_nav_0309.xlsx")    
 
     sheet_name = "AMC Users"
     
@@ -736,6 +742,7 @@ def load_amc_users():
 
 
 def load_users_to_database(final_df, submitter_id, p_password):
+    print('load_users_to_database()')
     # Create engine and session
 
     users_to_insert = []
@@ -782,7 +789,7 @@ def load_users_to_database(final_df, submitter_id, p_password):
 
     except Exception as e:
         db.session.rollback()
-        print(f"An error occurred: {str(e)}")
+        print(f"error: {str(e)}")
     finally:
         db.session.close()
 
@@ -802,7 +809,7 @@ def convert (df):
 
     # Step 2: Create separate columns for fname, lname, email
     melted_df['field_type'] = melted_df['user_field'].str.split('_').str[-1]
-    melted_df['user_number'] = melted_df['user_field'].str.extract('(\d+)')
+    melted_df['user_number'] = melted_df['user_field'].str.extract('(\\d+)')
 
     # Step 3: Pivot the melted DataFrame
     pivoted_df = melted_df.pivot_table(index=['ID', 'amc_id', 'amc_name', 'user_number'], 
@@ -838,82 +845,6 @@ def convert (df):
 
 
 
-# def store_amc_users(amc_dict):
-#     print('store_amc_users()')
-    
-#     # print( len(amc_dict))
-#     # print(amc_dict[0])
-    
-#     # first_key, first_value = next(iter(amc_dict.items()))
-#     # print(f"First key: {first_key}, First value: {first_value}")
-
-#     submitter_role_id = db.session.query(UserRole.id).filter(UserRole.name == "SUBMITTER").scalar()
-
-#     users_to_insert = []
-#     for amc_id, users in amc_dict.items():
-#         print(" in for looooooppppp")
-#         print(f"amc_id = {amc_id}")
-#         for temp_user in users:
-#             users_to_insert.append(User(
-#                 fname=temp_user['user_fname'],
-#                 lname=temp_user['user_lname'],
-#                 email=temp_user['user_email'],
-#                 password="11111",
-#                 userrole_id=submitter_role_id,
-#                 amc_id=amc_id,
-#                 isactive=1,
-#                 created_at=datetime.now(timezone.utc)
-#             ))
-
-#     # Bulk insert
-#     try:
-#         db.session.bulk_save_objects(users_to_insert)
-#         db.session.commit()
-#         print(f"Successfully inserted {len(users_to_insert)} users.")
-#     except IntegrityError as e:
-#         db.session.rollback()
-#         print(f"Error inserting users: {str(e)}")
-#         # Handle duplicate emails or other integrity errors
-#         # You might want to update existing users or skip duplicates
-#     except Exception as e:
-#         db.session.rollback()
-#         print(f"An error occurred: {str(e)}")
-        
-
-
-# def df_to_amc_dict(df):
-#     print('df_to_amc_dict()')
-    
-#     amc_dict = {}
-    
-#     # Get all AMC IDs
-#     amc_ids = df['amc_id'].unique()
-    
-#     for amc_id in amc_ids:
-#         amc_df = df[df['amc_id'] == amc_id]
-        
-#         users = []
-#         for i in range(1, 7):  # Assuming you have POC1 to POC6
-#             user_data = amc_df[[f'user{i}_fname', f'user{i}_lname', f'user{i}_email']]
-            
-#             # Check if any field is not null
-#             mask = user_data.notna().any(axis=1)
-#             valid_users = user_data[mask]
-            
-#             users.extend([
-#                 {
-#                     'user_fname': row[f'user{i}_fname'] if pd.notna(row[f'user{i}_fname']) else '',
-#                     'user_lname': row[f'user{i}_lname'] if pd.notna(row[f'user{i}_lname']) else '',
-#                     'user_email': row[f'user{i}_email'] if pd.notna(row[f'user{i}_email']) else ''
-#                 }
-#                 for _, row in valid_users.iterrows()
-#             ])
-        
-#         amc_dict[amc_id] = users
-        
-#         # print(amc_dict)
-    
-#     return amc_dict
 
 
 # @bp.route("/populate-pms-nav", methods=["GET"])
@@ -969,6 +900,7 @@ def populate_pms_nav():
         )
     except Exception as e:
         db.session.rollback()
+        print(f"error: {str(e)}")
         return jsonify({"error": str(e)}), 500
     
     
@@ -1034,7 +966,7 @@ def dummy_pmsperf():
         )
     except Exception as e:
         db.session.rollback()
-        print(f"error: str(e)")
+        print(f"error: {str(e)}")
         return jsonify({"error": str(e)}), 500        
     
 
@@ -1103,7 +1035,7 @@ def dummy_indexperf():
         )
     except Exception as e:
         db.session.rollback()
-        print(f"error: str(e)")
+        print(f"error: {str(e)}")
         return jsonify({"error": str(e)}), 500     
     
 # @bp.route("/load-dummy-stock", methods=["GET"])
@@ -1136,7 +1068,6 @@ def loadDummySector():
 
 # @bp.route("/load-dummy-pmsstocks", methods=["GET"])
 def loadDummyPmsStocks():
-    
     print("loadDummyPmsStocks()")
     dummy_stock_id = (
         db.session.query(StockMaster).filter(StockMaster.stock_symbol == "DUMMY").first().id
@@ -1181,7 +1112,7 @@ def loadDummyPmsStocks():
         )
     except Exception as e:
         db.session.rollback()
-        print(f"error: str(e)")
+        print(f"error: {str(e)}")
         return jsonify({"error": str(e)}), 500        
 
 
@@ -1189,6 +1120,8 @@ def loadDummyPmsStocks():
 # @bp.route("/load-dummy-pmssector", methods=["GET"])
 def loadDummyPmsSectors():
     print("loadDummyPmsSectors()")
+    
+
     
     # print("loadDummyPmsSectors()")
     dummy_sector_id = (
@@ -1234,5 +1167,56 @@ def loadDummyPmsSectors():
         )
     except Exception as e:
         db.session.rollback()
-        print(f"error: str(e)")
+        print(f"error: {str(e)}")
         return jsonify({"error": str(e)}), 500        
+
+#############
+
+# def loadPmsSectors():
+#     print("loadPmsSectors()")
+    
+#     FILE_NAME = os.path.join(current_dir, "init_data", "Portfolio_Holdings_28-08-2024.csv")
+    
+
+    
+#     output_file = 'processed_holdings.csv'
+#     # df.to_csv(output_file, index=False)
+        
+
+#     # Usage
+#     input_file = FILE_NAME
+#     output_file = 'processed_holdings.csv'
+
+#     # with current_app.app_context():
+#     process_holdings_csv(input_file, output_file)
+        
+    
+#     # Function to process each holding
+# def process_holdings_csv(input_file, output_file):
+#     print('process_holdings_csv()')
+#     # Get all stocks
+#     stocks_list = getAllStocks()
+
+#     # Create a dictionary for faster lookups
+#     # We'll use uppercase stock names as keys for case-insensitive matching
+#     stocks_dict = {stock.stock_name.strip().upper(): stock.id for stock in stocks_list}
+
+#     # Read the CSV file
+#     df = pd.read_csv(input_file)
+
+#     # Function to lookup stock ID
+#     def get_stock_id(stock_name):
+#         stock_name = stock_name.strip().upper()
+#         return stocks_dict.get(stock_name)
+
+#     # Apply the processing to the 'Holding' column and create a new 'StockID' column
+#     df['Holding'] = df['Holding'].str.strip().str.upper()
+#     df['StockID'] = df['Holding'].apply(get_stock_id)
+
+#     # Display the updated DataFrame
+#     print(df.head())
+#     print(df.info())
+
+#     # Save the updated DataFrame to a new CSV file
+#     df.to_csv(output_file, index=False)
+#     print(f"Processed data saved to {output_file}")

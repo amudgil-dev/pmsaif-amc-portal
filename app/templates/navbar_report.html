@@ -18,13 +18,45 @@
 
   {% set local_css_url = url_for('static', filename='css/style.css') %}
   <link rel="stylesheet" href="{{local_css_url}}">
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var dropdownToggle = document.querySelector('#reportsDropdown');
+      var dropdownMenu = document.querySelector('.dropdown-menu');
+      
+      // Function to close the dropdown
+      function closeDropdown() {
+        dropdownMenu.classList.remove('show');
+      }
+    
+      // Toggle dropdown on click
+      dropdownToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent this click from being caught by the document listener
+        dropdownMenu.classList.toggle('show');
+      });
+    
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!dropdownMenu.contains(e.target) && !dropdownToggle.contains(e.target)) {
+          closeDropdown();
+        }
+      });
+    
+      // Close dropdown on Escape key press
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeDropdown();
+        }
+      });
+    });
+    </script>
   <title>PMSAIF World</title>
 </head>
 
 <body>
   <nav class="navbar navbar-expand-sm navbar-dark bg-dark p-3 " >
     <div class="container" >
-      <a href="" class="navbar-brand">PMSAIFWorld</a>
+      <a href="" class="navbar-brand">PMS AIF WORLD</a>
       <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -40,7 +72,7 @@
               {% if is_admin %}
 
                 <li class="nav-item">
-                  <a href="{{url_for('admin.amclist')}}" class="nav-link">
+                  <a href="{{url_for('admin.admin_home')}}" class="nav-link">
                     AMC List &nbsp; | 
                   </a>
                 </li>
@@ -50,11 +82,20 @@
                   </a>
                 </li>
       
-                <li class="nav-item">
-                  <a href="{{url_for('admin.pms_reports')}}" class="nav-link">
-                    PMS Reports
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Reports
                   </a>
-                </li>              
+                  <ul class="dropdown-menu" aria-labelledby="reportsDropdown">
+                    <li><a class="dropdown-item" href="{{url_for('admin_report.pms_reports')}}">PMS Performance Report</a></li>
+                    <li><a class="dropdown-item" href="{{url_for('admin_report.pms_reports')}}">PMS Holding Report - WIP </a></li>
+                    <li><a class="dropdown-item" href="{{url_for('admin_report.pms_reports')}}">PMS Sector Report - WIP </a></li>                                        
+                    <li><a class="dropdown-item" href="{{url_for('admin_report.pms_reports')}}">NAV Report - WIP </a></li>
+                    
+                    <!-- Add more report items as needed -->
+                  </ul>
+                </li>
+   
   
               {% else %}            
 
@@ -150,7 +191,7 @@
           <p class="lead text-center">
             Copyright &copy;
             <span id="year"></span>
-            PMSAIF World
+            PMS AIF WORLD
           </p>
         </div>
       </div>

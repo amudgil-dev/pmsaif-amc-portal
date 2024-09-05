@@ -1,12 +1,13 @@
 import calendar
 from datetime import datetime
-from sqlite3 import IntegrityError
+# from sqlite3 import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import Blueprint, render_template, redirect, send_file, url_for, flash,current_app,request
 from flask_login import login_user, logout_user, login_required, current_user
 from markupsafe import Markup
 from app.helpers.helper_excel import write_Excel_report
 from app.helpers.helper_util import generate_resetlink,email_resetlink, getLastMonthYYMM, isAdmin
-from app.helpers.queries import getIndexListing, getIndexPerformance, getPerformanceReport,getAmcListing,getAdminPmsListing, getUserListing
+from app.helpers.queries import getAdminPmsListingByIndex, getIndexListing, getIndexPerformance, getPerformanceReport,getAmcListing,getAdminPmsListing, getUserListing
 from app.models.models import AMCMaster, IndexMaster, IndexPerformance, User, UserRole
 from app.forms.forms import DummyForm, IndexPerformanceEditForm, IndexPerformanceForm, ResetPasswordForm, ResetRequestForm, SigninForm, SignupForm
 from app.helpers.auth_helper import AuthHelper
@@ -16,12 +17,13 @@ from app.extensions import login_manager, db
 bp_admin = Blueprint('admin', __name__)
 
 
+
 @bp_admin.route('/admin')
 @login_required
 @AuthHelper.check_session
 @AuthHelper.check_pms_authorisations
-def amclist():
-  print('amclist()')
+def admin_home():
+  print('admin_home()')
   # loggedin = 0
   user_name = ""
 
@@ -30,6 +32,8 @@ def amclist():
   # print(f"current_user.id = {current_user.id}")
   amc_list = getAmcListing()
   # print(pms_list)
+  if is_empty(amc_list):
+    return redirect(url_for('admin.admin_home'))
   
   return render_template('admin_amc_listing.html',
                          is_authenticated = current_user.is_authenticated,
@@ -50,7 +54,9 @@ def index_list():
 
       
   index_list = getIndexListing()
-  
+  if is_empty(index_list):
+    return redirect(url_for('admin.admin_home'))
+    
   return render_template('admin_index_listing.html',
                          is_authenticated = current_user.is_authenticated,
                          is_admin=isAdmin(current_user.userrole_id),                         
@@ -67,6 +73,10 @@ def view_indexperf(index_id):
   print('view_indexperf()')
       
   index_perf = getIndexPerformance(index_id)
+  # print('back in function')
+  if is_empty(index_perf):
+    return redirect(url_for('admin.admin_home'))
+    
 
   return render_template('admin_index_perf.html',
                          is_authenticated = current_user.is_authenticated,
@@ -83,14 +93,13 @@ def view_indexperf(index_id):
 @AuthHelper.check_session
 @AuthHelper.check_admin_authorisations
 def edit_indexperf(index_id):
-  # print('in edit_indexperf()')
+  print('in edit_indexperf()')
 
   index_perf = IndexPerformance.query.filter_by(id=index_id).order_by(IndexPerformance.id.desc()).first()
-
-  if index_perf is None:
-    flash('Not Authorised, please contat PMSAIF Administrator!', 'danger')
-    # print('Index Id not found not valid')
-    return redirect(url_for('admin.admin_home'))
+  # index_perf_list = [index_perf] if index_perf else []
+  
+  if is_empty(index_perf):
+    return redirect(url_for('admin.edit_indexperf', index_id=index_id))
   
   index = IndexMaster.query.filter_by(id=index_perf.index_id).first()
 
@@ -246,110 +255,8 @@ def new_indexperf(index_id):
         print(form.errors)
         flash(form.errors,'danger')
         # return redirect('/pmslist')
-        return redirect(url_for('admin.admin_home'))
+        return redirect (url_for('admin.new_indexperf', index_id=index_id))
         # Process the data as needed (e.g., store in a database)
-
-
-@bp_admin.route('/admin/pmsreports', methods=['GET', 'POST'])
-@login_required
-@AuthHelper.check_session
-@AuthHelper.check_admin_authorisations
-def pms_reports():
-  # print('in pms_reports()')
-  form = DummyForm()
-
-
-  if request.method == 'POST':
-    # print('in post')
-
-
-    selected_month_year = request.form['monthYear']
-    selected_month = int(selected_month_year[:2])  # Extract month as integer
-    selected_year = int(selected_month_year[2:])   # Extract year as integer
-
-    # print(selected_month, selected_year)
-  
-    month = selected_month
-    year = selected_year
-    df = getPerformanceReport(month, year)
-
-    df = df.fillna('-')
-    # df = df.replace(np.nan, '---')
-
-    # print(df['Large'])
-    
-    # constraining the relevant columns to two decimal place only
-    df.Large = df.Large.round(2)
-    df.Mid = df.Mid.round(2)
-    df.Small = df.Small.round(2)    
-    df.cash = df.cash.round(2)    
-    # df['Large'] = df['Large'].map('{:,.2f}'.format)
-    # df['Mid'] = df['Mid'].map('{:,.2f}'.format)
-    # df['Small'] = df['Small'].map('{:,.2f}'.format)
-    # df['Cash'] = df['Cash'].map('{:,.2f}'.format)    
-
-    keys = df.keys()
-
-    # print(keys)
-    # print(len(keys))
-    lists= df.values.tolist()
-    
-    # print(lists)
-    
-    temp_date  = datetime(int(year), int(month), 1)
-    date_display = temp_date.strftime("%B, %Y")
- 
-    return render_template('admin_pms_report.html', 
-                                  is_authenticated = current_user.is_authenticated,
-                                  is_admin=isAdmin(current_user.userrole_id),                                  
-                                  user_name= current_user.fname + " " + current_user.lname,
-                                  month=month,
-                                  year= year,
-                                  form=form,
-                                  page_heading="All PMS Report  for  - " +date_display,   
-                          keys=keys,lists=lists)
-
-  if request.method == 'GET':
-    # print('in get')
-    return render_template('admin_pms_report.html', 
-                                is_authenticated = current_user.is_authenticated,
-                                is_admin=isAdmin(current_user.userrole_id),                                
-                                user_name= current_user.fname + " " + current_user.lname,
-                                form=form,
-                                page_heading=" PMS Report  " 
-                        )
-
-
-@bp_admin.route('/download_excel', methods=['GET','POST'])
-@login_required
-@AuthHelper.check_session
-@AuthHelper.check_admin_authorisations
-def download_excel():
-    # print('in download_excel()')
-    form = DummyForm()
-    
-    # selected_month_year = request.form['month']
-    # selected_month = int(selected_month_year[:2])  # Extract month as integer
-    # selected_year = int(selected_month_year[2:])   # Extract year as integer
-
-    month = request.form.get('month')  # Get the selected month from the form data  
-    year = request.form.get('year')
-    month = int(month)
-    year = int(year)
-    # Get the month name from its number
-    month_name = calendar.month_name[month]
-
-    # Format the string
-    formatted_string = f"{year}_{month_name[:3]}"
-
-    file_name ="PMSReport_"+ formatted_string+".xlsx"
-    df = getPerformanceReport(month, year)
-    # df = df.fillna('-')
-    excel_file = write_Excel_report(df)
-    print('download_excel() ')
-
-    # Return the Excel file as an attachment
-    return send_file(excel_file, download_name=file_name, as_attachment=True)
 
 
 
@@ -359,15 +266,13 @@ def download_excel():
 @AuthHelper.check_session
 @AuthHelper.check_admin_authorisations
 def admin_pmslist(amc_id):
-  print('admin_pmslist()')
-  print(f"amc_id = {amc_id}")
+  # print('admin_pmslist()')
+  # print(f"amc_id = {amc_id}")
   pms_list = getAdminPmsListing(amc_id)
-  print(pms_list)
-  
-    
-  # loggedin,user_name = get_user_status()
-  
-  # print(f" current_user details: {current_user}")
+  # print(pms_list)
+  if is_empty(pms_list):
+    return redirect(url_for('admin.admin_home'))
+
   
   return render_template('pms_listing.html',
                          is_authenticated = current_user.is_authenticated,
@@ -387,6 +292,12 @@ def admin_userlist(amc_id):
   user_list = getUserListing(amc_id)
   # print(user_list)
   amc_record = AMCMaster.query.filter_by(amc_id=amc_id).first()
+  
+  print(f"amc_record ==> {amc_record} and type = {type(amc_record)}")
+  
+  if amc_record is None:
+    flash (' Not found, contact administrator! ', 'warning')
+    return redirect('/admin')
   
   return render_template('admin_amc_user_listing.html',
                          is_authenticated = current_user.is_authenticated,
@@ -438,6 +349,8 @@ def user_registeration(amc_id):
       newUser = User(fname=fname,lname=lname, email=email, amc_id=amc_id, password="11111", userrole_id=user_role,isactive=1,created_at=datetime.now())
 
       try:
+        print(' Before adding the user to the session...')
+        print(f"user = {newUser}")
         db.session.add(newUser)
         db.session.commit()
         # # logging user registration 
@@ -462,7 +375,7 @@ def user_registeration(amc_id):
         # return redirect('/admin/<int:amc_id>')
         return redirect('/admin/users/'+str(amc_id))
       
-      except IntegrityError as exc:
+      except SQLAlchemyError as exc:
        print('Integrity Error occured!!!')
        db.session.rollback()
        flash("EmailId is already registered, login/reset password or register with another email !",'danger')
@@ -591,6 +504,43 @@ def admin_edit_user(user_id):
   
   return redirect('/admin/users/'+str(amc_id))
 
-
-
  
+@bp_admin.route('/admin/index/<int:index_id>')
+@login_required
+@AuthHelper.check_session
+@AuthHelper.check_admin_authorisations
+def admin_pmslist_by_index(index_id):
+  print('admin_pmslist_by_index()')
+  print(f"index_id = {index_id}")
+  pms_list = getAdminPmsListingByIndex(index_id)
+  # print(pms_list)
+  
+  
+  if is_empty(pms_list):
+    return redirect(url_for('admin.admin_home'))
+    
+  # loggedin,user_name = get_user_status()
+  
+  # print(f" current_user details: {current_user}")
+  
+  return render_template('pms_listing_for_index.html',
+                         is_authenticated = current_user.is_authenticated,
+                         is_admin=isAdmin(current_user.userrole_id),                         
+                         user_name= current_user.fname + " " + current_user.lname,
+                         page_heading="List of PMS",
+                         pms_list=pms_list)
+  
+def is_empty(data_list, redirect_url='admin.admin_home', flash_message='No data found. Redirecting to home.'):
+  
+  if isinstance(data_list, list):
+      if data_list is None or len(data_list) == 0:
+        flash(flash_message, 'warning')
+        return redirect(url_for(redirect_url))
+      return False
+  else:
+    if data_list is None:
+      flash(flash_message, 'warning')
+      return redirect(url_for(redirect_url))
+    return False
+      
+

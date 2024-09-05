@@ -2,36 +2,20 @@
 
 {% block content  %}
 
-<div class="container">
-    <div class="row">
-      <div class="col-sm-12 m-auto">
-
-        {% for category, message in get_flashed_messages(with_categories=True) %}
-                
-            <div class="alert alert-{{category}} alert-dismissible">
-                <strong>{{ message }}</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
-            </div>
-
-        {% endfor %}
-
-
-
-            <br>        <br>        <br>
-
-                <h1> Welcome to the PMSAIFWorld Partner Portal!</h1>
-                <br>        <br>        <br>        <br>    
-                {% if loggedin == 0 %}
-                <h2> Please <a href="{{ url_for('auth.login')}}">login</a> to submit the performance of your PMS strategies!</h2>
-                {% endif %}
-                <div class="row">
-                <br>        <br>        <br>        <br>        <br>        <br>        <br>       
-                <br>        <br>              <br>        <br>      
-                <br>        <br>        <br>        <br>        <br>
-
-            </div>
-      </div>
-    </div>
+<div class="text-center">
+    <br><br><br>
+    <h1>Welcome to the partner portal of PMS AIF WORLD !</h1>
+    <br><br><br><br>
+    {% if not loggedin %}
+        <h2>To submit the performance of your PMS strategies, </h2>
+        <h2>
+            <br>
+            please <a href="{{ url_for('auth.login') }}" style="font-weight: bold; font-size: 1.5em;">login here</a>
+        </h2>
+    {% endif %}
+    <br><br><br><br><br><br><br>
+    <br><br><br><br>
+    <br><br><br><br><br>
 </div>
 
 {% endblock %}

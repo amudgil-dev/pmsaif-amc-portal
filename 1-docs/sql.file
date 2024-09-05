@@ -1,0 +1,23 @@
+select structure_id, name from structure_master order by structure_id
+select category_id, name from category_master order by category_id
+
+select id index_id, name from index_master order by id
+
+select amc_id, name from amc_master order by amc_id
+
+select amc_id, pms_id, name , structure_id, category_id, index_id from pms_master order by amc_id, pms_id
+
+select t1.amc_id, t2.name amc_name, t1.pms_id, t1.name pms_name , t1.structure_id , t4.name structure_name, 
+t1.category_id, t5.name category_name, t1.index_id, t3.name index_name 
+from pms_master t1, amc_master t2, index_master t3, structure_master t4, category_master t5
+where t1.amc_id = t2.amc_id 
+and   t1.index_id = t3.id
+and   t1.structure_id = t4.structure_id
+and   t1.category_id = t5.category_id
+order by t1.amc_id, t1.pms_id
+
+select t1.id, t1.amc_id, name , fname, lname, email  from user t1, amc_master t2
+where t1.amc_id = t2.amc_id
+order by t1.amc_id
+
+

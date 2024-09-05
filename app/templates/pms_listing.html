@@ -31,6 +31,10 @@
               <thead class="thead-dark">
                 <tr>
                   <th>#</th>
+                  {% if is_admin %}
+                  <th>Scheme Id</th>
+                  {% endif %}
+
                   <th>PMS Name</th>
                   <th>Index</th>
                   <th></th>
@@ -41,6 +45,9 @@
                 {% for pms in pms_list %}
                 <tr>
                   <td>{{loop.index}}</td>
+                  {% if is_admin %}
+                  <th>{{pms.pms_id}}</th>
+                  {% endif %}                  
                   <td>{{pms.pms_name}}</td>
                   <td>{{pms.index_name}}</td>
                   <td>

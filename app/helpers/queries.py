@@ -45,6 +45,7 @@ def getPmsListing(user_id):
 
 def getAdminPmsListing(amc_id):
     print('getAdminPmsListing()')
+    print(amc_id)
     
     query = 'select t1.amc_id amc_id, t1.name amc_name, t2.name pms_name, t2.pms_id pms_id, t2.index_id index_id, t3.name index_name   '\
             ' from amc_master t1 , pms_master t2 , index_master t3  '\
@@ -67,9 +68,10 @@ def getAdminPmsListing(amc_id):
   
             pms_array = [dict(zip(label_tuple, row)) for row in records]
      
-            # print(pms_array)
+            print(f"pms_array : {pms_array}")
             return pms_array
     except Exception as e:
+        print(" getAdminPmsListing () IN EXCEPTION")
         print(f"in getPmsListing() exception : {e}" )
         current_app.logger.error(f"Error in getPmsListing: {e}")
         
@@ -77,6 +79,40 @@ def getAdminPmsListing(amc_id):
     
 
 
+
+def getAdminPmsListingByIndex(index_id):
+    print('getAdminPmsListingByIndex()')
+    print(index_id)
+    
+    query = 'select t1.amc_id amc_id, t1.name amc_name, t2.name pms_name, t2.pms_id pms_id, t2.index_id index_id, t3.name index_name   '\
+            ' from amc_master t1 , pms_master t2 , index_master t3  '\
+            '  where t2.index_id =   '+str(index_id) +' '\
+            ' and t1.amc_id = t2.amc_id ' \
+            ' and t2.index_id = t3.id '
+    
+    
+    label_tuple = ('amc_id', 'amc_name', 'pms_name', 'pms_id', 'index_id', 'index_name')    
+
+
+    try:
+
+        with current_app.app_context():
+            
+            with db.engine.connect() as connection:
+ 
+                result = connection.execute(text(query), {"index_id": index_id})
+                records = result.fetchall()
+  
+            pms_array = [dict(zip(label_tuple, row)) for row in records]
+     
+            # print(f"pms_array : {pms_array}")
+            return pms_array
+    except Exception as e:
+        print(" getAdminPmsListing () IN EXCEPTION")
+        print(f"in getPmsListing() exception : {e}" )
+        current_app.logger.error(f"Error in getPmsListing: {e}")
+        
+        return None    
     
     
 def getUserListing(amc_id):
@@ -114,7 +150,7 @@ def getAmcListing():
     print('getAmcListing()')
     
     query = 'select t1.amc_id amc_id, t1.name amc_name   '\
-            ' from amc_master t1   '
+            ' from amc_master t1 order by t1.amc_id  '
     
     
     label_tuple = ('amc_id', 'amc_name')    
@@ -265,11 +301,19 @@ def getIndexPerformance(index_id):
     sql = text(query)
     records = db.session.execute(sql)
     # print(records)
+    print(type(records))
 
-    tuple_list = [i for i in records]
-    tuple = tuple_list[0]
-    index_perf = tuple
-    return tuple_list 
+    # Convert the result to a list
+    result_list = list(records)
+
+    # Check if the list is empty
+    if not result_list:
+        return None
+    else:
+        return result_list
+
+        
+ 
 
 def getPmsDetails(pms_id):
     print('getPmsDetails()')
@@ -525,7 +569,7 @@ def getPMSPerfDF(month, year):
     popped = df_pms.pop('No. of stocks')
     df_pms.insert(3, 'No. of stocks', popped)
 
-    # print(df_pms.keys())
+    print(df_pms.keys())
     
 
     # popping the AUM column and inserting it into correct place after cash
@@ -537,8 +581,11 @@ def getPMSPerfDF(month, year):
     
     # Adding Structure and Category column
     
-    df_pms["Category"] = 3
-    df_pms["Structure"] = 1    
+    # df_pms["Category"] = 3
+    # df_pms["Structure"] = 1    
+    
+    df_pms = df_pms.rename(columns={'structure_id': 'Structure'}) 
+    df_pms = df_pms.rename(columns={'category_id': 'Category'})     
     
     # print('After adding structure ', df_pms.keys())    
         
@@ -665,3 +712,102 @@ def getPmsNavDataList(pms_id):
     # pms_sectors = getPmsSectors(pms_id)
 
     return pms_details, pms_nav
+
+
+def getAllStocks():
+    print('getAllStocks()')
+
+    query = ' select '\
+            ' t1.id id , t1.stock_ref stock_ref, t1.name stock_name, t1.stock_symbol stock_symbol, t1.isin_code isin_code'\
+            ' from stock_master t1 '
+                
+    try:
+        with current_app.app_context():
+            with db.engine.connect() as connection:
+                result = connection.execute(text(query))
+                records = result.fetchall()
+                
+                tuple_list = [i for i in records]
+                stocks_list = tuple_list
+                
+                return stocks_list
+
+    except:
+        None
+
+
+# def getNavReports():
+#     print('getPmsSectors()')
+
+#     query = ''' SELECT 
+#                 COALESCE(am.name, 'No AMC') AS Company,
+#                 pm.name AS Scheme,
+#                 pm.id AS "Scheme Id",
+#                 CASE 
+#                     WHEN rn.p_year IS NOT NULL AND rn.p_month IS NOT NULL 
+#                     THEN date(rn.p_year || '-' || printf('%02d', rn.p_month) || '-01') 
+#                     ELSE NULL 
+#                 END AS "Nav Date",
+#                 rn.nav AS Nav
+#                 FROM PMS_Master pm
+#                 LEFT JOIN AMC_Master am ON pm.amc_id = am.id
+#                 LEFT JOIN ranked_nav rn ON pm.id = rn.pms_id AND rn.rn = 1
+#                 ORDER BY COALESCE(am.name, 'No AMC'), pm.name;'''
+
+#     try:
+#         with current_app.app_context():
+#             with db.engine.connect() as connection:
+#                 result = connection.execute(text(query))
+#                 records = result.fetchall()
+                
+#                 tuple_list = [i for i in records]
+#                 nav_records = tuple_list
+                
+#                 return nav_records
+
+#     except:
+#         None
+
+def getNavReports():
+    print('getPmsSectors()')
+
+    query = '''
+            WITH ranked_nav AS (
+                SELECT *,
+                    ROW_NUMBER() OVER (PARTITION BY pms_id ORDER BY p_year DESC, p_month DESC) as rn
+                FROM pms_nav
+            )
+            SELECT 
+                COALESCE(am.name, 'No AMC') AS Company,
+                pm.name AS Scheme,
+                pm.id AS "Scheme Id",
+                CASE 
+                    WHEN rn.p_year IS NOT NULL AND rn.p_month IS NOT NULL 
+                    THEN date(rn.p_year || '-' || printf('%02d', rn.p_month) || '-01') 
+                    ELSE NULL 
+                END AS "Nav Date",
+                rn.nav AS Nav
+            FROM PMS_Master pm
+            LEFT JOIN AMC_Master am ON pm.amc_id = am.id
+            LEFT JOIN ranked_nav rn ON pm.id = rn.pms_id AND rn.rn = 1
+            ORDER BY COALESCE(am.name, 'No AMC'), pm.name
+        '''
+    try:
+        with current_app.app_context():
+            with db.engine.connect() as connection:
+                result = connection.execute(text(query))
+                
+                # Fetch the column names
+                columns = result.keys()
+                
+                # Fetch all records
+                records = result.fetchall()
+                
+                # Create DataFrame
+                df = pd.DataFrame(records, columns=columns)
+                
+                return df
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None

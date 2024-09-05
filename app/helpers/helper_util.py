@@ -329,3 +329,18 @@ def get_missing_months(existing_data):
 
     # Convert missing months to (year, month) format
     return [(d.year, d.month) for d in missing_months]
+
+
+def is_empty(data_list, request, flash_message='No data found.'):
+    if data_list is None or len(data_list) == 0:
+        flash(flash_message, 'warning')
+        
+        # Get the current path
+        current_path = request.path
+        
+        # Determine the appropriate redirect based on the current path
+        if current_path.startswith('/admin'):
+            return redirect(url_for('admin.admin_home'))
+        else:
+            return redirect(url_for('home'))  # Assuming you have a 'home' route
+    return False
