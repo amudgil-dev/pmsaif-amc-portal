@@ -509,7 +509,7 @@ def getPerformanceReport(month, year):
     merged_df = merged_df.drop(columns=['index_id'], axis=1)
     merged_df = merged_df.rename(columns={
                             'amc_id': 'Company Id',
-                            'pms_id': 'Scheme Id'
+                            'pms_id': 'Scheme ID'
                             
                             })   
 
@@ -517,8 +517,15 @@ def getPerformanceReport(month, year):
 
     popped = merged_df.pop('Company Name')
     merged_df.insert(0, 'Company Name', popped)
+    
     popped = merged_df.pop('Scheme Name')
     merged_df.insert(1, 'Scheme Name', popped)
+    
+    popped = merged_df.pop('No. of stocks')
+    merged_df.insert(6, 'No. of stocks', popped)    
+    
+    popped = merged_df.pop('AUM')
+    merged_df.insert(12, 'AUM', popped)        
 
     return merged_df
 
@@ -569,7 +576,7 @@ def getPMSPerfDF(month, year):
     popped = df_pms.pop('No. of stocks')
     df_pms.insert(3, 'No. of stocks', popped)
 
-    print(df_pms.keys())
+    print(f"df_pms.keys() after No of Stocks => {df_pms.keys()}")
     
 
     # popping the AUM column and inserting it into correct place after cash
@@ -584,17 +591,17 @@ def getPMSPerfDF(month, year):
     # df_pms["Category"] = 3
     # df_pms["Structure"] = 1    
     
-    df_pms = df_pms.rename(columns={'structure_id': 'Structure'}) 
-    df_pms = df_pms.rename(columns={'category_id': 'Category'})     
+    df_pms = df_pms.rename(columns={'structure_id': 'Structure ID'}) 
+    df_pms = df_pms.rename(columns={'category_id': 'Category Id'})     
     
     # print('After adding structure ', df_pms.keys())    
         
     # popping the Category and Structure column and inserting it into correct place after Scheme ID
-    popped = df_pms.pop('Category')
-    df_pms.insert(3, 'Category', popped)
+    popped = df_pms.pop('Category Id')
+    df_pms.insert(3, 'Category Id', popped)
         
-    popped = df_pms.pop('Structure')
-    df_pms.insert(4, 'Structure', popped)    
+    popped = df_pms.pop('Structure ID')
+    df_pms.insert(4, 'Structure ID', popped)    
     
     # print(df_pms.keys())    
     
