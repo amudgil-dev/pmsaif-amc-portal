@@ -10,23 +10,13 @@
 
     <div class="container mt-4">
         <div class="row align-items-end">
+
             <div class="col-md-4 mb-3">
-                <form id="myForm" action="{{ url_for('admin_report.pms_reports') }}" method="POST" class="d-flex align-items-end">
-                    {{ form.csrf_token }}
-                    <div class="form-group mb-0 mr-2 flex-grow-1">
-                        <select class="form-control" id="monthYear" name="monthYear">
-                            <!-- Options will be dynamically populated here -->
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-            </div>
-            <div class="col-md-4 mb-3">
-                <form action="{{ url_for('admin_report.download_excel') }}" method="POST" class="d-flex justify-content-start">
+                <form action="{{ url_for('admin_report.dload_most_recent_nav_report') }}" method="POST" class="d-flex justify-content-start">
                     {{ form.csrf_token }}
                     <input type="hidden" id="month" name="month" value="{{month}}">
                     <input type="hidden" id="year" name="year" value="{{year}}">
-                    <button type="submit" class="btn btn-secondary">Download Excel</button>
+                    <button type="submit" class="btn btn-secondary">Download Report as Excel</button>
                 </form>
             </div>
         </div>
@@ -37,7 +27,9 @@
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
+                
                 <tr>
+                    <th>Record #</th>
                     {% for key in keys %}
                         <th>{{ key }}</th>
                     {% endfor %}
@@ -45,7 +37,9 @@
             </thead>
             <tbody>
                 {% for list in lists %}
+             
                     <tr>
+                        <td>{{loop.index}}</td>   
                         {% for item in list %}
                             <td>{{ item }}</td>
                         {% endfor %}

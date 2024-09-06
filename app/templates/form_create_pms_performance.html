@@ -171,7 +171,8 @@ function checkValidity() {
     // alert('checkValidity()');
     var mandatoryFields = ['one_month', 'cagr_si','si'];
     var optionalFields = ['three_months', 'six_months','twelve_months','two_year_cagr','three_year_cagr','five_year_cagr','ten_year_cagr'];
-    var pattern = /^\d+(\.\d{1,10})?$/;
+    // var pattern = /^\d+(\.\d{1,10})?$/;
+    var pattern = /^-?\d*\.?\d{0,10}$/; // Allow negative numbers 
         var isValid = true;
 
         // Check mandatory fields
@@ -204,7 +205,8 @@ document.getElementById('myform').addEventListener('submit', function(event) {
     if (!checkValidity()) {
         event.preventDefault();
         // document.getElementById('error-message').style.display = 'block';
-        $('#error-message').text('Field with * are mandatory, please fill with correct values!');
+
+            $('#error-message').text('Field with * are mandatory, please fill with numeric -ve/+ve values!');
     }
 });
 </script>

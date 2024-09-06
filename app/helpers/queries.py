@@ -4,6 +4,7 @@ from app.models.models import AMCMaster, PMSMaster, PMSStock, User, db
 from sqlalchemy import text
 from pandas import DataFrame
 import pandas as pd
+from pandas.tseries.offsets import MonthEnd
 from flask import current_app
 
 from app.helpers.helper_util import generate_range
@@ -739,65 +740,39 @@ def getAllStocks():
                 
                 return stocks_list
 
-    except:
-        None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 
-# def getNavReports():
-#     print('getPmsSectors()')
 
-#     query = ''' SELECT 
-#                 COALESCE(am.name, 'No AMC') AS Company,
-#                 pm.name AS Scheme,
-#                 pm.id AS "Scheme Id",
-#                 CASE 
-#                     WHEN rn.p_year IS NOT NULL AND rn.p_month IS NOT NULL 
-#                     THEN date(rn.p_year || '-' || printf('%02d', rn.p_month) || '-01') 
-#                     ELSE NULL 
-#                 END AS "Nav Date",
-#                 rn.nav AS Nav
-#                 FROM PMS_Master pm
-#                 LEFT JOIN AMC_Master am ON pm.amc_id = am.id
-#                 LEFT JOIN ranked_nav rn ON pm.id = rn.pms_id AND rn.rn = 1
-#                 ORDER BY COALESCE(am.name, 'No AMC'), pm.name;'''
-
-#     try:
-#         with current_app.app_context():
-#             with db.engine.connect() as connection:
-#                 result = connection.execute(text(query))
-#                 records = result.fetchall()
-                
-#                 tuple_list = [i for i in records]
-#                 nav_records = tuple_list
-                
-#                 return nav_records
-
-#     except:
-#         None
-
-def getNavReports():
-    print('getPmsSectors()')
+def getMostRecentNavReport():
+    print('getMostRecentNavReport()')
 
     query = '''
-            WITH ranked_nav AS (
-                SELECT *,
-                    ROW_NUMBER() OVER (PARTITION BY pms_id ORDER BY p_year DESC, p_month DESC) as rn
-                FROM pms_nav
-            )
-            SELECT 
-                COALESCE(am.name, 'No AMC') AS Company,
-                pm.name AS Scheme,
-                pm.id AS "Scheme Id",
-                CASE 
-                    WHEN rn.p_year IS NOT NULL AND rn.p_month IS NOT NULL 
-                    THEN date(rn.p_year || '-' || printf('%02d', rn.p_month) || '-01') 
-                    ELSE NULL 
-                END AS "Nav Date",
-                rn.nav AS Nav
-            FROM PMS_Master pm
-            LEFT JOIN AMC_Master am ON pm.amc_id = am.id
-            LEFT JOIN ranked_nav rn ON pm.id = rn.pms_id AND rn.rn = 1
-            ORDER BY COALESCE(am.name, 'No AMC'), pm.name
+                WITH ranked_nav AS (
+                    SELECT *,
+                        ROW_NUMBER() OVER (PARTITION BY pms_id ORDER BY p_year DESC, p_month DESC) as rn
+                    FROM pms_nav
+                )
+                SELECT 
+                    COALESCE(am.id, 0) AS amc_id,  -- Include amc_id in the SELECT statement
+                    COALESCE(am.name, 'No AMC') AS Company,
+                    pm.name AS Scheme,
+                    pm.pms_id AS "Scheme Id",
+                    CASE 
+                        WHEN rn.p_year IS NOT NULL AND rn.p_month IS NOT NULL 
+                        THEN date(rn.p_year || '-' || printf('%02d', rn.p_month) || '-01') 
+                        ELSE NULL 
+                    END AS "Nav Date",
+                    rn.nav AS Nav
+
+                FROM PMS_Master pm
+                LEFT JOIN AMC_Master am ON pm.amc_id = am.amc_id
+                LEFT JOIN ranked_nav rn ON pm.id = rn.pms_id AND rn.rn = 1
+                ORDER BY 
+                    COALESCE(am.id, 0),  -- Sort by amc_id first, using 0 for NULL values
+                    pm.pms_id              -- Then sort by scheme name
         '''
     try:
         with current_app.app_context():
@@ -812,6 +787,25 @@ def getNavReports():
                 
                 # Create DataFrame
                 df = pd.DataFrame(records, columns=columns)
+                
+                # Convert 'Nav Date' to datetime
+                df['Nav Date'] = pd.to_datetime(df['Nav Date'])
+                
+                # Convert 'Nav Date' to datetime, coercing errors to NaT
+                df['Nav Date'] = pd.to_datetime(df['Nav Date'], errors='coerce')
+
+                # Get the last day of the month for each date
+                df['Nav Date'] = df['Nav Date'] + MonthEnd(0)
+
+                # Define a function to format dates, returning a blank string for NaT values
+                def format_date(date):
+                    return date.strftime('%d-%b-%Y') if pd.notnull(date) else ''
+
+                # Apply the formatting function to the 'Nav Date' column
+                df['Nav Date'] = df['Nav Date'].apply(format_date)
+
+                # Replace NaN values in the 'Nav' column with blank strings
+                df['Nav'] = df['Nav'].fillna('')
                 
                 return df
 

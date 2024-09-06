@@ -8,7 +8,7 @@ mkdir pmsweb
 
 ### rsync to ubuntu
 
-rsync -avz -e "ssh -i ~/.ssh/pmsaifappdb_oct23_key.pem" --exclude='instance/' --exclude '**pycache**' --exclude='venv' --exclude='.git' --exclude='logs' --exclude='logs/' ~/projects/pms-aif/pmsportal_aug_2024/ ubuntu@43.204.211.87:amcdata/
+rsync -avz -e "ssh -i ~/.ssh/pmsaifappdb_oct23_key.pem" --exclude='instance/' --exclude='instance' --exclude '**pycache**' --exclude='venv' --exclude='.git' --exclude='logs' --exclude='zzz_remote_code' --exclude='logs/' ~/projects/pms-aif/pmsportal_aug_2024/ ubuntu@43.204.211.87:amcdata/
 
 ### downloading database from remote into local location
 
