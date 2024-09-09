@@ -245,7 +245,7 @@ class PMSMaster(db.Model):
     aum = db.Column(db.REAL, nullable=False)
     stocks_min = db.Column(db.Integer, nullable=False)
     stocks_max = db.Column(db.Integer, nullable=False)
-    portfolio_pe = db.Column(db.REAL, nullable=False)
+    portfolio_pe = db.Column(db.REAL)
     large_cap = db.Column(db.REAL, nullable=False)
     mid_cap = db.Column(db.REAL, nullable=False)
     small_cap = db.Column(db.REAL, nullable=False)

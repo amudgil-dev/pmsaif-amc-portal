@@ -238,29 +238,66 @@ def getPmsPerformance(pms_id):
 
 def getPmsIndexPerformance(pms_id,month, year):
     print('getPmsIndexPerformance()')
-
-    query = ' select t2.id, t1.name index_name, t2.index_id index_id, '\
-        ' t2.p_month month, t2.p_year year,one_month, three_months,six_months,twelve_months,two_year_cagr,three_year_cagr,five_year_cagr,ten_year_cagr '\
-        ' from index_performance t2, index_master t1 '\
-        ' where t1.id = t2.index_id '\
-        ' and t2.index_id = (select index_id from pms_master where pms_id = '+str(pms_id)+') '\
-        ' and t2.p_month = '+str(month)+' and t2.p_year = '+str(year)+' '\
-        ' order by year desc, month desc, t2.id desc limit 1' 
     
-    label_index_perf = ('id','index_name', 'index_id', 'month', 'year', 'one_month', 'three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr')
+    # print(f" pms_id={pms_id}, month={month}  year={year} ")
+    query = text("""
+        SELECT t2.id, t1.name AS index_name, t2.index_id,
+               t2.p_month AS month, t2.p_year AS year,
+               one_month, three_months, six_months, twelve_months,
+               two_year_cagr, three_year_cagr, five_year_cagr, ten_year_cagr
+        FROM index_performance t2
+        JOIN index_master t1 ON t1.id = t2.index_id
+        WHERE t2.index_id = (SELECT index_id FROM pms_master WHERE pms_id = :pms_id)
+          AND t2.p_month = :month AND t2.p_year = :year
+        ORDER BY year DESC, month DESC, t2.id DESC
+        LIMIT 1
+    """)
+
+    params = {'pms_id': pms_id, 'month': month, 'year': year}
+
+    label_index_perf = ('id', 'index_name', 'index_id', 'month', 'year', 'one_month', 'three_months', 
+                        'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 
+                        'five_year_cagr', 'ten_year_cagr')
 
     try:
         with current_app.app_context():
             with db.engine.connect() as connection:
-                result = connection.execute(text(query), {"pms_id": pms_id})
+                result = connection.execute(query, params)
                 records = result.fetchall()
+                tuple_list = list(records)
+
+
+    # query = ' select t2.id, t1.name index_name, t2.index_id index_id, '\
+    #     ' t2.p_month month, t2.p_year year,one_month, three_months,six_months,twelve_months,two_year_cagr,three_year_cagr,five_year_cagr,ten_year_cagr '\
+    #     ' from index_performance t2, index_master t1 '\
+    #     ' where t1.id = t2.index_id '\
+    #     ' and t2.index_id = (select index_id from pms_master where pms_id = '+str(pms_id)+') '\
+    #     ' and t2.p_month = '+str(month)+' and t2.p_year = '+str(year)+' '\
+    #     ' order by year desc, month desc, t2.id desc limit 1' 
+    
+    # print(f"query = {query}")
+    
+    # label_index_perf = ('id','index_name', 'index_id', 'month', 'year', 'one_month', 'three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr')
+
+    # try:
+    #     with current_app.app_context():
+    #         with db.engine.connect() as connection:
+    #             result = connection.execute(text(query))
+    #             records = result.fetchall()
                 
-                tuple_list = [i for i in records]
-    except:
+    #             tuple_list = [i for i in records]
+    except Exception as e:
+        print('Exception occured ')
+        print(e)
         pass
+    
+    # print(tuple_list)
+    # print(type(tuple_list))
+    # print(len(tuple_list))
 
 
-    if len(tuple_list) > 1:
+    if len(tuple_list) >= 1:
+        print('Index perf record found')
         index_perf_tuple = tuple_list[0]
     else:
         print('No Records found generating zero value index records...')
