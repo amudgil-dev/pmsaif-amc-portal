@@ -29,7 +29,6 @@
     initFormSubmission(formSelector, selectedStocksTableSelector, pmsIdSelector, errorMessageSelector, submitUrl);
 }
 
-
 function initAutocomplete(selector, url, selectedStockIds, errorMessageSelector) {
     $(selector).autocomplete({
         source: (request, response) => {
@@ -41,11 +40,65 @@ function initAutocomplete(selector, url, selectedStockIds, errorMessageSelector)
             });
         },
         minLength: 3,
-        select: (event, ui) => handleStockSelection(event, ui, selectedStockIds, errorMessageSelector, selector)
+        select: (event, ui) => handleStockSelection(event, ui, selectedStockIds, errorMessageSelector)
     }).autocomplete("instance")._renderItem = (ul, item) => {
         return $("<li>").append("<div>" + item.label + "</div>").appendTo(ul);
     };
 }
+
+// function initAutocomplete(selector, url, selectedStockIds, errorMessageSelector) {
+//     $(selector).autocomplete({
+//         source: (request, response) => {
+//             $.ajax({
+//                 url: url,
+//                 dataType: 'json',
+//                 data: { query: request.term },
+//                 success: (data) => response(data)
+//             });
+//         },
+//         minLength: 3,
+//         select: (event, ui) => handleStockSelection(event, ui, selectedStockIds, errorMessageSelector, selector)
+//     }).autocomplete("instance")._renderMenu = function(ul, items) {
+//         var that = this;
+//         ul.addClass("autocomplete-results"); // Add the class for styling
+//         $.each(items, function(index, item) {
+//             that._renderItemData(ul, item);
+//         });
+//     };
+
+//     $(selector).autocomplete("instance")._renderItem = function(ul, item) {
+//         return $("<li>")
+//             .addClass("autocomplete-item")
+//             .append("<div>" + item.label + "</div>")
+//             .appendTo(ul);
+//     };
+
+//     // Add CSS for styling
+//     $("<style>")
+//     .prop("type", "text/css")
+//     .html(`
+//         .autocomplete-results {
+//             background: rgba(210, 180,140 , 1) !important; /* Fully opaque beige */
+//             border: 1px solid #dcd9c0 !important;
+//             max-height: 200px;
+//             overflow-y: auto;
+//         }
+//         .autocomplete-item {
+//             padding: 5px 10px;
+//             cursor: pointer;
+//             color: #000 !important; /* Black text color */
+//         }
+//         .autocomplete-item:hover,
+//         .ui-state-active {
+//             background: rgba(230, 230, 200, 1) !important; /* Fully opaque slightly darker beige for hover/selected */
+//             color: #000 !important; /* Keep text color black on hover */
+//             border: none !important;
+//         }
+//     `)
+//     .appendTo("head");
+// }
+
+
 
 function handleStockSelection(event, ui, selectedStockIds,errorMessageSelector) {
     const stockEntry = $(event.target).closest('.stock-entry');
