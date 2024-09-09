@@ -130,7 +130,7 @@ class PMSMasterEditForm(FlaskForm):
     stocks_min = IntegerField('Stocks Min', validators=[Optional() ,NumberRange(min=0)])
     stocks_max = IntegerField('Stocks Max', validators=[Optional() ,NumberRange(min=0)])
     
-    portfolio_pe = FloatField('Portfolio PE', validators=[Optional() ,NumberRange(min=0.0)])
+    portfolio_pe = FloatField('Portfolio PE', validators=[Optional() ])
     large_cap = FloatField('Large Cap Percent', validators=[Optional() ,NumberRange(min=0.0)]) 
     mid_cap = FloatField('Mid Cap Percent', validators=[Optional() ,NumberRange(min=0.0)])  
     small_cap = FloatField('Small Cap Percent', validators=[Optional() ,NumberRange(min=0.0)])

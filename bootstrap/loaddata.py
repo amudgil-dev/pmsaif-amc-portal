@@ -913,8 +913,8 @@ def dummy_pmsperf():
     pms_records = PMSMaster.query.all()
 
     # Set fixed values for month and year
-    p_month = 9  # September
-    p_year = 2023
+    p_month = 7  # September
+    p_year = 2024
 
     # Dummy user_id (replace with appropriate value)
     user_id = 1

@@ -161,7 +161,7 @@
         </div>
     </div>
 </div>   
-
+<!-- 
 <script>
     function checkBounds() {
         const aumValue = parseFloat($('#aum').val());
@@ -174,6 +174,7 @@
         }
         
         // Check total allocation percentage
+        alert('in checkBounds()');
         const largeCap = parseFloat($('#large_cap').val()) || 0;
         const midCap = parseFloat($('#mid_cap').val()) || 0;
         const smallCap = parseFloat($('#small_cap').val()) || 0;
@@ -185,6 +186,7 @@
             $('#error-message').text('Total allocation percentage cannot exceed 100%.');
             return false;
         } else {
+            alert(' total is < 100');
             $('#error-message').text('');
         }
     }
@@ -198,7 +200,7 @@
             }
         });
     });
-</script>
+</script> -->
 
 
 

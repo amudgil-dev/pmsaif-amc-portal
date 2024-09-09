@@ -20,7 +20,6 @@
             <div class="col-md-1" ></div>
             <div class="col-md-4" > <h2><i>AMC - {{amc.name}} </i></h3></div>
             <div class="col-md-2 offset-md-3" >
-               
             </div>
           </div>        
 
@@ -30,7 +29,7 @@
             {{ form.hidden_tag() }}
             <div class="container">
             <div class="row">
-                <div class="col-sm-6 m-auto">
+                <div class="col-sm-9 m-auto">
         
                         <br/>
                         <!-- Tables -->
@@ -125,6 +124,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                               
                         
                                 <div class="col-md-6 mb-1">
                                     <!--Table for PMS Hoding Data -->
@@ -141,6 +141,8 @@
                                             <div id="error-message" style="color: red; margin-top: 20px;"></div>
 
                                             {{ form.submit(class="btn btn-primary") }}
+
+                                         
                         
                                         </tbody>
                                     </table>
@@ -148,6 +150,16 @@
 
                             </div>
 
+                            <!-- <div class="row mt-3 mt-4 mr-0">
+                                <div id="help-message" style="color: rgb(0, 136, 255); margin-top: 20px; font-weight: bold; font-size: 24px;">
+                                    Valid values: -ve & +ve numeric without % sign. 
+
+                                    <br>
+                                    Fields with (*) are mandatory
+                                </div>
+                            </div> -->
+
+                            
                             <!-- NEW TABLE ENDS HERE -->
                         </div>
                         
@@ -161,8 +173,70 @@
     </div>
 </div>   
 
+<!-- <script>
+    function trimToTwoDecimalPlaces(value) {
+        var floatValue = parseFloat(value);
+        return floatValue.toFixed(2);
+    }
 
-<script>
+    function isValidNumber(value) {
+        return /^-?\d*\.?\d*$/.test(value) && value !== '';
+    }
+
+    function checkValidity() {
+        var mandatoryFields = ['one_month', 'cagr_si', 'si'];
+        var optionalFields = ['three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr'];
+        var isValid = true;
+        var errorMessages = [];
+
+        function validateField(fieldId, isMandatory) {
+            var input = document.getElementById(fieldId);
+            var value = input.value.trim();
+            var errorElement = document.getElementById(fieldId + '-error');
+
+            if (isMandatory && value === '') {
+                isValid = false;
+                errorElement.textContent = 'This field is required.';
+            } else if (value !== '' && !isValidNumber(value)) {
+                isValid = false;
+                errorElement.textContent = 'Please enter a valid number.';
+            } else {
+                errorElement.textContent = '';
+                if (value.includes('.') && value.split('.')[1].length > 2) {
+                    input.value = trimToTwoDecimalPlaces(value);
+                }
+            }
+        }
+
+        mandatoryFields.forEach(function(fieldId) {
+            validateField(fieldId, true);
+        });
+
+        optionalFields.forEach(function(fieldId) {
+            validateField(fieldId, false);
+        });
+
+        return isValid;
+    }
+
+    document.getElementById('myform').addEventListener('submit', function(event) {
+        if (!checkValidity()) {
+            event.preventDefault();
+            $('#error-message').text('Please correct the errors in the form.');
+        }
+    });
+
+    // Add input event listeners to all fields
+    var allFields = ['one_month', 'cagr_si', 'si', 'three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr'];
+    allFields.forEach(function(fieldId) {
+        document.getElementById(fieldId).addEventListener('input', function() {
+            checkValidity();
+        });
+    });
+</script> -->
+
+
+<!-- <script>
         function trimToTwoDecimalPlaces(value) {
             var floatValue = parseFloat(value);
             return floatValue.toFixed(2);
@@ -206,8 +280,122 @@
         if (!checkValidity()) {
             event.preventDefault();
             // document.getElementById('error-message').style.display = 'block';
-            $('#error-message').text('Field with * are mandatory, please fill with numeric -ve/+ve values!');
+            $('#error-message').text('Field with * are mandatory, please use valid values!');
         }
+    }); 
+</script> -->
+
+<script>
+    function trimToTwoDecimalPlaces(value) {
+        var floatValue = parseFloat(value);
+        return floatValue.toFixed(2);
+    }
+    
+    var invalid_fields = '';
+    
+    function checkValidity() {
+        var mandatoryFields = ['one_month', 'cagr_si', 'si'];
+        var optionalFields = ['three_months', 'six_months', 'twelve_months', 'two_year_cagr', 'three_year_cagr', 'five_year_cagr', 'ten_year_cagr'];
+        var pattern = /^-?\d*\.?\d{0,10}$/;
+        var isValid = true;
+    
+        // Check mandatory fields
+        mandatoryFields.forEach(function(fieldId) {
+            var input = document.getElementById(fieldId);
+            var value = input.value.trim();
+            if (value === '' || !pattern.test(value)) {
+                isValid = false;
+            } else if (value.includes('.') && value.split('.')[1].length > 2) {
+                input.value = trimToTwoDecimalPlaces(value);
+            }
+        });
+    
+        // Check optional fields
+        optionalFields.forEach(function(fieldId) {
+            var input = document.getElementById(fieldId);
+            var value = input.value.trim();
+            if (value !== '' && !pattern.test(value)) {
+                isValid = false;
+            } else if (value.includes('.') && value.split('.')[1].length > 2) {
+                input.value = trimToTwoDecimalPlaces(value);
+            }
+        });
+    
+        return isValid;
+    }
+    
+    function showFlashMessage(message, type = 'error') {
+    try {
+        console.log('Entering showFlashMessage() with message:', message);
+        
+        // Find the form
+        const form = document.getElementById('myform');
+        if (!form) {
+            throw new Error('Form not found');
+        }
+        
+        // Create flash message container if it doesn't exist
+        let flashContainer = document.getElementById('flash-container');
+        if (!flashContainer) {
+            console.log('Creating flash container...');
+            flashContainer = document.createElement('div');
+            flashContainer.id = 'flash-container';
+            flashContainer.style.marginTop = '10px';
+            
+            // Insert the flash container after the form
+            form.parentNode.insertBefore(flashContainer, form.nextSibling);
+        }
+        console.log('Flash container ready');
+
+        // Create and style the flash message
+        const flashMessage = document.createElement('div');
+        flashMessage.className = `flash-message ${type}`;
+        flashMessage.textContent = message;
+        flashMessage.style.padding = '10px 20px';
+        flashMessage.style.marginBottom = '10px';
+        flashMessage.style.borderRadius = '4px';
+        flashMessage.style.color = 'white';
+        flashMessage.style.fontWeight = 'bold';
+        flashMessage.style.backgroundColor = type === 'error' ? '#F44336' : '#4CAF50';
+    
+        console.log('Flash message element created');
+
+        // Add the flash message to the container
+        flashContainer.innerHTML = ''; // Clear any existing messages
+        flashContainer.appendChild(flashMessage);
+        console.log('Flash message appended to container');
+    
+        // Remove the flash message after 15 seconds
+        setTimeout(() => {
+            console.log('Starting flash message removal');
+            flashMessage.style.transition = 'opacity 0.5s';
+            flashMessage.style.opacity = '0';
+            setTimeout(() => {
+                flashMessage.remove();
+                console.log('Flash message removed');
+            }, 500);
+        }, 15000);
+
+        console.log('Flash message setup complete');
+    } catch (error) {
+        console.error('Error in showFlashMessage:', error);
+        alert('An error occurred while showing the flash message: ' + error.message);
+    }
+}
+
+    document.getElementById('myform').addEventListener('submit', function(event) {
+        // alert('getting form');
+        if (!checkValidity()) {
+            // alert('in checkValidity()');
+            event.preventDefault();
+            // alert('4');
+            showFlashMessage('Fields with * are mandatory, please use decimal values without % or any characters', 'error');
+            // alert('5');
+        }
+        // alert(' outside of if');
     });
-</script>
+    </script>
+
+
+
 {% endblock %}
