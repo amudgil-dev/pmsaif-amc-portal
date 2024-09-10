@@ -83,7 +83,7 @@ def user_reset_req():
             return redirect("/logout")
 
         flash("If your mail is registered, you will receive a password reset link, else consider registering!", 'warning')
-        return redirect("/register")
+        return redirect("/login")
 
     return render_template("form_resetreq.html",
                            page_heading="Reset Password Request",
