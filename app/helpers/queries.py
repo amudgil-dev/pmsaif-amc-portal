@@ -564,6 +564,19 @@ def getPerformanceReport(month, year):
     
     popped = merged_df.pop('AUM')
     merged_df.insert(12, 'AUM', popped)        
+    
+    # df3 = merged_df
+    
+    # Calculating the outperformance.
+    
+    
+    merged_df['Out Performance'] = (merged_df['SI'] - merged_df ['10 Year Benchmark'])
+    
+    # print("after ...")
+    # print(merged_df['Out Performance'])
+    
+    # popped = merged_df.pop('Out Performance')
+    # merged_df.insert(22, 'Out Performance', df3['Out Performance'])            
 
     return merged_df
 
@@ -757,7 +770,6 @@ def getPmsNavDataList(pms_id):
     # pms_sectors = getPmsSectors(pms_id)
 
     return pms_details, pms_nav
-
 
 def getAllStocks():
     print('getAllStocks()')
