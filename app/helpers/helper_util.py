@@ -30,7 +30,7 @@ def email_resetlink(reset_link, receiver_email):
     print(reset_link)
     print(receiver_email)
     print(len(receiver_email))    
-    subject = 'reset your password for portal.pmsaifworld Portal'
+    subject = 'reset your password for amcdata.pmsaifworld.com Portal'
     msg = Message('Password Reset Request!', sender='noreply@pmsaifworld.com', recipients=[receiver_email])
     body = f''' 
 
