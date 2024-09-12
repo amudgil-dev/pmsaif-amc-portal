@@ -568,15 +568,20 @@ def getPerformanceReport(month, year):
     # df3 = merged_df
     
     # Calculating the outperformance.
+    # print("before ...")
+    # print(merged_df.keys())
     
-    
-    merged_df['Out Performance'] = (merged_df['SI'] - merged_df ['10 Year Benchmark'])
+    merged_df['Out Performance'] = (merged_df['SI'] - merged_df ['Benchmark Since Inception']).round(2)
     
     # print("after ...")
+    # print(merged_df.keys())
     # print(merged_df['Out Performance'])
     
-    # popped = merged_df.pop('Out Performance')
-    # merged_df.insert(22, 'Out Performance', df3['Out Performance'])            
+    popped = merged_df.pop('Out Performance')
+    merged_df.insert(22, 'Out Performance', popped)            
+    
+    popped = merged_df.pop('Benchmark Since Inception')
+    merged_df.insert(31, 'Benchmark Since Inception',popped)         
 
     return merged_df
 
@@ -678,7 +683,7 @@ def getPMSPerfDF(month, year):
                                     'five_year_cagr': '5y',
                                     'ten_year_cagr': '10 yrs',
                                     'cagr_si': 'SI',
-                                    'si': 'Out Performance'                                   
+                                    'si': 'Benchmark Since Inception'                                   
                                     })     
 
 

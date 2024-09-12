@@ -85,16 +85,6 @@ class PMSPerformanceEditForm(FlaskForm):
     cagr_si = FloatField('CAGR Since Inception *')
     si = FloatField('Benchmark SI *')
         
-    # one_month = FloatField('One Month *')
-    # three_months = FloatField('Three Months', validators=[Optional()])
-    # six_months = FloatField('Six Months', validators=[Optional(), NumberRange(min=0.0)])
-    # twelve_months = FloatField('Twelve Months', validators=[Optional(), NumberRange(min=0.0)])
-    # two_year_cagr = FloatField('Two Year CAGR', validators=[Optional(), NumberRange(min=0.0)])
-    # three_year_cagr = FloatField('Three Year CAGR', validators=[Optional(), NumberRange(min=0.0)])
-    # five_year_cagr = FloatField('Five Year CAGR', validators=[Optional(), NumberRange(min=0.0)])
-    # ten_year_cagr = FloatField('Ten Year CAGR', validators=[Optional(), NumberRange(min=0.0)])
-    # cagr_si = FloatField('CAGR Since Inception *', validators=[NumberRange(min=0.0)])
-    # si = FloatField('Benchmark SI *', validators=[NumberRange(min=0.0)])
     submit = SubmitField("Confirm Change")
 
 

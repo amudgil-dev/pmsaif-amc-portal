@@ -8,6 +8,7 @@ from app.extensions import db
 from app.forms.forms import AddTransactionForm, DummyForm, NavForm, PMSMasterEditForm, PMSPerformanceEditForm, PMSPerformanceForm
 from app.helpers.auth_helper import AuthHelper
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 bp_nav = Blueprint('nav', __name__)
 
@@ -119,26 +120,36 @@ def add_missing_nav(pms_id):
     missing_entries = []
     
     pms = PMSMaster.query.filter_by(pms_id=pms_id).first()
-    print(pms.name)
+    # print(pms.name)
         
     navs = PMSNav.query.filter_by(pms_id=pms_id).order_by(PMSNav.p_year.desc(), PMSNav.p_month.desc()).all()
     
-    print(current_date.year, current_date.month)
-    print(type(navs))
-    
-    oldest = navs[-1]
-    latest = navs[0]
-    print(oldest.p_year, oldest.p_month,)
-    print(latest.p_year, latest.p_month,)
-    
-    existing_data = [(nav.p_year, nav.p_month) for nav in navs]
- 
-    
-    missing_entries =  get_missing_months(existing_data)
+    # print(current_date.year, current_date.month)
+    # print(type(navs))
+    # print(navs)
+    # print(len(navs))
+    if len(navs) < 1 :
+        # oldest = navs[-1]
+        # latest = navs[0]
+        previous = current_date - relativedelta(months=1)
+        # existing_data = [previous.year,previous.month]     
+        missing_entries = []   
+        missing_entries.append((previous.year,previous.month))
+    else:
+        
+        oldest = navs[-1]
+        latest = navs[0]
 
-    print(' printing possible entries')
-    for entries in missing_entries:
-        print(entries)
+        
+        existing_data = [(nav.p_year, nav.p_month) for nav in navs]
+ 
+        missing_entries =  get_missing_months(existing_data)
+    
+    # print(' printing possible entries')
+
+    # print(f"printing possible entries and type = {type(missing_entries[0])}")
+    # for entries in missing_entries:
+    #     print(entries)
 
     if request.method == 'POST':
         if form.validate_on_submit(): 

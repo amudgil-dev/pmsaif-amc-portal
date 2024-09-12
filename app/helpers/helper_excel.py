@@ -56,7 +56,7 @@ def write_PmsPerf_Excel_report(df):
 
     df[['1m', '3m','6m','1y','2y','3y','5y','10 yrs','SI']] = df[['1m', '3m','6m','1y','2y','3y','5y','10 yrs','SI']].div(100)
 
-    df[['1 Month Benchmark', '3 Month Benchmark','6 Month Benchmark','1 Year Benchmark','2 Year Benchmark','3 Year Benchmark','5 Year Benchmark','10 Year Benchmark']] = df[['1 Month Benchmark', '3 Month Benchmark','6 Month Benchmark','1 Year Benchmark','2 Year Benchmark','3 Year Benchmark','5 Year Benchmark','10 Year Benchmark']].div(100)
+    df[['1 Month Benchmark', '3 Month Benchmark','6 Month Benchmark','1 Year Benchmark','2 Year Benchmark','3 Year Benchmark','5 Year Benchmark','10 Year Benchmark','Benchmark Since Inception']] = df[['1 Month Benchmark', '3 Month Benchmark','6 Month Benchmark','1 Year Benchmark','2 Year Benchmark','3 Year Benchmark','5 Year Benchmark','10 Year Benchmark','Benchmark Since Inception']].div(100)
 
 
 
