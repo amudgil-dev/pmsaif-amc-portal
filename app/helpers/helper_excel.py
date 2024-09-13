@@ -47,19 +47,25 @@ def write_report(df,month, year):
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
 
-def is_zero_or_blank(value):
+
+def replace_zero_with_none(value):
     if pd.isna(value) or value == '' or value == 0 or value == 0.00:
-        return True
+        return None
     if isinstance(value, str) and value.strip() in ['0', '0.00', '-0', '-0.00']:
-        return True
-    return False
+        return None
+    return value
 
 def align_benchmark_values(df, column_mapping):
     for pms_col, benchmark_col in column_mapping.items():
-        # Where PMS column is NaN, empty string, 0, or 0.00, set benchmark column to NaN
-        mask = df[pms_col].apply(is_zero_or_blank)
-        df.loc[mask, benchmark_col] = np.nan
+        # Where PMS column is NaN, empty string, 0, or 0.00, set benchmark column to None
+        mask = df[pms_col].apply(replace_zero_with_none).isna()
+        df.loc[mask, benchmark_col] = None
     return df
+
+def process_stocks(value):
+    if pd.isna(value) or value == '0' or value == 0:
+        return None
+    return str(value)
 
 def write_PmsPerf_Excel_report(df):
     print('write_PmsPerf_Excel_report()')
@@ -74,44 +80,34 @@ def write_PmsPerf_Excel_report(df):
         '5y': '5 Year Benchmark',
         '10 yrs': '10 Year Benchmark',
         'SI': 'Benchmark Since Inception'
-        }
+    }
 
     excel_file = BytesIO()
 
     # divide the columns by 100 which needs to be formatted to percentage in Excel
     df[['Large', 'Mid', 'Small', 'cash']] = df[['Large', 'Mid', 'Small', 'cash']].div(100)
-
     df[['1m', '3m','6m','1y','2y','3y','5y','10 yrs','SI']] = df[['1m', '3m','6m','1y','2y','3y','5y','10 yrs','SI']].div(100)
-
     df[['1 Month Benchmark', '3 Month Benchmark','6 Month Benchmark','1 Year Benchmark','2 Year Benchmark','3 Year Benchmark','5 Year Benchmark','10 Year Benchmark','Benchmark Since Inception']] = df[['1 Month Benchmark', '3 Month Benchmark','6 Month Benchmark','1 Year Benchmark','2 Year Benchmark','3 Year Benchmark','5 Year Benchmark','10 Year Benchmark','Benchmark Since Inception']].div(100)
 
-    df = align_benchmark_values(df,column_mapping)
+    df = align_benchmark_values(df, column_mapping)
+
+    # Replace zeros with None in numeric columns
+    numeric_columns = df.select_dtypes(include=[np.number]).columns
+    for col in numeric_columns:
+        df[col] = df[col].apply(replace_zero_with_none)
+
+    print(df['No. of stocks'])
+    df['No. of stocks'] = df['No. of stocks'].apply(process_stocks)
 
     with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
-    # with pd.ExcelWriter(excel_file, engine='xlsxwriter', options={'nan_inf_to_errors': True}) as writer:    
- 
-        # Add the XlsxWriter workbook object
-        workbook = writer.book
-        
-        # Replace NaN and INF values with strings
-        # df.replace([np.nan, np.inf, -np.inf], ['NaN', 'INF', '-INF'], inplace=True)
-     
-        print(df['No. of stocks'])
-        df['No. of stocks'] = df['No. of stocks'].apply(process_stocks)
-        
         df.to_excel(writer, sheet_name='Sheet_1', index=False)
         worksheet1 = writer.sheets['Sheet_1']
 
         # Adding formatters:
-        # format_integer = writer.book.add_format({"num_format": "#,##0"})        
-        # format_decimal = writer.book.add_format({"num_format": "#,##0.00"})
-        # format_percent = writer.book.add_format({'num_format': '0.00%'})
-        
-        # Adding formatters:
-        format_integer = writer.book.add_format({"num_format": '#,##0;-#,##0;""'})
-        format_decimal = writer.book.add_format({"num_format": '#,##0.00;-#,##0.00;""'})
-        format_percent = writer.book.add_format({'num_format': '0.00%;-0.00%;""'})    
-        format_string = writer.book.add_format({"num_format": '0;-0;"-"'})    
+        format_integer = writer.book.add_format({"num_format": '#,##0;-#,##0'})
+        format_decimal = writer.book.add_format({"num_format": '#,##0.00;-#,##0.00'})
+        format_percent = writer.book.add_format({'num_format': '0.00%;-0.00%'})
+        format_string = writer.book.add_format({"num_format": '@'})
 
         # Add formats
         header_format = writer.book.add_format({'bg_color': 'yellow', 'border': 1})
@@ -121,8 +117,6 @@ def write_PmsPerf_Excel_report(df):
         for col_num, value in enumerate(df.columns.values):
             worksheet1.write(0, col_num, value, header_format)
             worksheet1.set_column(col_num, col_num, None, center_format)
-
-   
 
         # Apply center alignment
         for col_num in range(len(df.columns)):
@@ -158,13 +152,6 @@ def write_PmsPerf_Excel_report(df):
     excel_file.seek(0)
 
     return excel_file
-
-
-def process_stocks(value):
-    if pd.isna(value) or value == '0' or value == 0:
-        return ''
-    return str(value)
-
 
 def write_most_recent_nav_excel_report(df):
     print('write_most_recent_nav_excel_report()')
