@@ -62,21 +62,25 @@ def pms_dashboard(pms_id):
   get_flashed_messages()
   
   pms,index_perf,pms_details,pms_stocks, pms_sectors = getPmsDashDataList(pms_id)  
+  
+  print(f" pms = {type(pms)} , index_perf = {type(index_perf)}, pms_details = {type(pms_details)}, pms_stocks = {type(pms_stocks)}, pms_sectors = {type(pms_sectors)}")
 
+  print(f"pms_details = {pms_details}")
+  print(f"pms = {pms}")
   # print('--- BEFORE ROUTE ---')
   # print(pms.one_month)
   # print(pms.pms_id)
   # print('--- JUST BEFORE ROUTE ---')
   
   # booking_id = db.session.query(Booking).filter(and_(Booking.event_id==event_id, Booking.user_id == uid  )).order_by(Booking.id.desc()).first().id
-  temp_date  = datetime(pms.year, pms.month, 1)
+  temp_date  = datetime(pms['year'], pms['month'], 1)
   date_display = temp_date.strftime("%B, %Y")
 
   return render_template('pms_dashboard.html',
                          is_authenticated = current_user.is_authenticated,
                         is_admin=isAdmin(current_user.userrole_id),      
                          user_name= current_user.fname + " " + current_user.lname,
-                         page_heading="PMS Dashboard - "+pms.pms_name,
+                         page_heading="PMS Dashboard - "+pms['pms_name'],
                          pms=pms,
                          date_display=date_display,
                          index=index_perf,
@@ -176,7 +180,6 @@ def edit_pms(pms_id):
 @AuthHelper.check_pms_authorisations
 def edit_pmsperf(pms_id):
   print('in edit_pmsperf()')
-
   
   pms = PMSMaster.query.filter_by(pms_id=pms_id).first()
   # if pms is None:

@@ -1,0 +1,263 @@
+{% extends 'navbar.html' %}
+
+
+{% block content  %}
+<div class="container">
+    <div class="row">
+      <div class="col-sm-12 m-auto">
+
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="alert alert-{{category}} alert-dismissible">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+            </div>
+
+        {% endfor %}
+        <br>
+        <div class="row">
+            <!-- 2 4 column divs, the second offset by 4 -->
+            <div class="col-md-1" ></div>
+            <div class="col-md-5" > <h2><i>{{date_display}} </i></h3></div>
+            <div class="col-md-3 offset-md-3" >
+                
+                <button class="btn btn-primary" onclick="window.location.href='../newpmsperf/{{pms.pms_id}}'"> Add New Performance </button>  
+            </div>
+          </div>        
+
+        <!-- </div> -->
+
+
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-12 m-auto">
+      
+                      <br/>
+                    <!-- Tables -->
+                    <div class="container mt-1">
+                        
+                        <div class="row">
+
+                          <div class="col-md-6 mb-1">
+                            <!--Table for PMS Meta Data -->
+                            <table class="table table-sm table-bordered table-striped">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th class="table-info"> 
+                                            <button class="btn btn-info" onclick="window.location.href='../editpms/{{pms.pms_id}}'"> Edit</button>  
+                                            
+                                        </th>
+                                        <th >Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table1-body">
+                
+                                    <tr>
+                                        <th class="table-info" > Strategy </th>
+                                        <td>{{pms_details['pms_name']}}</td>
+                
+                                    </tr>
+                                    <tr>
+                                        <th class="table-info"> Index </th>
+                                        <td>{{pms['index_name']}}</td>
+                                
+                                    </tr>
+                                    <tr>
+                                        <th class="table-info"> AUM (Cr.)</th>
+                                        <td>{{pms_details['aum']}}</td>
+                
+                                    </tr>
+                                    <tr>
+                                        <th class="table-info"> No. of stocks </th>
+                                        <td> {{pms_details['min']}}-{{pms_details['max']}}</td>
+                                
+                                    </tr>
+                                    <tr>
+                                      <th class="table-info"> PE </th>
+                                      <td> {{pms_details['portfolio_pe'] if pms_details['portfolio_pe'] is not none else '' }}</td>
+                              
+                                  </tr>                    
+                
+                
+                                </tbody>
+                            </table>
+             
+                            <table class="table table-sm table-bordered table-striped">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th class="table-info"> 
+                                            <button class="btn btn-info" onclick="window.location.href='../editpms/{{pms.pms_id}}'"> Edit</button>  
+                                            
+                                        </th>
+                                        <th >Allocation %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table1-body">
+                
+                
+                                    <tr>
+                                        <th class="table-info"> Large Cap % </th>
+                                        <td>{{"%.2f"|format(pms_details['large_cap'])}}</td>
+                                
+                                    </tr>
+                                    <tr>
+                                        <th class="table-info"> Medium Cap % </th>
+                                        <td>{{"%.2f"|format(pms_details['mid_cap'])}}</td>
+                                
+                                    </tr>
+                                    <tr>
+                                        <th class="table-info"> Small Cap % </th>
+                                        <td>{{"%.2f"|format(pms_details['small_cap'])}}</td>
+                                
+                                    </tr>
+                                    <tr>
+                                        <th class="table-info"> Cash % </th>
+                                        <td>{{"%.2f"|format(pms_details['cash'])}}</td>
+                                
+                                    </tr>
+                
+                                </tbody>
+                            </table>
+                        </div>
+
+                            <div class="col-md-6 mb-0">
+                                <!--Table 1-->
+                                <table class="table table-sm table-bordered table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th class="table-info"> 
+                                                <button class="btn btn-info" onclick="window.location.href='../editpmsperf/{{pms.pms_id}}'"> Edit</button>  
+
+                                            </th>
+                                            <th >Scheme <br>Performance (%)</th>
+                                            <th>Index <br>Performance (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table1-body">
+                    
+                                        <tr>
+                                            <th class="table-info" > 1 Month </th>
+                                            <td>{{pms['one_month']}}</td>
+                                            <td>{{index['one_month']}}</td>                    
+                                        </tr>
+
+                                        <tr>
+                                            <th class="table-info"> 3 Month </th>
+                                            <td>{{pms['three_months'] or ''}}</td>
+                                            <td>{{index['three_months'] or ''}}</td>                    
+                                        </tr>
+                                        <tr>
+                                            <th class="table-info"> 6 Month </th>
+                                            <td>{{pms['six_months'] or ''}}</td>
+                                            <td>{{index['six_months'] or ''}}</td>                    
+                                        </tr>
+                                        <tr>
+                                            <th class="table-info"> 12 Month </th>
+                                            <td>{{pms['twelve_months'] or ''}}</td>
+                                            <td>{{index['twelve_months'] or ''}}</td>                    
+                                        </tr>
+                                        <tr>
+                                            <th class="table-info"> 2 Year CAGR</th>
+                                            <td>{{pms['two_year_cagr'] or ''}}</td>
+                                            <td>{{index['two_year_cagr'] or ''}}</td>                    
+                                        </tr>                    
+                                        <tr>
+                                            <th class="table-info"> 3 Year CAGR</th>
+                                            <td>{{pms['three_year_cagr'] or ''}}</td>
+                                            <td>{{index['three_year_cagr'] or ''}}</td>                    
+                                        </tr>
+                                        <tr>
+                                            <th class="table-info"> 5 Year CAGR</th>
+                                            <td>{{pms['five_year_cagr'] or ''}}</td>
+                                            <td>{{index['five_year_cagr'] or ''}}</td>                    
+                                        </tr>
+                                        <tr>
+                                            <th class="table-info"> 10 Year CAGR</th>
+                                            <td>{{pms['ten_year_cagr'] or ''}}</td>
+                                            <td>{{index['ten_year_cagr'] or ''}}</td>                    
+                                        </tr>
+                                        <tr>
+                                            <th class="table-info"> CAGR SI </th>
+                                            <td>{{pms['cagr_si']}}</td>
+                                            <td>{{index['cagr_si']}}</td>                    
+                                        </tr>
+                                        <tr>
+                                            <th class="table-info"> Benchmark <br>SI </th>
+                                            <td>{{pms['si']}}</td>
+                                            <td></td>                    
+                                        </tr>                    
+                    
+                                    </tbody>
+                                </table>
+                            </div>
+                    
+
+                        </div>
+                    
+                    
+                        <div class="row mt-3 mt-4 mr-0">
+                            
+                            <div class="col-md-6 mb-1">
+                                <!--Table for PMS Hoding Data -->
+                                <table class="table table-sm table-bordered table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th class="table-info"> 
+                                                    <button class="btn btn-info" onclick="window.location.href='../pmsstocks/{{pms.pms_id}}'"> Edit</button>  
+                        
+                                                </th>
+                                                <th >Stock Holdings  <br>% Deployed </th>
+                              
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table1-body">
+                                        
+                                        {% for stock in pms_stocks %}
+                                        <tr>
+                                            <th > {{stock.stock_name}} </th>
+                                            <td>{{stock.pct_deployed}}</td>
+                    
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                    
+                            <div class="col-md-6 mb-1">
+                                <!--Table for PMS Hoding Data -->
+                                <table class="table table-sm table-bordered table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th class="table-info"> 
+                                                <button class="btn btn-info" onclick="window.location.href='../pmssectors/{{pms.pms_id}}'"> Edit</button>  
+                    
+                                            </th>
+                                            <th >Sector Holdings <br> % Deployed </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table1-body">
+                                      {% for sector in pms_sectors %}                    
+                                        <tr>
+                                            <th > {{sector.sector_name}} </th>
+                                            <td>{{sector.pct_deployed}}</td>
+                    
+                                        </tr>
+                                      {% endfor %}
+                    
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                      
+              </div>
+          </div>
+      </div>   
+
+
+        </div>
+    </div>
+</div>   
+{% endblock %}

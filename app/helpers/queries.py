@@ -183,8 +183,10 @@ def getPmsDashDataList(pms_id):
     print("pms_id ==>", pms_id)
     
     pms_perf, pms_label = getPmsPerformance(pms_id)
-    # print(f" type(pms_perf) ====>><<<<< {type(pms_perf)} and {pms_perf.month}")
-    index_perf, index_label = getPmsIndexPerformance(pms_id, pms_perf.month, pms_perf.year)
+    
+    
+    print(f" type(pms_perf) ====>><<<<< {type(pms_perf)} and {pms_perf}")
+    index_perf, index_label = getPmsIndexPerformance(pms_id, pms_perf['month'], pms_perf['year'])
     
     pms_details = getPmsDetails(pms_id)
     pms_stocks = getPmsStocks(pms_id)
@@ -225,10 +227,17 @@ def getPmsPerformance(pms_id):
 
             tuple = tuple_list[0]
             pms_perf = tuple            
-                    
+            
+            
+            
+            # print(f" before converting to dicationary {pms_perf }")
+            # pms_dict = dict(pms_perf)
+            # pms_dict = {str(i): value for i, value in enumerate(pms_perf)}      
+            pms_dict = dict(zip(label_pms_perf, pms_perf))      
+            # print(f" converted to dicationary {pms_dict}")
             # pms_perf = pms_perf[0]
             # print(f"pms_perf =====> {type(pms_perf)}")
-            return pms_perf ,label_pms_perf
+            return pms_dict ,label_pms_perf
     except Exception as e:
         current_app.logger.error(f"Error in getPmsListing: {e}")
         return None , None 
@@ -318,6 +327,9 @@ def getPmsIndexPerformance(pms_id,month, year):
         )
 
     index_perf = index_perf_tuple
+    
+    index_perf = dict(zip(label_index_perf, index_perf))      
+    
     return index_perf , label_index_perf
 
 def getIndexPerformance(index_id):
@@ -373,6 +385,7 @@ def getPmsDetails(pms_id):
                 tuple_list = [i for i in records]
                 tuple = tuple_list[0]
                 pms_details = tuple
+                pms_details = dict(zip(labels, pms_details))   
                 return pms_details
 
     except:

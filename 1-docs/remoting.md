@@ -12,7 +12,7 @@ rsync -avz -e "ssh -i ~/.ssh/pmsaifappdb_oct23_key.pem" --exclude='instance/' --
 
 ### downloading entire code from remote into local location
 
-rsync -avz -e "ssh -i ~/.ssh/dm_mumbai_aws_key.pem" --exclude '**pycache**' --exclude='venv' --exclude='.git' ubuntu@43.204.211.87:amcdata/ ~/projects/pms-aif/pmsportal_aug_2024/zzz_remote_code/
+rsync -avz -e "ssh -i ~/.ssh/pmsaifappdb_oct23_key.pem" --exclude '**pycache**' --exclude='venv' --exclude='.git' ubuntu@43.204.211.87:amcdata/ ~/projects/pms-aif/pmsportal_aug_2024/zzz_remote_code/
 
 ### downloading database from remote into local location
 

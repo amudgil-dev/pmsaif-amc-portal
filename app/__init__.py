@@ -28,7 +28,7 @@ def create_app(config_class=Config):
     from app.routes.route_nav import bp_nav      
     from app.routes.route_admin import bp_admin     
     from app.routes.route_admin_report import bp_admin_report              
-    
+    from app.routes.route_upload import bp_upload
     
     
     app.register_blueprint(bp_home)
@@ -39,7 +39,8 @@ def create_app(config_class=Config):
     app.register_blueprint(bp_sectors)
     app.register_blueprint(bp_nav)    
     app.register_blueprint(bp_admin)   
-    app.register_blueprint(bp_admin_report)            
+    app.register_blueprint(bp_admin_report)         
+    app.register_blueprint(bp_upload)        
     
 
     # Set up logging
